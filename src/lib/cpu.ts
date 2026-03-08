@@ -236,15 +236,9 @@ export function executeStep(
         logMessage = `JNZ ${operand}`;
         break;
 
-      case 0x800: // JC <memory_address>
-          // Carry flag is simulated by checking for overflow/underflow after ADD/SUB
-          let carry = false;
-          if (opcode === 0x300 && state.accumulator + memory[operand].value > 255) {
-              carry = true;
-          }
-          if (opcode === 0x400 && state.accumulator - memory[operand].value < 0) {
-              carry = true;
-          }
+      case 0x800: { // JC <memory_address>
+          // Carry flag is simulated by checking state's carryFlag
+          const carry = state.carryFlag === true;
 
           if (carry) {
               newState.programCounter = operand;
