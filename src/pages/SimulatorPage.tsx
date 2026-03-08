@@ -504,7 +504,7 @@ export default function SimulatorPage() {
                     advanced={advanced}
                   />
                 </div>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3" data-tour="sim-diagram">
                   <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CpuStatePanel state={cpuState} previousState={prevState} />
