@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { X, ChevronRight, ChevronLeft, Sparkles } from "lucide-react";
@@ -74,7 +75,7 @@ export default function TourOverlay({ active, steps, onDismiss }: TourOverlayPro
     if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
-  return (
+  return createPortal(
     <>
       <div className="fixed inset-0 z-[10000] pointer-events-auto" onClick={(e) => e.stopPropagation()}>
         <div
@@ -151,7 +152,8 @@ export default function TourOverlay({ active, steps, onDismiss }: TourOverlayPro
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body
   );
 }
 
