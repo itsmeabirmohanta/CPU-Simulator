@@ -42,7 +42,7 @@ export function createInitialState(): CpuState {
     registerB: 0,
     registerC: 0,
     programCounter: 0,
-    status: "running",
+    status: "ready",
     memorySize: MEMORY_SIZE,
   };
 }
