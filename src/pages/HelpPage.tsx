@@ -50,9 +50,24 @@ export default function HelpPage() {
         </section>
 
         <section className="mb-10">
-          <h2 className="font-display text-lg font-semibold mb-4">Supported Instructions</h2>
+          <h2 className="font-display text-lg font-semibold mb-4">Basic Instructions</h2>
           <div className="space-y-3">
-            {instructions.map((inst) => (
+            {basicInstructions.map((inst) => (
+              <div key={inst.opcode} className="panel p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <code className="font-mono font-bold text-primary">{inst.opcode}</code>
+                  <code className="font-mono text-xs text-muted-foreground">{inst.example}</code>
+                </div>
+                <p className="text-sm text-muted-foreground">{inst.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-10">
+          <h2 className="font-display text-lg font-semibold mb-4">Advanced Instructions <span className="text-xs font-normal text-muted-foreground">(Advanced mode only)</span></h2>
+          <div className="space-y-3">
+            {advancedInstructions.map((inst) => (
               <div key={inst.opcode} className="panel p-4">
                 <div className="flex items-center justify-between mb-1">
                   <code className="font-mono font-bold text-primary">{inst.opcode}</code>
