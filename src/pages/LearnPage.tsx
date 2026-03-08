@@ -7,7 +7,7 @@ import ProgressTracker, {
   resetProgress,
   type LessonMeta,
 } from "@/components/learn/LessonProgress";
-import { BookOpen, Cpu, Zap, HardDrive, Flag, ArrowRight, ChevronDown, Rocket, Brain, Layers, GitBranch, Repeat, Binary } from "lucide-react";
+import { BookOpen, Cpu, Zap, HardDrive, Flag, ArrowRight, ChevronDown, Rocket, Brain, Layers, GitBranch, Repeat, Binary, HelpCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
