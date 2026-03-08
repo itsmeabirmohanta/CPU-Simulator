@@ -431,7 +431,7 @@ export default function LandingPage() {
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Cpu className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-display font-bold text-sm">CPUverse</span>
+                <span className="font-display font-bold text-sm">CPU Simulator</span>
               </div>
               <p className="text-xs text-muted-foreground font-body leading-relaxed">
                 A visual microprocessor learning platform. Built for education.
