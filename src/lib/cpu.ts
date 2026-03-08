@@ -71,7 +71,9 @@ export function parseProgram(code: string, advanced: boolean): { memory: MemoryC
     }
 
     const addressStr = parts[0]?.trim();
-    const instructionStr = parts[1]?.trim();
+    // Strip inline comments (anything after ;)
+    const rawInstr = parts.slice(1).join(":").trim();
+    const instructionStr = rawInstr.includes(";") ? rawInstr.substring(0, rawInstr.indexOf(";")).trim() : rawInstr;
 
     const address = parseInt(addressStr);
     if (isNaN(address) || address < 0 || address >= MEMORY_SIZE) {
