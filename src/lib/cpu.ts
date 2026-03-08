@@ -411,6 +411,11 @@ export function executeStep(
       changes.push(`RET to ${newState.programCounter}`);
       break;
 
+    case 0x1700: // NOP
+      newState.programCounter += 1;
+      logMessage = "NOP";
+      break;
+
     default:
       newState.status = "error";
       newState.errorMessage = `Unknown opcode 0x${opcode.toString(16)}`;
