@@ -124,8 +124,8 @@ export default function AboutPage() {
         </section>
         <section>
           <motion.div {...fadeUp} className="text-center mb-10">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Instruction Set</h2>
-            <p className="text-sm text-muted-foreground">The complete 8-bit instruction set supported by CPUverse</p>
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Instruction Set</h2>
+          <p className="text-sm text-muted-foreground">The complete 8-bit instruction set supported by CPU Simulator</p>
           </motion.div>
           <motion.div {...fadeUp} className="overflow-hidden rounded-2xl border bg-card/50">
             <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
