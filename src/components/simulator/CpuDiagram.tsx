@@ -9,181 +9,129 @@ interface CpuDiagramProps {
 
 export default function CpuDiagram({ state, previousState, activeFlow }: CpuDiagramProps) {
   const aChanged = state.accumulator !== previousState.accumulator;
-  const bChanged = state.registerB !== previousState.registerB;
-  const cChanged = state.registerC !== previousState.registerC;
   const pcChanged = state.programCounter !== previousState.programCounter;
   const irChanged = state.instructionRegister !== previousState.instructionRegister;
 
   return (
-    <div className="panel">
-      <div className="panel-header">CPU Architecture</div>
-      <div className="p-4">
-        <svg viewBox="0 0 480 280" className="w-full h-auto" style={{ minHeight: 200 }}>
-          {/* Background grid */}
+    <div className="sim-panel">
+      <div className="sim-panel-header">
+        <span className="sim-panel-title">CPU Block Diagram</span>
+        <div className="flex items-center gap-1.5">
+          {(["fetch", "decode", "execute"] as const).map((phase) => (
+            <span key={phase} className={`text-[9px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded transition-all ${
+              activeFlow === phase ? "bg-primary/20 text-primary" : "text-muted-foreground/30"
+            }`}>
+              {phase.charAt(0).toUpperCase()}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="p-3">
+        <svg viewBox="0 0 460 200" className="w-full h-auto">
           <defs>
-            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="hsl(var(--border))" strokeWidth="0.3" opacity="0.5" />
-            </pattern>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="hsl(var(--primary))" opacity="0.6" />
+            <marker id="arr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+              <polygon points="0 0, 6 2, 0 4" fill="hsl(var(--primary))" opacity="0.5" />
             </marker>
-            <marker id="arrowhead-active" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="hsl(var(--primary))" />
+            <marker id="arr-on" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+              <polygon points="0 0, 6 2, 0 4" fill="hsl(var(--primary))" />
             </marker>
           </defs>
-          <rect width="480" height="280" fill="url(#grid)" rx="8" />
 
-          {/* CPU boundary box */}
-          <rect x="10" y="10" width="460" height="260" rx="8" fill="none" stroke="hsl(var(--border))" strokeWidth="1" strokeDasharray="4 2" />
-          <text x="24" y="28" fontSize="9" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)" fontWeight="600" letterSpacing="2">CPU</text>
+          {/* Background */}
+          <rect width="460" height="200" rx="6" fill="hsl(var(--muted) / 0.3)" />
+          <rect x="4" y="4" width="452" height="192" rx="4" fill="none" stroke="hsl(var(--border))" strokeWidth="0.5" strokeDasharray="3 2" />
 
-          {/* PC Box */}
-          <RegisterBlock x={30} y={45} w={90} h={50} label="PC" value={String(state.programCounter).padStart(2, "0")} active={pcChanged} highlight={activeFlow === "fetch"} />
-
-          {/* IR Box */}
-          <RegisterBlock x={30} y={115} w={90} h={50} label="IR" value={state.instructionRegister || "—"} active={irChanged} highlight={activeFlow === "decode"} />
-
-          {/* ALU */}
-          <motion.g animate={activeFlow === "execute" ? { opacity: [0.7, 1, 0.7] } : { opacity: 1 }} transition={{ duration: 1, repeat: activeFlow === "execute" ? Infinity : 0 }}>
-            <polygon points="240,190 195,240 285,240" fill="hsl(var(--primary) / 0.08)" stroke={activeFlow === "execute" ? "hsl(var(--primary))" : "hsl(var(--border))"} strokeWidth={activeFlow === "execute" ? "2" : "1"} />
-            <text x="240" y="228" textAnchor="middle" fontSize="11" fill="hsl(var(--primary))" fontFamily="var(--font-mono)" fontWeight="700">ALU</text>
-          </motion.g>
-
-          {/* Accumulator */}
-          <RegisterBlock x={170} y={45} w={90} h={50} label="A (ACC)" value={String(state.accumulator).padStart(2, "0")} active={aChanged} highlight={aChanged} />
-
-          {/* Register B */}
-          <RegisterBlock x={290} y={45} w={80} h={50} label="REG B" value={String(state.registerB).padStart(2, "0")} active={bChanged} highlight={bChanged} />
-
-          {/* Register C */}
-          <RegisterBlock x={390} y={45} w={80} h={50} label="REG C" value={String(state.registerC).padStart(2, "0")} active={cChanged} highlight={cChanged} />
+          {/* Registers row */}
+          <Block x={15} y={15} w={70} h={40} label="PC" value={String(state.programCounter).padStart(2,"0")} active={pcChanged || activeFlow==="fetch"} />
+          <Block x={100} y={15} w={90} h={40} label="IR" value={state.instructionRegister||"---"} active={irChanged || activeFlow==="decode"} />
+          <Block x={210} y={15} w={70} h={40} label="ACC" value={String(state.accumulator)} active={aChanged} />
+          <Block x={295} y={15} w={55} h={40} label="B" value={String(state.registerB)} active={state.registerB !== previousState.registerB} />
+          <Block x={360} y={15} w={55} h={40} label="C" value={String(state.registerC)} active={state.registerC !== previousState.registerC} />
 
           {/* Flags */}
-          <FlagBlock x={340} y={130} label="Z" active={state.zeroFlag} />
-          <FlagBlock x={395} y={130} label="CY" active={state.carryFlag} />
-          <text x="340" y="125" fontSize="8" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)" letterSpacing="1.5">FLAGS</text>
+          <SmallBlock x={425} y={15} w={25} h={18} label="Z" value={state.zeroFlag?"1":"0"} active={state.zeroFlag} />
+          <SmallBlock x={425} y={37} w={25} h={18} label="CY" value={state.carryFlag?"1":"0"} active={state.carryFlag} />
 
-          {/* Memory label */}
-          <rect x={340} y={200} width={120} height={50} rx="6" fill="hsl(var(--muted) / 0.5)" stroke="hsl(var(--border))" strokeWidth="1" />
-          <text x="400" y="220" textAnchor="middle" fontSize="9" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)" letterSpacing="1.5">MEMORY</text>
-          <text x="400" y="238" textAnchor="middle" fontSize="10" fill="hsl(var(--foreground))" fontFamily="var(--font-mono)" fontWeight="600">
-            [{String(state.programCounter).padStart(2, "0")}]
-          </text>
+          {/* ALU */}
+          <motion.g animate={activeFlow==="execute"?{opacity:[0.6,1,0.6]}:{opacity:1}} transition={{duration:1,repeat:activeFlow==="execute"?Infinity:0}}>
+            <polygon points="210,100 170,155 250,155" fill={activeFlow==="execute"?"hsl(var(--primary) / 0.1)":"hsl(var(--muted) / 0.5)"} stroke={activeFlow==="execute"?"hsl(var(--primary))":"hsl(var(--border))"} strokeWidth={activeFlow==="execute"?"1.5":"0.5"} />
+            <text x="210" y="140" textAnchor="middle" fontSize="10" fill="hsl(var(--primary))" fontFamily="var(--font-mono)" fontWeight="700">ALU</text>
+          </motion.g>
 
-          {/* Data flow arrows */}
-          {/* PC → IR (fetch) */}
-          <FlowArrow x1={75} y1={95} x2={75} y2={115} active={activeFlow === "fetch"} />
-          
-          {/* IR → ALU (decode) */}
-          <FlowArrow x1={120} y1={140} x2={195} y2={200} active={activeFlow === "decode"} />
-          
-          {/* ACC → ALU */}
-          <FlowArrow x1={215} y1={95} x2={230} y2={190} active={activeFlow === "execute"} />
-          
-          {/* ALU → ACC (result) */}
-          <FlowArrow x1={255} y1={190} x2={240} y2={95} active={activeFlow === "execute" && aChanged} />
-          
-          {/* Memory → ALU */}
-          <FlowArrow x1={340} y1={225} x2={285} y2={225} active={activeFlow === "execute"} />
-          
-          {/* PC → Memory (address bus) */}
-          <FlowArrow x1={120} y1={60} x2={340} y2={215} active={activeFlow === "fetch"} dashed />
+          {/* Memory */}
+          <rect x={310} y={100} width={130} height={50} rx="4" fill="hsl(var(--muted) / 0.5)" stroke="hsl(var(--border))" strokeWidth="0.5" />
+          <text x="375" y="120" textAnchor="middle" fontSize="8" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)" letterSpacing="1">MEMORY</text>
+          <text x="375" y="140" textAnchor="middle" fontSize="11" fill="hsl(var(--foreground))" fontFamily="var(--font-mono)" fontWeight="600">[{String(state.programCounter).padStart(2,"0")}]</text>
 
-          {/* Cycle indicator */}
-          <CycleIndicator phase={activeFlow} />
+          {/* Arrows */}
+          <Arrow x1={50} y1={55} x2={50} y2={75} x3={145} y3={75} x4={145} y4={55} active={activeFlow==="fetch"} label="fetch" />
+          <Arrow x1={190} y1={35} x2={210} y2={35} x3={210} y3={100} active={activeFlow==="decode"} />
+          <Arrow x1={245} y1={55} x2={245} y2={100} active={activeFlow==="execute"} />
+          <Arrow x1={310} y1={125} x2={250} y2={125} active={activeFlow==="execute"} />
+
+          {/* Cycle bar */}
+          <g transform="translate(15, 170)">
+            {(["FETCH","DECODE","EXECUTE"] as const).map((p, i) => {
+              const isActive = activeFlow === p.toLowerCase();
+              const x = i * 145;
+              return (
+                <g key={p}>
+                  <rect x={x} y={0} width={130} height={20} rx="3" fill={isActive?"hsl(var(--primary) / 0.15)":"transparent"} stroke={isActive?"hsl(var(--primary) / 0.4)":"hsl(var(--border) / 0.3)"} strokeWidth="0.5" />
+                  <text x={x+65} y={13} textAnchor="middle" fontSize="8" fill={isActive?"hsl(var(--primary))":"hsl(var(--muted-foreground) / 0.4)"} fontFamily="var(--font-mono)" fontWeight={isActive?"700":"400"} letterSpacing="1.5">{p}</text>
+                </g>
+              );
+            })}
+          </g>
         </svg>
       </div>
     </div>
   );
 }
 
-function RegisterBlock({ x, y, w, h, label, value, active, highlight }: {
-  x: number; y: number; w: number; h: number; label: string; value: string; active: boolean; highlight: boolean;
-}) {
-  return (
-    <motion.g
-      animate={active ? { scale: [1, 1.03, 1] } : {}}
-      transition={{ duration: 0.4 }}
-      style={{ transformOrigin: `${x + w / 2}px ${y + h / 2}px` }}
-    >
-      <rect
-        x={x} y={y} width={w} height={h} rx="6"
-        fill={highlight ? "hsl(var(--primary) / 0.1)" : "hsl(var(--card))"}
-        stroke={highlight ? "hsl(var(--primary))" : "hsl(var(--border))"}
-        strokeWidth={highlight ? "2" : "1"}
-        filter={highlight ? "url(#glow)" : undefined}
-      />
-      <text x={x + 8} y={y + 16} fontSize="8" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)" letterSpacing="1.5">{label}</text>
-      <text x={x + w / 2} y={y + h / 2 + 8} textAnchor="middle" fontSize="16" fill={highlight ? "hsl(var(--primary))" : "hsl(var(--foreground))"} fontFamily="var(--font-mono)" fontWeight="700">
-        {value}
-      </text>
-    </motion.g>
-  );
-}
-
-function FlagBlock({ x, y, label, active }: { x: number; y: number; label: string; active: boolean }) {
+function Block({ x,y,w,h,label,value,active }:{x:number;y:number;w:number;h:number;label:string;value:string;active:boolean}) {
   return (
     <g>
-      <rect x={x} y={y} width={40} height={30} rx="4"
-        fill={active ? "hsl(var(--primary) / 0.15)" : "hsl(var(--muted) / 0.5)"}
-        stroke={active ? "hsl(var(--primary))" : "hsl(var(--border))"}
-        strokeWidth={active ? "1.5" : "0.5"}
+      <rect x={x} y={y} width={w} height={h} rx="4"
+        fill={active?"hsl(var(--primary) / 0.08)":"hsl(var(--card))"}
+        stroke={active?"hsl(var(--primary))":"hsl(var(--border))"}
+        strokeWidth={active?"1.5":"0.5"}
       />
-      <text x={x + 20} y={y + 13} textAnchor="middle" fontSize="7" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)">{label}</text>
-      <text x={x + 20} y={y + 24} textAnchor="middle" fontSize="12" fill={active ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"} fontFamily="var(--font-mono)" fontWeight="700">
-        {active ? "1" : "0"}
-      </text>
+      <text x={x+4} y={y+11} fontSize="7" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)" letterSpacing="1">{label}</text>
+      <text x={x+w/2} y={y+h/2+7} textAnchor="middle" fontSize="13" fill={active?"hsl(var(--primary))":"hsl(var(--foreground))"} fontFamily="var(--font-mono)" fontWeight="700">{value}</text>
     </g>
   );
 }
 
-function FlowArrow({ x1, y1, x2, y2, active, dashed }: { x1: number; y1: number; x2: number; y2: number; active: boolean; dashed?: boolean }) {
+function SmallBlock({ x,y,w,h,label,value,active }:{x:number;y:number;w:number;h:number;label:string;value:string;active:boolean}) {
   return (
-    <motion.line
-      x1={x1} y1={y1} x2={x2} y2={y2}
-      stroke={active ? "hsl(var(--primary))" : "hsl(var(--border))"}
-      strokeWidth={active ? "2" : "1"}
-      strokeDasharray={dashed ? "4 3" : undefined}
-      markerEnd={active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
-      animate={active ? { opacity: [0.5, 1, 0.5] } : { opacity: 0.4 }}
-      transition={{ duration: 1.2, repeat: active ? Infinity : 0 }}
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx="2"
+        fill={active?"hsl(var(--primary) / 0.12)":"hsl(var(--muted) / 0.5)"}
+        stroke={active?"hsl(var(--primary) / 0.5)":"hsl(var(--border) / 0.5)"}
+        strokeWidth="0.5"
+      />
+      <text x={x+3} y={y+h/2+1} fontSize="6" fill="hsl(var(--muted-foreground))" fontFamily="var(--font-mono)">{label}</text>
+      <text x={x+w-3} y={y+h/2+1} textAnchor="end" fontSize="8" fill={active?"hsl(var(--primary))":"hsl(var(--muted-foreground))"} fontFamily="var(--font-mono)" fontWeight="700">{value}</text>
+    </g>
+  );
+}
+
+function Arrow({ x1,y1,x2,y2,x3,y3,x4,y4,active,label }:{x1:number;y1:number;x2:number;y2:number;x3?:number;y3?:number;x4?:number;y4?:number;active:boolean;label?:string}) {
+  const points = x3 !== undefined && y3 !== undefined
+    ? x4 !== undefined && y4 !== undefined
+      ? `M${x1},${y1} L${x2},${y2} L${x3},${y3} L${x4},${y4}`
+      : `M${x1},${y1} L${x2},${y2} L${x3},${y3}`
+    : `M${x1},${y1} L${x2},${y2}`;
+
+  return (
+    <motion.path
+      d={points}
+      fill="none"
+      stroke={active?"hsl(var(--primary))":"hsl(var(--border))"}
+      strokeWidth={active?"1.5":"0.5"}
+      markerEnd={active?"url(#arr-on)":"url(#arr)"}
+      animate={active?{opacity:[0.4,1,0.4]}:{opacity:0.3}}
+      transition={{duration:1.2,repeat:active?Infinity:0}}
     />
-  );
-}
-
-function CycleIndicator({ phase }: { phase: string }) {
-  const phases = [
-    { key: "fetch", label: "FETCH", x: 40 },
-    { key: "decode", label: "DECODE", x: 200 },
-    { key: "execute", label: "EXECUTE", x: 360 },
-  ];
-  return (
-    <g>
-      {phases.map((p) => (
-        <g key={p.key}>
-          <rect x={p.x} y={255} width={60} height={16} rx="8"
-            fill={phase === p.key ? "hsl(var(--primary) / 0.2)" : "transparent"}
-            stroke={phase === p.key ? "hsl(var(--primary))" : "hsl(var(--border))"}
-            strokeWidth={phase === p.key ? "1.5" : "0.5"}
-          />
-          <text x={p.x + 30} y={266} textAnchor="middle" fontSize="7"
-            fill={phase === p.key ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"}
-            fontFamily="var(--font-mono)" fontWeight={phase === p.key ? "700" : "400"} letterSpacing="1"
-          >
-            {p.label}
-          </text>
-        </g>
-      ))}
-      {/* Connecting arrows between phases */}
-      <line x1="100" y1="263" x2="198" y2="263" stroke="hsl(var(--border))" strokeWidth="0.5" markerEnd="url(#arrowhead)" />
-      <line x1="260" y1="263" x2="358" y2="263" stroke="hsl(var(--border))" strokeWidth="0.5" markerEnd="url(#arrowhead)" />
-    </g>
   );
 }

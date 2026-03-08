@@ -7,78 +7,47 @@ interface ExplanationPanelProps {
 
 export default function ExplanationPanel({ currentLog }: ExplanationPanelProps) {
   return (
-    <div className="panel">
-      <div className="panel-header">🔍 Instruction Breakdown</div>
-      <div className="p-4 min-h-[100px]">
+    <div className="sim-panel">
+      <div className="sim-panel-header">
+        <span className="sim-panel-title">Explanation</span>
+        {currentLog && (
+          <div className="flex items-center gap-1">
+            <PhaseDot label="F" active />
+            <span className="text-muted-foreground/30 text-[8px]">→</span>
+            <PhaseDot label="D" active />
+            <span className="text-muted-foreground/30 text-[8px]">→</span>
+            <PhaseDot label="E" active />
+          </div>
+        )}
+      </div>
+      <div className="p-3 min-h-[60px]">
         <AnimatePresence mode="wait">
           {currentLog ? (
             <motion.div
               key={currentLog.explanation}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-2"
             >
-              {/* Phase pipeline */}
-              <div className="flex items-center gap-2">
-                <PhaseChip label="1. FETCH" color="primary" icon="📥" />
-                <motion.span
-                  className="text-muted-foreground"
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  →
-                </motion.span>
-                <PhaseChip label="2. DECODE" color="warning" icon="🔍" />
-                <motion.span
-                  className="text-muted-foreground"
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-                >
-                  →
-                </motion.span>
-                <PhaseChip label="3. EXECUTE" color="success" icon="⚡" />
-              </div>
-
-              {/* Explanation text */}
-              <div className="rounded-lg bg-muted/30 border p-3">
-                <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">
-                  {currentLog.explanation}
-                </p>
-              </div>
-
-              {/* Changes summary */}
+              <p className="text-[12px] text-foreground/90 leading-relaxed whitespace-pre-line font-mono">
+                {currentLog.explanation}
+              </p>
               {currentLog.changes.length > 0 && (
-                <div className="space-y-1">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Changes</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {currentLog.changes.map((c, j) => (
-                      <motion.span
-                        key={j}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: j * 0.1 }}
-                        className="inline-flex items-center rounded-full border bg-accent/10 text-accent-foreground px-2.5 py-1 text-[11px] font-mono"
-                      >
-                        {c}
-                      </motion.span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap gap-1">
+                  {currentLog.changes.map((c, j) => (
+                    <span key={j} className="inline-block rounded bg-primary/10 text-primary px-1.5 py-0.5 text-[10px] font-mono font-medium">
+                      {c}
+                    </span>
+                  ))}
                 </div>
               )}
             </motion.div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center py-4 text-center"
-            >
-              <span className="text-2xl mb-2">🔬</span>
-              <p className="text-sm text-muted-foreground">
-                Execute an instruction to see a detailed<br />fetch → decode → execute breakdown.
-              </p>
-            </motion.div>
+            <p className="text-[11px] text-muted-foreground/50 text-center">
+              Step through code to see instruction explanations
+            </p>
           )}
         </AnimatePresence>
       </div>
@@ -86,15 +55,12 @@ export default function ExplanationPanel({ currentLog }: ExplanationPanelProps) 
   );
 }
 
-function PhaseChip({ label, color, icon }: { label: string; color: string; icon: string }) {
-  const colorClasses: Record<string, string> = {
-    primary: "bg-primary/10 text-primary border-primary/30",
-    warning: "bg-warning/10 text-warning border-warning/30",
-    success: "bg-success/10 text-success border-success/30",
-  };
+function PhaseDot({ label, active }: { label: string; active: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide ${colorClasses[color]}`}>
-      <span>{icon}</span> {label}
+    <span className={`inline-flex items-center justify-center h-4 w-4 rounded-full text-[8px] font-bold font-mono ${
+      active ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground/40"
+    }`}>
+      {label}
     </span>
   );
 }
