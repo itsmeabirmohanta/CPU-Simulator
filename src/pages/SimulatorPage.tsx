@@ -430,7 +430,7 @@ export default function SimulatorPage() {
             /* ===== BEGINNER MODE ===== */
             <div className="flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:min-h-[calc(100vh-160px)]">
               {/* Left sidebar */}
-              <div className="lg:col-span-3 flex flex-col gap-2">
+              <div className="lg:col-span-3 flex flex-col gap-2" data-tour="sim-samples">
                 <div className="glass-card p-3 sm:p-4">
                   <div className="font-display font-bold text-sm mb-2 sm:mb-3">📝 Choose a Program</div>
                   <div className="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
