@@ -460,7 +460,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span className="text-[11px] text-muted-foreground/60 font-body">© {new Date().getFullYear()} CPUverse. Educational Project.</span>
+            <span className="text-[11px] text-muted-foreground/60 font-body">© {new Date().getFullYear()} CPU Simulator. Educational Project.</span>
             <span className="text-[11px] text-muted-foreground/40 font-mono">v3.0</span>
           </div>
         </div>
