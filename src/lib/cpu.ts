@@ -487,6 +487,8 @@ export function executeStep(
 interface SampleProgram {
   name: string;
   code: string;
+  description?: string;
+  advanced?: boolean;
 }
 
 export const SAMPLE_PROGRAMS: Record<string, SampleProgram> = {
