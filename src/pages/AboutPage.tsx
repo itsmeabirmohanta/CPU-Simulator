@@ -84,7 +84,7 @@ export default function AboutPage() {
       </section>
       <div className="container mx-auto px-4 py-16 max-w-6xl space-y-24">
         <motion.section {...fadeUp} className="max-w-3xl mx-auto text-center">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Why CPUverse?</h2>
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Why CPU Simulator?</h2>
           <p className="text-muted-foreground leading-relaxed">
             Understanding how a CPU works is fundamental to computer science, yet most resources are either too abstract or too complex. CPU Simulator bridges this gap with a purpose-built 8-bit simulator that lets you <strong className="text-foreground">see</strong> every fetch, decode, and execute cycle — then reinforces concepts through a structured, progressive curriculum.
           </p>
