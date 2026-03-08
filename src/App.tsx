@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import SimulatorPage from "./pages/SimulatorPage";
 import LearnPage from "./pages/LearnPage";
 import AboutPage from "./pages/AboutPage";
+import LearnModulePage from "./pages/LearnModulePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
