@@ -17,19 +17,31 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Slider } from "@/components/ui/slider";
 import {
   GraduationCap, Cpu, Play, Pause, SkipForward, RotateCcw, Upload,
-  Keyboard, ChevronRight, Gauge,
+  Keyboard, ChevronRight, Gauge, Share2, Download,
 } from "lucide-react";
 
 const SPEED_LABELS: Record<number, string> = { 0: "0.25×", 1: "0.5×", 2: "1×", 3: "2×", 4: "4×" };
 const SPEED_MS: Record<number, number> = { 0: 3200, 1: 1600, 2: 800, 3: 400, 4: 200 };
 
+// localStorage helpers
+function loadSaved<T>(key: string, fallback: T): T {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+}
+function save(key: string, value: unknown) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+
 export default function SimulatorPage() {
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "advanced" ? "advanced" : "beginner";
-  const [mode, setMode] = useState<"beginner" | "advanced">(initialMode);
+
+  // Load shared program from URL if present
+  const sharedCode = searchParams.get("code") ? decodeURIComponent(searchParams.get("code")!) : null;
+
+  const [mode, setMode] = useState<"beginner" | "advanced">(loadSaved("cpuverse-mode", initialMode) as "beginner" | "advanced");
   const advanced = mode === "advanced";
 
-  const [code, setCode] = useState(SAMPLE_PROGRAMS.addition.code);
+  const [code, setCode] = useState(sharedCode || loadSaved("cpuverse-code", SAMPLE_PROGRAMS.addition.code));
   const [cpuState, setCpuState] = useState<CpuState>(createInitialState());
   const [prevState, setPrevState] = useState<CpuState>(createInitialState());
   const [memory, setMemory] = useState<MemoryCell[]>(createMemory());
@@ -40,8 +52,13 @@ export default function SimulatorPage() {
   const memSize = advanced ? 64 : 32;
 
   const [beginnerSample, setBeginnerSample] = useState("addition");
-  const [speedLevel, setSpeedLevel] = useState(2);
+  const [speedLevel, setSpeedLevel] = useState(loadSaved("cpuverse-speed", 2));
   const [showShortcuts, setShowShortcuts] = useState(false);
+
+  // Persist code, mode, speed
+  useEffect(() => { save("cpuverse-code", code); }, [code]);
+  useEffect(() => { save("cpuverse-mode", mode); }, [mode]);
+  useEffect(() => { save("cpuverse-speed", speedLevel); }, [speedLevel]);
 
   const beginnerSamples = [
     { key: "addition", label: "➕ Add Two Numbers", code: SAMPLE_PROGRAMS.addition.code },
