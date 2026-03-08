@@ -71,7 +71,7 @@ export default function AboutPage() {
             <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-6">
               <Cpu className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">About CPUverse</h1>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">About CPU Simulator</h1>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6">
               An interactive, visual CPU simulator and curriculum designed to make computer architecture accessible to everyone — from curious beginners to university students.
             </p>
