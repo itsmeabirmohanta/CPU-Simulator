@@ -189,11 +189,19 @@ export default function LearnPage() {
 
         {/* Quick actions */}
         <div className="mt-6 flex items-center gap-3 mb-8">
-          <Button asChild className="rounded-xl gap-2 bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button asChild className="rounded-xl gap-2 bg-accent hover:bg-accent/90 text-accent-foreground" data-tour="open-sim">
             <Link to="/simulator?mode=beginner">Open Simulator →</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-xl gap-2">
             <Link to="/simulator?mode=advanced">Advanced Lab →</Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-xl gap-1.5 text-xs text-muted-foreground ml-auto"
+            onClick={restartWalkthrough}
+          >
+            <HelpCircle className="h-3.5 w-3.5" /> Tour
           </Button>
         </div>
 
