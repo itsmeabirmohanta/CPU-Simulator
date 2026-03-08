@@ -12,6 +12,7 @@ import {
 import Navbar from "@/components/Navbar";
 import CodeEditor from "@/components/simulator/CodeEditor";
 import CpuStatePanel from "@/components/simulator/CpuStatePanel";
+import CpuDiagram from "@/components/simulator/CpuDiagram";
 import MemoryViewer from "@/components/simulator/MemoryViewer";
 import ExecutionLog from "@/components/simulator/ExecutionLog";
 import ExecutionControls from "@/components/simulator/ExecutionControls";
@@ -25,6 +26,7 @@ export default function SimulatorPage() {
   const [memory, setMemory] = useState<MemoryCell[]>(createMemory());
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [hasProgram, setHasProgram] = useState(false);
+  const [activeFlow, setActiveFlow] = useState<"fetch" | "decode" | "execute" | "idle">("idle");
   const runTimerRef = useRef<number | null>(null);
 
   const loadProgram = useCallback(() => {
@@ -39,11 +41,19 @@ export default function SimulatorPage() {
     setMemory(parsedMem);
     setLogs([]);
     setHasProgram(true);
+    setActiveFlow("idle");
     toast.success("Program loaded successfully");
   }, [code]);
 
   const step = useCallback(() => {
     if (cpuState.status === "halted" || cpuState.status === "error") return;
+    
+    // Animate phases
+    setActiveFlow("fetch");
+    setTimeout(() => setActiveFlow("decode"), 150);
+    setTimeout(() => setActiveFlow("execute"), 300);
+    setTimeout(() => setActiveFlow("idle"), 600);
+
     setPrevState(cpuState);
     const result = executeStep(cpuState, memory);
     result.log.step = logs.length + 1;
@@ -70,12 +80,10 @@ export default function SimulatorPage() {
             if (runTimerRef.current) clearInterval(runTimerRef.current);
             return currentState;
           }
-          // We need to do the step inline
           return currentState;
         });
-        // Use step via a ref-based approach
         step();
-      }, 500);
+      }, 600);
       return () => {
         if (runTimerRef.current) clearInterval(runTimerRef.current);
       };
@@ -85,6 +93,7 @@ export default function SimulatorPage() {
   const pause = useCallback(() => {
     if (runTimerRef.current) clearInterval(runTimerRef.current);
     setCpuState((s) => ({ ...s, status: s.status === "running" ? "paused" : s.status }));
+    setActiveFlow("idle");
   }, []);
 
   const reset = useCallback(() => {
@@ -95,6 +104,7 @@ export default function SimulatorPage() {
     setMemory(createMemory());
     setLogs([]);
     setHasProgram(false);
+    setActiveFlow("idle");
   }, []);
 
   const currentLog = logs.length > 0 ? logs[logs.length - 1] : null;
@@ -103,8 +113,12 @@ export default function SimulatorPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto p-4">
+        {/* Header with controls */}
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="font-display text-xl font-bold">Simulator</h1>
+          <div>
+            <h1 className="font-display text-xl font-bold">Simulator</h1>
+            <p className="text-xs text-muted-foreground">8-bit Accumulator-Based CPU</p>
+          </div>
           <ExecutionControls
             status={cpuState.status}
             onLoad={loadProgram}
@@ -116,9 +130,10 @@ export default function SimulatorPage() {
           />
         </div>
 
+        {/* Main 3-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left: Code Editor */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-3">
             <CodeEditor
               code={code}
               onChange={setCode}
@@ -128,8 +143,9 @@ export default function SimulatorPage() {
             />
           </div>
 
-          {/* Center: CPU State + Explanation */}
-          <div className="lg:col-span-4 space-y-4">
+          {/* Center: CPU Diagram + State + Explanation */}
+          <div className="lg:col-span-5 space-y-4">
+            <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
             <CpuStatePanel state={cpuState} previousState={prevState} />
             <ExplanationPanel currentLog={currentLog} />
           </div>
