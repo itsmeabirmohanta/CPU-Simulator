@@ -173,7 +173,7 @@ export const modules: Module[] = [
         concepts: ["Accumulator", "Register B", "Register C", "MOV", "INR", "DCR"],
         theory: "Besides the Accumulator, the CPU has registers B and C for temporary storage. MOV copies data between registers (e.g., MOV B,A copies A into B). INR adds 1 to a register; DCR subtracts 1. Registers are the CPU's fastest storage — much quicker than memory. Using registers efficiently is key to writing fast programs.",
         code: SAMPLE_PROGRAMS.registerMove.code,
-        challenge: "Track register B and C values through each step. What ends up in address 12?",
+        challenge: "Track register B and C values through each step. What ends up in address 11?",
         estimatedMinutes: 8,
       },
       {
@@ -423,7 +423,7 @@ export const modules: Module[] = [
         theory: "A subroutine is a reusable block of code — the assembly equivalent of a function. CALL jumps to the subroutine and pushes the return address onto the stack. RET pops that address and jumps back. The stack is a LIFO (last-in-first-out) structure. PUSH puts the Accumulator on top; POP removes the top value into A. The stack enables recursion, nested function calls, and local variables. Every function call in every language uses this mechanism.",
         code: SAMPLE_PROGRAMS.subroutine.code,
         advanced: true,
-        challenge: "The subroutine doubles the accumulator. What value ends up at address 21?",
+        challenge: "The subroutine doubles the accumulator. What value ends up at address 31?",
         estimatedMinutes: 12,
       },
       {

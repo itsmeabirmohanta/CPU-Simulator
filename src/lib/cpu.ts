@@ -642,19 +642,17 @@ export const SAMPLE_PROGRAMS: Record<string, SampleProgram> = {
 08: MOV A,B
 09: RAR
 10: MOV B,A
-11: DCR A
-12: LDA 33
-13: SUB 31
-14: STA 33
-15: LDA 33
-16: JZ 18
-17: JMP 04
-18: MOV A,C
-19: STA 34
-20: HLT
+11: LDA 33
+12: SUB 32
+13: STA 33
+14: JZ 16
+15: JMP 04
+16: MOV A,C
+17: STA 34
+18: HLT
 30: 170 ; Value to count bits of (10101010 = 4 bits)
 31: 0   ; Initial count
-32: 01  ; Mask (value 1)
+32: 01  ; Mask (value 1) and decrement value
 33: 08  ; Loop counter (8 bits)
 34: 0   ; Result`,
   },
