@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Cpu, BookOpen, Rocket, Eye,
   ArrowRight, GraduationCap, Terminal, Lightbulb,
-  Keyboard, Share2, BarChart3, Heart,
+  Keyboard, Share2, BarChart3, Heart, Github, Linkedin, User,
 } from "lucide-react";
 import { modules, getTotalLessonCount } from "@/lib/curriculum";
 
