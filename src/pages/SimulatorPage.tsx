@@ -361,6 +361,19 @@ export default function SimulatorPage() {
                 </TooltipTrigger>
                 <TooltipContent>Keyboard shortcuts (?)</TooltipContent>
               </Tooltip>
+
+              {/* Tour button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={restartTour}
+                    className="hidden md:inline-flex items-center p-2 rounded-lg hover:bg-muted/50 text-muted-foreground transition-colors"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Guided tour</TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
