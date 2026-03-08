@@ -6,21 +6,35 @@ interface CpuStatePanelProps {
   previousState?: CpuState;
 }
 
-function RegisterCard({ label, value, changed, mono = true }: { label: string; value: string | number; changed: boolean; mono?: boolean }) {
+function RegisterCard({ label, value, changed, icon }: { label: string; value: string | number; changed: boolean; icon?: string }) {
   return (
     <motion.div
-      className={changed ? "register-card-active" : "register-card"}
-      animate={changed ? { scale: [1, 1.05, 1] } : {}}
-      transition={{ duration: 0.3 }}
+      className={`relative overflow-hidden rounded-lg border p-3 transition-all duration-300 ${
+        changed ? "border-primary bg-primary/5 glow-primary" : "bg-card border-border"
+      }`}
+      animate={changed ? { scale: [1, 1.04, 1] } : {}}
+      transition={{ duration: 0.35 }}
     >
-      <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{label}</div>
+      {changed && (
+        <motion.div
+          className="absolute inset-0 bg-primary/5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.15, 0] }}
+          transition={{ duration: 0.8 }}
+        />
+      )}
+      <div className="flex items-center gap-1.5 mb-1">
+        {icon && <span className="text-xs">{icon}</span>}
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">{label}</span>
+      </div>
       <AnimatePresence mode="wait">
         <motion.div
           key={String(value)}
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 5 }}
-          className={`text-lg font-bold ${mono ? "font-mono" : "font-display"} ${changed ? "text-primary" : "text-foreground"}`}
+          initial={{ opacity: 0, y: -8, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 8, scale: 0.9 }}
+          transition={{ duration: 0.2 }}
+          className={`text-xl font-bold font-mono tabular-nums ${changed ? "text-primary" : "text-foreground"}`}
         >
           {value}
         </motion.div>
@@ -29,32 +43,45 @@ function RegisterCard({ label, value, changed, mono = true }: { label: string; v
   );
 }
 
-function FlagBadge({ label, active, changed }: { label: string; active: boolean; changed: boolean }) {
+function FlagBadge({ label, fullLabel, active, changed }: { label: string; fullLabel: string; active: boolean; changed: boolean }) {
   return (
     <motion.div
-      className={`flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-mono transition-all ${
-        active ? "border-primary bg-primary/15 text-primary" : "border-border bg-muted/50 text-muted-foreground"
+      className={`flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-xs font-mono transition-all ${
+        active ? "border-primary bg-primary/10 text-primary" : "border-border bg-muted/30 text-muted-foreground"
       }`}
-      animate={changed ? { scale: [1, 1.1, 1] } : {}}
+      animate={changed ? { scale: [1, 1.08, 1] } : {}}
+      transition={{ duration: 0.3 }}
     >
-      <div className={`h-2 w-2 rounded-full ${active ? "bg-primary animate-pulse-glow" : "bg-muted-foreground/30"}`} />
-      <span className="uppercase tracking-wider">{label}</span>
-      <span className="font-bold">{active ? "1" : "0"}</span>
+      <motion.div
+        className={`h-2.5 w-2.5 rounded-full ${active ? "bg-primary" : "bg-muted-foreground/20"}`}
+        animate={active ? { scale: [1, 1.3, 1], opacity: [1, 0.6, 1] } : {}}
+        transition={{ duration: 2, repeat: active ? Infinity : 0 }}
+      />
+      <div className="flex flex-col">
+        <span className="font-bold text-xs">{label}</span>
+        <span className="text-[9px] text-muted-foreground">{fullLabel}</span>
+      </div>
+      <span className={`ml-auto text-lg font-bold tabular-nums ${active ? "text-primary" : ""}`}>{active ? "1" : "0"}</span>
     </motion.div>
   );
 }
 
 function StatusBadge({ status }: { status: CpuState["status"] }) {
-  const styles: Record<string, string> = {
-    ready: "bg-secondary text-secondary-foreground",
-    running: "bg-primary/15 text-primary border-primary",
-    halted: "bg-success/15 text-success border-success",
-    error: "bg-destructive/15 text-destructive border-destructive",
-    paused: "bg-warning/15 text-warning border-warning",
+  const config: Record<string, { bg: string; dot: string; icon: string }> = {
+    ready: { bg: "bg-secondary text-secondary-foreground border-border", dot: "bg-muted-foreground", icon: "⏸" },
+    running: { bg: "bg-primary/10 text-primary border-primary", dot: "bg-primary", icon: "▶" },
+    halted: { bg: "bg-success/10 text-success border-success", dot: "bg-success", icon: "✓" },
+    error: { bg: "bg-destructive/10 text-destructive border-destructive", dot: "bg-destructive", icon: "✕" },
+    paused: { bg: "bg-warning/10 text-warning border-warning", dot: "bg-warning", icon: "⏯" },
   };
+  const c = config[status];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${styles[status]}`}>
-      {status === "running" && <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" />}
+    <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${c.bg}`}>
+      <motion.span
+        className={`h-2 w-2 rounded-full ${c.dot}`}
+        animate={status === "running" ? { scale: [1, 1.4, 1], opacity: [1, 0.5, 1] } : {}}
+        transition={{ duration: 1, repeat: status === "running" ? Infinity : 0 }}
+      />
       {status}
     </span>
   );
@@ -65,28 +92,28 @@ export default function CpuStatePanel({ state, previousState }: CpuStatePanelPro
   return (
     <div className="panel">
       <div className="panel-header flex items-center justify-between">
-        <span>CPU State</span>
+        <span>⚡ CPU Registers</span>
         <StatusBadge status={state.status} />
       </div>
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-3">
         <div className="grid grid-cols-3 gap-2">
-          <RegisterCard label="Accumulator (A)" value={String(state.accumulator).padStart(2, "0")} changed={state.accumulator !== prev.accumulator} />
-          <RegisterCard label="Register B" value={String(state.registerB).padStart(2, "0")} changed={state.registerB !== prev.registerB} />
-          <RegisterCard label="Register C" value={String(state.registerC).padStart(2, "0")} changed={state.registerC !== prev.registerC} />
+          <RegisterCard icon="📊" label="Accumulator (A)" value={String(state.accumulator).padStart(2, "0")} changed={state.accumulator !== prev.accumulator} />
+          <RegisterCard icon="📦" label="Register B" value={String(state.registerB).padStart(2, "0")} changed={state.registerB !== prev.registerB} />
+          <RegisterCard icon="📦" label="Register C" value={String(state.registerC).padStart(2, "0")} changed={state.registerC !== prev.registerC} />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <RegisterCard label="Program Counter (PC)" value={String(state.programCounter).padStart(2, "0")} changed={state.programCounter !== prev.programCounter} />
-          <RegisterCard label="Instruction Register (IR)" value={state.instructionRegister || "—"} changed={state.instructionRegister !== prev.instructionRegister} mono />
+          <RegisterCard icon="📍" label="Program Counter" value={String(state.programCounter).padStart(2, "0")} changed={state.programCounter !== prev.programCounter} />
+          <RegisterCard icon="📋" label="Instruction Reg" value={state.instructionRegister || "—"} changed={state.instructionRegister !== prev.instructionRegister} />
         </div>
-        <div className="flex gap-2">
-          <FlagBadge label="Zero (Z)" active={state.zeroFlag} changed={state.zeroFlag !== prev.zeroFlag} />
-          <FlagBadge label="Carry (CY)" active={state.carryFlag} changed={state.carryFlag !== prev.carryFlag} />
+        <div className="grid grid-cols-2 gap-2">
+          <FlagBadge label="Z" fullLabel="Zero Flag" active={state.zeroFlag} changed={state.zeroFlag !== prev.zeroFlag} />
+          <FlagBadge label="CY" fullLabel="Carry Flag" active={state.carryFlag} changed={state.carryFlag !== prev.carryFlag} />
         </div>
         {state.errorMessage && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive font-mono"
+            className="rounded-lg border border-destructive bg-destructive/10 p-3 text-sm text-destructive font-mono"
           >
             ⚠ {state.errorMessage}
           </motion.div>
