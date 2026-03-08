@@ -78,7 +78,7 @@ export default function LearnPage() {
                   <Rocket className="h-4 w-4" /> Start Learning
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full gap-2 px-6">
+              <Button asChild size="lg" variant="outline" className="rounded-full gap-2 px-6" data-tour="open-sim">
                 <Link to="/simulator?mode=beginner">
                   <Cpu className="h-4 w-4" /> Open Simulator
                 </Link>
