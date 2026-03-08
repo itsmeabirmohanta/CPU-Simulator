@@ -485,7 +485,7 @@ export default function SimulatorPage() {
               </div>
 
               {/* Visual CPU */}
-              <div className="lg:col-span-9 overflow-y-auto">
+              <div className="lg:col-span-9 overflow-y-auto" data-tour="sim-visual">
                 <BeginnerVisualCPU
                   state={cpuState} previousState={prevState} memory={memory}
                   activeFlow={activeFlow} currentLog={currentLog} logs={logs}
