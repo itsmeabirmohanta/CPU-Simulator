@@ -57,7 +57,7 @@ export default function LearnPage() {
             </div>
 
             {/* Stat chips */}
-            <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap mb-8">
+            <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap mb-8" data-tour="stats">
               {[
                 { icon: Layers, label: `${modules.length} Modules`, color: "bg-primary/10 text-primary" },
                 { icon: BookOpen, label: `${totalLessons} Lessons`, color: "bg-accent/10 text-accent" },
