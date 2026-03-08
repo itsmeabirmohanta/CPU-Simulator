@@ -13,29 +13,27 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between h-14 px-4">
-        <Link to="/" className="flex items-center gap-2 font-display font-bold text-lg">
-          <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center">
-            <Cpu className="h-4.5 w-4.5 text-primary" />
-          </div>
-          <span>CPU Simulator</span>
+    <nav className="border-b bg-card/90 backdrop-blur-md sticky top-0 z-50">
+      <div className="container mx-auto flex items-center justify-between h-12 px-4">
+        <Link to="/" className="flex items-center gap-2 font-display font-bold text-sm">
+          <Cpu className="h-4 w-4 text-primary" />
+          <span>CPU Sim</span>
         </Link>
-        <div className="flex items-center gap-1 text-sm font-medium">
+        <div className="flex items-center gap-0.5">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`px-3 py-1.5 rounded-md transition-colors ${
+              className={`px-2.5 py-1 rounded text-[12px] font-medium transition-colors ${
                 location.pathname === link.to
-                  ? "bg-primary/10 text-primary font-semibold"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {link.label}
             </Link>
           ))}
-          <div className="ml-2 border-l pl-2">
+          <div className="ml-1.5 border-l pl-1.5">
             <ThemeToggle />
           </div>
         </div>

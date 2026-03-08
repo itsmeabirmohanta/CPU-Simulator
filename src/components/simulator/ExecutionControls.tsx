@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Play, Pause, SkipForward, RotateCcw, Upload, Zap } from "lucide-react";
+import { Play, Pause, SkipForward, RotateCcw, Upload } from "lucide-react";
 import { CpuStatus } from "@/lib/cpu";
-import { motion } from "framer-motion";
 
 interface ExecutionControlsProps {
   status: CpuStatus;
@@ -13,74 +11,50 @@ interface ExecutionControlsProps {
   hasProgram: boolean;
 }
 
+function ControlBtn({ onClick, disabled, children, variant = "default" }: {
+  onClick: () => void; disabled?: boolean; children: React.ReactNode; variant?: "default" | "primary";
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+        variant === "primary"
+          ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+          : "bg-muted hover:bg-muted/80 text-foreground"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function ExecutionControls({
-  status,
-  onLoad,
-  onStep,
-  onRun,
-  onPause,
-  onReset,
-  hasProgram,
+  status, onLoad, onStep, onRun, onPause, onReset, hasProgram,
 }: ExecutionControlsProps) {
   const isHaltedOrError = status === "halted" || status === "error";
   const isRunning = status === "running";
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button
-        onClick={onLoad}
-        disabled={isRunning}
-        variant="outline"
-        size="sm"
-        className="gap-1.5 rounded-full"
-      >
-        <Upload className="h-3.5 w-3.5" />
-        Load
-      </Button>
-      <Button
-        onClick={onStep}
-        disabled={!hasProgram || isHaltedOrError || isRunning}
-        variant="outline"
-        size="sm"
-        className="gap-1.5 rounded-full"
-      >
-        <SkipForward className="h-3.5 w-3.5" />
-        Step
-      </Button>
+    <div className="flex items-center gap-1.5">
+      <ControlBtn onClick={onLoad} disabled={isRunning}>
+        <Upload className="h-3 w-3" /> Load
+      </ControlBtn>
+      <ControlBtn onClick={onStep} disabled={!hasProgram || isHaltedOrError || isRunning}>
+        <SkipForward className="h-3 w-3" /> Step
+      </ControlBtn>
       {isRunning ? (
-        <Button onClick={onPause} variant="outline" size="sm" className="gap-1.5 rounded-full">
-          <Pause className="h-3.5 w-3.5" />
-          Pause
-        </Button>
+        <ControlBtn onClick={onPause}>
+          <Pause className="h-3 w-3" /> Pause
+        </ControlBtn>
       ) : (
-        <motion.div whileTap={{ scale: 0.95 }}>
-          <Button
-            onClick={onRun}
-            disabled={!hasProgram || isHaltedOrError}
-            size="sm"
-            className="gap-1.5 rounded-full"
-          >
-            <Play className="h-3.5 w-3.5" />
-            Run
-          </Button>
-        </motion.div>
+        <ControlBtn onClick={onRun} disabled={!hasProgram || isHaltedOrError} variant="primary">
+          <Play className="h-3 w-3" /> Run
+        </ControlBtn>
       )}
-      <Button onClick={onReset} variant="ghost" size="sm" className="gap-1.5 rounded-full">
-        <RotateCcw className="h-3.5 w-3.5" />
-        Reset
-      </Button>
-
-      {/* Status indicator */}
-      {hasProgram && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="ml-2 flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground"
-        >
-          <Zap className="h-3 w-3" />
-          {status === "running" ? "Executing..." : status === "halted" ? "Complete" : status === "error" ? "Error" : status === "paused" ? "Paused" : "Ready"}
-        </motion.div>
-      )}
+      <ControlBtn onClick={onReset}>
+        <RotateCcw className="h-3 w-3" />
+      </ControlBtn>
     </div>
   );
 }

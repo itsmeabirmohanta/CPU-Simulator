@@ -1,100 +1,66 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Cpu, Play, BookOpen, Layers, ArrowRight, Zap, Eye, Terminal } from "lucide-react";
+import { Cpu, Play, BookOpen, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { motion } from "framer-motion";
 
 const features = [
-  { icon: Terminal, title: "Assembly Editor", description: "Write assembly-like programs with syntax validation and sample programs." },
-  { icon: Eye, title: "Live Visualization", description: "Watch registers, memory, and flags update in real-time as instructions execute." },
-  { icon: Layers, title: "Step-by-Step", description: "Execute one instruction at a time to understand the fetch-decode-execute cycle." },
-  { icon: Zap, title: "Instant Feedback", description: "Get detailed explanations of what each instruction does and how it affects the CPU." },
+  { title: "Step-by-Step Execution", desc: "Walk through each fetch, decode, execute cycle at your own pace." },
+  { title: "Live Register View", desc: "Watch accumulator, flags, and PC update in real-time." },
+  { title: "Memory Visualization", desc: "See the entire memory layout with highlighted active cells." },
+  { title: "Detailed Explanations", desc: "Every instruction is explained in plain English as it runs." },
 ];
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
-      {/* Hero */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-4 py-1.5 text-xs font-medium text-muted-foreground mb-6">
-            <Cpu className="h-3.5 w-3.5 text-primary" />
-            Educational CPU Simulator
-          </div>
-          <h1 className="font-display text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            Understand How a{" "}
-            <span className="text-primary">CPU</span>{" "}
-            Really Works
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            An interactive 8-bit microprocessor simulator that visualizes registers, memory, flags, and the fetch-decode-execute cycle. Built for students and educators.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <Button asChild size="lg" className="gap-2">
-              <Link to="/simulator">
-                <Play className="h-4 w-4" />
-                Start Simulating
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="gap-2">
-              <Link to="/help">
-                <BookOpen className="h-4 w-4" />
-                Instruction Set
-              </Link>
-            </Button>
-          </div>
-        </motion.div>
+      <section className="container mx-auto px-4 py-24 text-center max-w-2xl">
+        <div className="inline-flex items-center gap-1.5 rounded-full border bg-muted px-3 py-1 text-[11px] font-medium text-muted-foreground mb-6">
+          <Cpu className="h-3 w-3 text-primary" />
+          Educational Simulator
+        </div>
+        <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+          Learn How a <span className="text-primary">CPU</span> Works
+        </h1>
+        <p className="text-base text-muted-foreground max-w-lg mx-auto mb-8 leading-relaxed">
+          An interactive 8-bit microprocessor simulator. Write assembly, step through instructions, and watch registers and memory change in real time.
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <Button asChild size="lg" className="gap-2 rounded-lg">
+            <Link to="/simulator"><Play className="h-4 w-4" /> Open Simulator</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="gap-2 rounded-lg">
+            <Link to="/help"><BookOpen className="h-4 w-4" /> Instruction Set</Link>
+          </Button>
+        </div>
       </section>
 
-      {/* Features */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * i, duration: 0.5 }}
-              className="panel p-5 space-y-3"
-            >
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <f.icon className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="font-display font-semibold">{f.title}</h3>
-              <p className="text-sm text-muted-foreground">{f.description}</p>
-            </motion.div>
+      <section className="container mx-auto px-4 pb-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+          {features.map((f) => (
+            <div key={f.title} className="sim-panel p-4 space-y-1.5">
+              <h3 className="font-display font-semibold text-sm">{f.title}</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Learning Outcomes */}
-      <section className="border-t bg-muted/30">
-        <div className="container mx-auto px-4 py-16">
-          <h2 className="font-display text-2xl font-bold text-center mb-8">What You'll Learn</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-            {[
-              "How the Program Counter sequences through instructions",
-              "How the ALU performs arithmetic and sets flags",
-              "How conditional branching works with status flags",
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <ArrowRight className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <span className="text-sm text-foreground">{item}</span>
-              </div>
+      <section className="border-t">
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h2 className="font-display text-lg font-bold mb-4">What You'll Understand</h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-4 text-sm text-muted-foreground">
+            {["Program Counter sequencing", "ALU arithmetic & flags", "Conditional branching"].map((item) => (
+              <span key={item} className="flex items-center gap-2">
+                <ArrowRight className="h-3 w-3 text-primary shrink-0" /> {item}
+              </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t py-6 text-center text-xs text-muted-foreground">
-        Microprocessor CPU Simulator — An educational project for microprocessor courses
+      <footer className="border-t py-4 text-center text-[11px] text-muted-foreground">
+        CPU Simulator — Educational Microprocessor Project
       </footer>
     </div>
   );
