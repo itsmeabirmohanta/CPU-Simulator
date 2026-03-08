@@ -104,7 +104,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Content ─────────────────────────────────────────── */}
-      <div className="container mx-auto px-4 pb-20 max-w-4xl space-y-8">
+      <div className="container mx-auto px-4 pt-12 pb-20 max-w-4xl space-y-8">
         {/* What is CPUverse */}
         <motion.div
           {...fadeUp}
