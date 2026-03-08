@@ -124,12 +124,13 @@ export default function LearnPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {modules.map((mod, i) => (
-              <ModuleCard
-                key={mod.id}
-                module={mod}
-                completedCount={getModuleProgress(mod.id).length}
-                index={i}
-              />
+              <div key={mod.id} data-tour={i === 0 ? "module-0" : undefined}>
+                <ModuleCard
+                  module={mod}
+                  completedCount={getModuleProgress(mod.id).length}
+                  index={i}
+                />
+              </div>
             ))}
           </div>
         </section>
