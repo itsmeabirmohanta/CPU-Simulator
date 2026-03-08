@@ -104,7 +104,7 @@ export default function SimulatorPage() {
   const run = useCallback(() => { setCpuState((s) => ({ ...s, status: "running" })); }, []);
 
   useEffect(() => {
-    if (cpuState.status === "running") {
+    if (cpuState.status === "running" && hasProgram) {
       const speed = SPEED_MS[speedLevel] || 800;
       runTimerRef.current = window.setInterval(() => {
         setCpuState((s) => { if (s.status !== "running") { if (runTimerRef.current) clearInterval(runTimerRef.current); } return s; });
@@ -112,7 +112,7 @@ export default function SimulatorPage() {
       }, speed);
       return () => { if (runTimerRef.current) clearInterval(runTimerRef.current); };
     }
-  }, [cpuState.status, step, speedLevel]);
+  }, [cpuState.status, step, speedLevel, hasProgram]);
 
   const pause = useCallback(() => {
     if (runTimerRef.current) clearInterval(runTimerRef.current);
