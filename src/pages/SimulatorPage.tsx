@@ -80,19 +80,26 @@ export default function SimulatorPage() {
   }, [code]);
 
   const step = useCallback(() => {
+    if (!hasProgram) return;
     if (cpuState.status === "halted" || cpuState.status === "error") return;
+    // Ensure status is "running" for executeStep
+    const runningState = { ...cpuState, status: "running" as const };
     setActiveFlow("fetch");
     setTimeout(() => setActiveFlow("decode"), 200);
     setTimeout(() => setActiveFlow("execute"), 400);
     setTimeout(() => setActiveFlow("idle"), 800);
     setPrevState(cpuState);
-    const result = executeStep(cpuState, memory, advanced);
+    const result = executeStep(runningState, memory);
     result.log.step = logs.length + 1;
-    setCpuState(result.state); setMemory(result.memory);
+    // If not auto-running, keep status as "ready" unless halted/error
+    const finalStatus = result.state.status === "halted" || result.state.status === "error"
+      ? result.state.status
+      : cpuState.status === "running" ? "running" : "ready";
+    setCpuState({ ...result.state, status: finalStatus }); setMemory(result.memory);
     setLogs((prev) => [...prev, result.log]);
     if (result.state.status === "halted") toast.success("✅ Program completed!");
     else if (result.state.status === "error") toast.error(result.state.errorMessage || "Error");
-  }, [cpuState, memory, logs.length, advanced]);
+  }, [cpuState, memory, logs.length, hasProgram]);
 
   const run = useCallback(() => { setCpuState((s) => ({ ...s, status: "running" })); }, []);
 
