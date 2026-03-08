@@ -55,7 +55,7 @@ export function createMemory(size: number = MEMORY_SIZE): MemoryCell[] {
   return memory;
 }
 
-export function parseProgram(code: string, advanced: boolean): { memory: MemoryCell[]; errors: string[] } {
+export function parseProgram(code: string, _advanced?: boolean): { memory: MemoryCell[]; errors: string[] } {
   const memory = createMemory(MEMORY_SIZE);
   const errors: string[] = [];
   const lines = code.split("\n");
@@ -64,16 +64,18 @@ export function parseProgram(code: string, advanced: boolean): { memory: MemoryC
     line = line.trim();
     if (!line || line.startsWith(";")) return;
 
-    const parts = line.split(":");
-    if (parts.length !== 2) {
+    const colonIdx = line.indexOf(":");
+    if (colonIdx === -1) {
       errors.push(`Invalid syntax on line ${i + 1}: ${line}`);
       return;
     }
 
-    const addressStr = parts[0]?.trim();
+    const addressStr = line.substring(0, colonIdx).trim();
     // Strip inline comments (anything after ;)
-    const rawInstr = parts.slice(1).join(":").trim();
-    const instructionStr = rawInstr.includes(";") ? rawInstr.substring(0, rawInstr.indexOf(";")).trim() : rawInstr;
+    let instructionStr = line.substring(colonIdx + 1).trim();
+    if (instructionStr.includes(";")) {
+      instructionStr = instructionStr.substring(0, instructionStr.indexOf(";")).trim();
+    }
 
     const address = parseInt(addressStr);
     if (isNaN(address) || address < 0 || address >= MEMORY_SIZE) {
@@ -81,38 +83,61 @@ export function parseProgram(code: string, advanced: boolean): { memory: MemoryC
       return;
     }
 
-    let value: number;
-    if (advanced) {
-      // Advanced mode: Parse assembly instructions
-      const [opcode, operandStr] = instructionStr.split(" ");
-      const instruction = opcode.toUpperCase();
+    if (!instructionStr) return;
 
-      if (!instruction) {
-        errors.push(`Missing instruction on line ${i + 1}`);
+    // Try parsing as a plain number (data value)
+    const numValue = parseInt(instructionStr);
+    if (!isNaN(numValue) && String(numValue) === instructionStr) {
+      if (numValue < 0 || numValue > 65535) {
+        errors.push(`Value out of range on line ${i + 1}: ${instructionStr}`);
         return;
       }
+      memory[address].value = numValue;
+      return;
+    }
 
-      let operand: number | undefined;
-      if (operandStr) {
-        operand = parseInt(operandStr);
-        if (isNaN(operand) || operand < 0 || operand > 255) {
-          errors.push(`Invalid operand on line ${i + 1}: ${operandStr}`);
-          return;
-        }
-      }
+    // Parse as assembly instruction
+    const parts = instructionStr.split(/[\s,]+/);
+    const opcode = parts[0].toUpperCase();
 
-      value = encodeInstruction(instruction, operand);
-      if (value === -1) {
-        errors.push(`Unknown instruction on line ${i + 1}: ${instruction}`);
+    if (!opcode) {
+      errors.push(`Missing instruction on line ${i + 1}`);
+      return;
+    }
+
+    // Handle MOV specially: MOV B,A -> operand encodes src/dst
+    let operand: number | undefined;
+    if (opcode === "MOV") {
+      const regMap: Record<string, number> = { A: 0, B: 1, C: 2 };
+      const dst = parts[1]?.toUpperCase();
+      const src = parts[2]?.toUpperCase();
+      if (dst && src && dst in regMap && src in regMap) {
+        operand = (regMap[dst] << 4) | regMap[src];
+      } else {
+        errors.push(`Invalid MOV operands on line ${i + 1}: ${instructionStr}`);
         return;
       }
-    } else {
-      // Beginner mode: Parse direct byte values
-      value = parseInt(instructionStr);
-      if (isNaN(value) || value < 0 || value > 255) {
-        errors.push(`Invalid value on line ${i + 1}: ${instructionStr}`);
+    } else if (opcode === "INR" || opcode === "DCR") {
+      const regMap: Record<string, number> = { A: 0, B: 1, C: 2 };
+      const reg = parts[1]?.toUpperCase();
+      if (reg && reg in regMap) {
+        operand = regMap[reg];
+      } else {
+        errors.push(`Invalid register on line ${i + 1}: ${parts[1]}`);
         return;
       }
+    } else if (parts[1]) {
+      operand = parseInt(parts[1]);
+      if (isNaN(operand) || operand < 0 || operand > 255) {
+        errors.push(`Invalid operand on line ${i + 1}: ${parts[1]}`);
+        return;
+      }
+    }
+
+    const value = encodeInstruction(opcode, operand);
+    if (value === -1) {
+      errors.push(`Unknown instruction on line ${i + 1}: ${opcode}`);
+      return;
     }
 
     memory[address].value = value;
