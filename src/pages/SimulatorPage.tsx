@@ -40,6 +40,7 @@ export default function SimulatorPage() {
 
   const [mode, setMode] = useState<"beginner" | "advanced">(loadSaved("cpuverse-mode", initialMode) as "beginner" | "advanced");
   const advanced = mode === "advanced";
+  const { showTour, dismissTour, restartTour } = useSimulatorTour(mode);
 
   const [code, setCode] = useState(sharedCode || loadSaved("cpuverse-code", SAMPLE_PROGRAMS.addition.code));
   const [cpuState, setCpuState] = useState<CpuState>(createInitialState());
