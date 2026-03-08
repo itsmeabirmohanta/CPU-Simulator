@@ -1,23 +1,32 @@
 import { toast } from "@/components/ui/use-toast";
 
+export type CpuStatus = "ready" | "running" | "halted" | "error" | "paused";
+
 export interface CpuState {
   accumulator: number;
   registerB: number;
   registerC: number;
   programCounter: number;
-  status: "running" | "halted" | "error";
+  status: CpuStatus;
   memorySize: number;
+  instructionRegister?: string;
+  zeroFlag?: boolean;
+  carryFlag?: boolean;
+  errorMessage?: string;
 }
 
 export interface MemoryCell {
   address: number;
   value: number;
+  type?: "instruction" | "data";
+  changed?: boolean;
 }
 
 export interface LogEntry {
   step: number;
   instruction: string;
   changes: string[];
+  explanation?: string;
 }
 
 const MEMORY_SIZE = 256;
