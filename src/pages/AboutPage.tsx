@@ -158,6 +158,37 @@ export default function AboutPage() {
           </div>
         </section>
         <motion.section {...fadeUp}>
+          <div className="text-center mb-10">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Meet the Developer</h2>
+            <p className="text-sm text-muted-foreground">The creative mind behind CPU Simulator</p>
+          </div>
+          <div className="max-w-lg mx-auto">
+            <div className="p-8 rounded-2xl border bg-card/50 text-center">
+              <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-primary/10 mb-4">
+                <User className="h-10 w-10 text-primary" />
+              </div>
+              <h3 className="font-display text-xl font-bold mb-2">Abir Mahanta</h3>
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                Crafting digital experiences at the intersection of design and AI innovation. Building products that resonate.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <Button asChild variant="outline" size="sm" className="rounded-full gap-2">
+                  <a href="https://github.com/itsmeabirmohanta" target="_blank" rel="noopener noreferrer">
+                    <Github className="h-4 w-4" />
+                    GitHub
+                  </a>
+                </Button>
+                <Button asChild variant="outline" size="sm" className="rounded-full gap-2">
+                  <a href="https://www.linkedin.com/in/itsmeabirmohanta/" target="_blank" rel="noopener noreferrer">
+                    <Linkedin className="h-4 w-4" />
+                    LinkedIn
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+        <motion.section {...fadeUp}>
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-6">Built With</h2>
           <div className="flex items-center justify-center gap-2.5 flex-wrap">
             {techStack.map(t => (<span key={t.name} className={`px-4 py-2 rounded-full text-xs font-medium ${t.color}`}>{t.name}</span>))}
