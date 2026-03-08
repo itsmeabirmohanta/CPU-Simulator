@@ -13,6 +13,7 @@ export default {
     extend: {
       fontFamily: {
         display: ["Space Grotesk", "system-ui", "sans-serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "Menlo", "monospace"],
       },
       colors: {
@@ -21,7 +22,11 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))" },
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
+        },
         secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
         destructive: { DEFAULT: "hsl(var(--destructive))", foreground: "hsl(var(--destructive-foreground))" },
         muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
@@ -56,6 +61,9 @@ export default {
         "float": { "0%, 100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
         "data-flow": { "0%": { strokeDashoffset: "20" }, "100%": { strokeDashoffset: "0" } },
         "glow-pulse": { "0%, 100%": { boxShadow: "0 0 8px hsl(var(--primary) / 0.2)" }, "50%": { boxShadow: "0 0 24px hsl(var(--primary) / 0.4)" } },
+        "count-up": { "0%": { opacity: "0", transform: "translateY(10px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        "slide-up": { "0%": { opacity: "0", transform: "translateY(20px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        "gradient-shift": { "0%, 100%": { backgroundPosition: "0% 50%" }, "50%": { backgroundPosition: "100% 50%" } },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -64,6 +72,9 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "data-flow": "data-flow 0.8s linear infinite",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "count-up": "count-up 0.5s ease-out forwards",
+        "slide-up": "slide-up 0.6s ease-out forwards",
+        "gradient-shift": "gradient-shift 3s ease infinite",
       },
     },
   },
