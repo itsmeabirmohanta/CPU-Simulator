@@ -211,7 +211,7 @@ export default function SimulatorPage() {
           <div className="container mx-auto px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0">
             {/* Left: Mode Toggle + Status */}
             <div className="flex items-center justify-between sm:justify-start gap-3">
-              <div className="flex items-center rounded-xl bg-muted/50 p-0.5 relative">
+              <div className="flex items-center rounded-xl bg-muted/50 p-0.5 relative" data-tour="sim-mode-toggle">
                 <button
                   onClick={() => handleModeSwitch("beginner")}
                   className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
