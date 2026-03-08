@@ -168,7 +168,7 @@ export default function AboutPage() {
           <div className="relative px-8 py-14 text-center">
             <Heart className="h-8 w-8 text-primary mx-auto mb-4" />
             <h3 className="font-display text-2xl md:text-3xl font-bold mb-3">Start Your Journey</h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-lg mx-auto">Whether you're a student, educator, or curious mind — CPUverse is free and ready to explore.</p>
+            <p className="text-sm text-muted-foreground mb-6 max-w-lg mx-auto">Whether you're a student, educator, or curious mind — CPU Simulator is free and ready to explore.</p>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Button asChild size="lg" className="rounded-full gap-2 px-8"><Link to="/learn">Begin the Curriculum <ArrowRight className="h-4 w-4" /></Link></Button>
               <Button asChild size="lg" variant="outline" className="rounded-full gap-2 px-6"><Link to="/simulator?mode=advanced"><Terminal className="h-4 w-4" /> Advanced Lab</Link></Button>
