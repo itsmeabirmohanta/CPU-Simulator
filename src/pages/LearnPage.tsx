@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { SAMPLE_PROGRAMS } from "@/lib/cpu";
+import GuidedWalkthrough, { useWalkthrough } from "@/components/learn/GuidedWalkthrough";
 
 /* ── Lesson data ──────────────────────────────────────────── */
 
