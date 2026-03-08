@@ -22,7 +22,7 @@ export default function Navbar() {
             <Cpu className="h-4 w-4 text-primary" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display font-bold text-sm leading-none tracking-tight">CPUverse</span>
+            <span className="font-display font-bold text-sm leading-none tracking-tight">CPU Simulator</span>
             <span className="text-[9px] text-muted-foreground leading-none mt-0.5 flex items-center gap-0.5">
               <Sparkles className="h-2 w-2" /> Visual Learning
             </span>

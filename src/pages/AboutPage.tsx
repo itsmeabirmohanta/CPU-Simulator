@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Cpu, BookOpen, Rocket, Eye,
   ArrowRight, GraduationCap, Terminal, Lightbulb,
-  Keyboard, Share2, BarChart3, Heart,
+  Keyboard, Share2, BarChart3, Heart, Github, Linkedin, User,
 } from "lucide-react";
 import { modules, getTotalLessonCount } from "@/lib/curriculum";
 
@@ -71,7 +71,7 @@ export default function AboutPage() {
             <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 mb-6">
               <Cpu className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">About CPUverse</h1>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">About CPU Simulator</h1>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6">
               An interactive, visual CPU simulator and curriculum designed to make computer architecture accessible to everyone — from curious beginners to university students.
             </p>
@@ -84,9 +84,9 @@ export default function AboutPage() {
       </section>
       <div className="container mx-auto px-4 py-16 max-w-6xl space-y-24">
         <motion.section {...fadeUp} className="max-w-3xl mx-auto text-center">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Why CPUverse?</h2>
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Why CPU Simulator?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Understanding how a CPU works is fundamental to computer science, yet most resources are either too abstract or too complex. CPUverse bridges this gap with a purpose-built 8-bit simulator that lets you <strong className="text-foreground">see</strong> every fetch, decode, and execute cycle — then reinforces concepts through a structured, progressive curriculum.
+            Understanding how a CPU works is fundamental to computer science, yet most resources are either too abstract or too complex. CPU Simulator bridges this gap with a purpose-built 8-bit simulator that lets you <strong className="text-foreground">see</strong> every fetch, decode, and execute cycle — then reinforces concepts through a structured, progressive curriculum.
           </p>
         </motion.section>
         <section>
@@ -124,8 +124,8 @@ export default function AboutPage() {
         </section>
         <section>
           <motion.div {...fadeUp} className="text-center mb-10">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Instruction Set</h2>
-            <p className="text-sm text-muted-foreground">The complete 8-bit instruction set supported by CPUverse</p>
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Instruction Set</h2>
+          <p className="text-sm text-muted-foreground">The complete 8-bit instruction set supported by CPU Simulator</p>
           </motion.div>
           <motion.div {...fadeUp} className="overflow-hidden rounded-2xl border bg-card/50">
             <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
@@ -158,6 +158,37 @@ export default function AboutPage() {
           </div>
         </section>
         <motion.section {...fadeUp}>
+          <div className="text-center mb-10">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Meet the Developer</h2>
+            <p className="text-sm text-muted-foreground">The creative mind behind CPU Simulator</p>
+          </div>
+          <div className="max-w-lg mx-auto">
+            <div className="p-8 rounded-2xl border bg-card/50 text-center">
+              <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-primary/10 mb-4">
+                <User className="h-10 w-10 text-primary" />
+              </div>
+              <h3 className="font-display text-xl font-bold mb-2">Abir Mahanta</h3>
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                Crafting digital experiences at the intersection of design and AI innovation. Building products that resonate.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <Button asChild variant="outline" size="sm" className="rounded-full gap-2">
+                  <a href="https://github.com/itsmeabirmohanta" target="_blank" rel="noopener noreferrer">
+                    <Github className="h-4 w-4" />
+                    GitHub
+                  </a>
+                </Button>
+                <Button asChild variant="outline" size="sm" className="rounded-full gap-2">
+                  <a href="https://www.linkedin.com/in/itsmeabirmohanta/" target="_blank" rel="noopener noreferrer">
+                    <Linkedin className="h-4 w-4" />
+                    LinkedIn
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+        <motion.section {...fadeUp}>
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-6">Built With</h2>
           <div className="flex items-center justify-center gap-2.5 flex-wrap">
             {techStack.map(t => (<span key={t.name} className={`px-4 py-2 rounded-full text-xs font-medium ${t.color}`}>{t.name}</span>))}
@@ -168,7 +199,7 @@ export default function AboutPage() {
           <div className="relative px-8 py-14 text-center">
             <Heart className="h-8 w-8 text-primary mx-auto mb-4" />
             <h3 className="font-display text-2xl md:text-3xl font-bold mb-3">Start Your Journey</h3>
-            <p className="text-sm text-muted-foreground mb-6 max-w-lg mx-auto">Whether you're a student, educator, or curious mind — CPUverse is free and ready to explore.</p>
+            <p className="text-sm text-muted-foreground mb-6 max-w-lg mx-auto">Whether you're a student, educator, or curious mind — CPU Simulator is free and ready to explore.</p>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Button asChild size="lg" className="rounded-full gap-2 px-8"><Link to="/learn">Begin the Curriculum <ArrowRight className="h-4 w-4" /></Link></Button>
               <Button asChild size="lg" variant="outline" className="rounded-full gap-2 px-6"><Link to="/simulator?mode=advanced"><Terminal className="h-4 w-4" /> Advanced Lab</Link></Button>
@@ -178,7 +209,7 @@ export default function AboutPage() {
       </div>
       <footer className="border-t py-8 mt-8">
         <div className="container mx-auto px-4 text-center">
-          <span className="text-xs text-muted-foreground font-mono">CPUverse v3.0 — Built with React, TypeScript & Framer Motion</span>
+          <span className="text-xs text-muted-foreground font-mono">CPU Simulator v3.0 — Built with React, TypeScript & Framer Motion</span>
         </div>
       </footer>
     </div>

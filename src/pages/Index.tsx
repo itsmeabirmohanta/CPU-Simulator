@@ -186,7 +186,7 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-body"
           >
-            CPUverse is a visual microprocessor simulator that animates every fetch, decode, and execute cycle. 
+            CPU Simulator is a visual microprocessor simulator that animates every fetch, decode, and execute cycle. 
             Designed for students and educators, it turns abstract CPU concepts into something you can actually see.
           </motion.p>
 
@@ -431,7 +431,7 @@ export default function LandingPage() {
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Cpu className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-display font-bold text-sm">CPUverse</span>
+                <span className="font-display font-bold text-sm">CPU Simulator</span>
               </div>
               <p className="text-xs text-muted-foreground font-body leading-relaxed">
                 A visual microprocessor learning platform. Built for education.
@@ -460,7 +460,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span className="text-[11px] text-muted-foreground/60 font-body">© {new Date().getFullYear()} CPUverse. Educational Project.</span>
+            <span className="text-[11px] text-muted-foreground/60 font-body">© {new Date().getFullYear()} CPU Simulator. Educational Project.</span>
             <span className="text-[11px] text-muted-foreground/40 font-mono">v3.0</span>
           </div>
         </div>
