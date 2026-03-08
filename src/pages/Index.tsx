@@ -186,7 +186,7 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-body"
           >
-            CPUverse is a visual microprocessor simulator that animates every fetch, decode, and execute cycle. 
+            CPU Simulator is a visual microprocessor simulator that animates every fetch, decode, and execute cycle. 
             Designed for students and educators, it turns abstract CPU concepts into something you can actually see.
           </motion.p>
 
