@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Inter", "system-ui", "sans-serif"],
-        mono: ["IBM Plex Mono", "Menlo", "monospace"],
+        display: ["Space Grotesk", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "Menlo", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -31,6 +31,8 @@ export default {
         success: { DEFAULT: "hsl(var(--success))", foreground: "hsl(var(--success-foreground))" },
         warning: { DEFAULT: "hsl(var(--warning))", foreground: "hsl(var(--warning-foreground))" },
         highlight: { DEFAULT: "hsl(var(--highlight))", foreground: "hsl(var(--highlight-foreground))" },
+        beginner: { DEFAULT: "hsl(var(--beginner))", foreground: "hsl(var(--beginner-foreground))" },
+        advanced: { DEFAULT: "hsl(var(--advanced))", foreground: "hsl(var(--advanced-foreground))" },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -51,11 +53,17 @@ export default {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
         "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
         "pulse-dot": { "0%, 100%": { opacity: "1" }, "50%": { opacity: "0.4" } },
+        "float": { "0%, 100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-6px)" } },
+        "data-flow": { "0%": { strokeDashoffset: "20" }, "100%": { strokeDashoffset: "0" } },
+        "glow-pulse": { "0%, 100%": { boxShadow: "0 0 8px hsl(var(--primary) / 0.2)" }, "50%": { boxShadow: "0 0 24px hsl(var(--primary) / 0.4)" } },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-dot": "pulse-dot 1.5s ease-in-out infinite",
+        "float": "float 3s ease-in-out infinite",
+        "data-flow": "data-flow 0.8s linear infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
     },
   },
