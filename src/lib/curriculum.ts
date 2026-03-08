@@ -423,7 +423,7 @@ export const modules: Module[] = [
         theory: "A subroutine is a reusable block of code — the assembly equivalent of a function. CALL jumps to the subroutine and pushes the return address onto the stack. RET pops that address and jumps back. The stack is a LIFO (last-in-first-out) structure. PUSH puts the Accumulator on top; POP removes the top value into A. The stack enables recursion, nested function calls, and local variables. Every function call in every language uses this mechanism.",
         code: SAMPLE_PROGRAMS.subroutine.code,
         advanced: true,
-        challenge: "The subroutine doubles the accumulator. What value ends up at address 21?",
+        challenge: "The subroutine doubles the accumulator. What value ends up at address 31?",
         estimatedMinutes: 12,
       },
       {
