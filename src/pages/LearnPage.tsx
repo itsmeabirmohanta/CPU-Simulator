@@ -7,12 +7,13 @@ import ProgressTracker, {
   resetProgress,
   type LessonMeta,
 } from "@/components/learn/LessonProgress";
-import { BookOpen, Cpu, Zap, HardDrive, Flag, ArrowRight, ChevronDown, Rocket, Brain, Layers, GitBranch, Repeat, Binary } from "lucide-react";
+import { BookOpen, Cpu, Zap, HardDrive, Flag, ArrowRight, ChevronDown, Rocket, Brain, Layers, GitBranch, Repeat, Binary, HelpCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { SAMPLE_PROGRAMS } from "@/lib/cpu";
+import GuidedWalkthrough, { useWalkthrough } from "@/components/learn/GuidedWalkthrough";
 
 /* ── Lesson data ──────────────────────────────────────────── */
 
@@ -148,6 +149,7 @@ export default function LearnPage() {
   const navigate = useNavigate();
   const [completed, setCompleted] = useState<string[]>(getCompletedLessons);
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
+  const { showWalkthrough, dismissWalkthrough, restartWalkthrough } = useWalkthrough();
 
   const toggleLesson = (id: string) => {
     setExpandedLesson((prev) => (prev === id ? null : id));
@@ -171,6 +173,7 @@ export default function LearnPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <GuidedWalkthrough active={showWalkthrough} onDismiss={dismissWalkthrough} />
       <div className="container mx-auto px-4 py-10 max-w-3xl">
         {/* Header */}
         <div className="flex items-center gap-3 mb-2">
@@ -187,16 +190,24 @@ export default function LearnPage() {
 
         {/* Quick actions */}
         <div className="mt-6 flex items-center gap-3 mb-8">
-          <Button asChild className="rounded-xl gap-2 bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button asChild className="rounded-xl gap-2 bg-accent hover:bg-accent/90 text-accent-foreground" data-tour="open-sim">
             <Link to="/simulator?mode=beginner">Open Simulator →</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-xl gap-2">
             <Link to="/simulator?mode=advanced">Advanced Lab →</Link>
           </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-xl gap-1.5 text-xs text-muted-foreground ml-auto"
+            onClick={restartWalkthrough}
+          >
+            <HelpCircle className="h-3.5 w-3.5" /> Tour
+          </Button>
         </div>
 
         {/* Progress Tracker */}
-        <div className="mb-10">
+        <div className="mb-10" data-tour="progress">
           <ProgressTracker lessons={lessonMetas} completed={completed} onReset={handleReset} />
         </div>
 
@@ -210,6 +221,7 @@ export default function LearnPage() {
             return (
               <motion.div
                 key={lesson.id}
+                data-tour={`lesson-${index}`}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.04, duration: 0.4 }}
