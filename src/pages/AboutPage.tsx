@@ -209,7 +209,7 @@ export default function AboutPage() {
       </div>
       <footer className="border-t py-8 mt-8">
         <div className="container mx-auto px-4 text-center">
-          <span className="text-xs text-muted-foreground font-mono">CPUverse v3.0 — Built with React, TypeScript & Framer Motion</span>
+          <span className="text-xs text-muted-foreground font-mono">CPU Simulator v3.0 — Built with React, TypeScript & Framer Motion</span>
         </div>
       </footer>
     </div>
