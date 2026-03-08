@@ -1,67 +1,173 @@
+import { useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
-import { BookOpen, Cpu, Zap, HardDrive, Flag, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import MiniSimulator from "@/components/learn/MiniSimulator";
+import ProgressTracker, {
+  getCompletedLessons,
+  markLessonComplete,
+  resetProgress,
+  type LessonMeta,
+} from "@/components/learn/LessonProgress";
+import { BookOpen, Cpu, Zap, HardDrive, Flag, ArrowRight, ChevronDown, Rocket, Brain, Layers, GitBranch, Repeat, Binary } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
+import { SAMPLE_PROGRAMS } from "@/lib/cpu";
 
-const basicInstructions = [
-  { opcode: "LDA addr", desc: "Load the value at memory address into the Accumulator.", example: "LDA 10", simple: "Read a number from memory." },
-  { opcode: "STA addr", desc: "Store the Accumulator value into memory address.", example: "STA 12", simple: "Save a number to memory." },
-  { opcode: "ADD addr", desc: "Add the value at memory address to the Accumulator. Updates Z and CY flags.", example: "ADD 11", simple: "Add a number to the accumulator." },
-  { opcode: "SUB addr", desc: "Subtract the value at memory address from the Accumulator. Updates Z and CY flags.", example: "SUB 11", simple: "Subtract a number." },
-  { opcode: "MOV dst,src", desc: "Copy value from source register to destination register. Registers: A, B, C.", example: "MOV B,A", simple: "Copy data between registers." },
-  { opcode: "INR reg", desc: "Increment the specified register by 1. Updates Z flag.", example: "INR A", simple: "Add 1 to a register." },
-  { opcode: "DCR reg", desc: "Decrement the specified register by 1. Updates Z flag.", example: "DCR A", simple: "Subtract 1 from a register." },
-  { opcode: "JMP addr", desc: "Unconditional jump — sets PC to the given address.", example: "JMP 00", simple: "Go to a different instruction." },
-  { opcode: "JZ addr", desc: "Jump to address if the Zero flag is set (Z=1).", example: "JZ 05", simple: "Jump only if result was zero." },
-  { opcode: "HLT", desc: "Halt execution. The CPU stops processing.", example: "HLT", simple: "Stop the program." },
-];
+/* ── Lesson data ──────────────────────────────────────────── */
 
-const advancedInstructions = [
-  { opcode: "AND addr", desc: "Bitwise AND of Accumulator with memory value. Resets CY.", example: "AND 10" },
-  { opcode: "OR addr", desc: "Bitwise OR of Accumulator with memory value. Resets CY.", example: "OR 10" },
-  { opcode: "XOR addr", desc: "Bitwise XOR of Accumulator with memory value. Resets CY.", example: "XOR 10" },
-  { opcode: "CMP addr", desc: "Compare Accumulator with memory value. Sets Z and CY flags. A unchanged.", example: "CMP 10" },
-  { opcode: "JNZ addr", desc: "Jump if Zero flag is clear (Z=0).", example: "JNZ 05" },
-  { opcode: "JC addr", desc: "Jump if Carry flag is set (CY=1).", example: "JC 05" },
-  { opcode: "PUSH", desc: "Push Accumulator value onto the stack.", example: "PUSH" },
-  { opcode: "POP", desc: "Pop top of stack into Accumulator.", example: "POP" },
-  { opcode: "CALL addr", desc: "Call subroutine. Pushes return address onto stack.", example: "CALL 10" },
-  { opcode: "RET", desc: "Return from subroutine. Pops return address from stack.", example: "RET" },
-  { opcode: "NOP", desc: "No operation. Just advances the program counter.", example: "NOP" },
-  { opcode: "CMA", desc: "Complement (bitwise NOT) the Accumulator.", example: "CMA" },
-  { opcode: "RAL", desc: "Rotate Accumulator left through Carry flag.", example: "RAL" },
-  { opcode: "RAR", desc: "Rotate Accumulator right through Carry flag.", example: "RAR" },
-];
+interface Lesson {
+  id: string;
+  title: string;
+  icon: React.ElementType;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  description: string;
+  concepts: string[];
+  theory: string;
+  code: string;
+  advanced?: boolean;
+  challenge?: string;
+}
 
-const concepts = [
+const lessons: Lesson[] = [
   {
-    icon: Cpu,
-    title: "What is a CPU?",
-    content: "A CPU (Central Processing Unit) is the brain of a computer. It reads instructions from memory, figures out what they mean, and carries them out. CPUverse simulates a simple 8-bit CPU so you can see exactly how this works.",
+    id: "fetch-decode-execute",
+    title: "The CPU Cycle",
+    icon: Repeat,
+    difficulty: "beginner",
+    description: "Learn the fundamental fetch-decode-execute cycle that every CPU follows.",
+    concepts: ["Fetch", "Decode", "Execute", "Program Counter"],
+    theory:
+      "Every instruction goes through three stages: FETCH reads the instruction from memory at the address pointed to by the Program Counter (PC). DECODE figures out what the instruction means. EXECUTE performs the action. The PC then advances, and the cycle repeats. This simple loop is the heartbeat of every computer.",
+    code: SAMPLE_PROGRAMS.addition.code,
+    challenge: "Watch the PC increment after each step. What value ends up in address 12?",
   },
   {
-    icon: ArrowRight,
-    title: "The Fetch-Decode-Execute Cycle",
-    content: "Every instruction goes through three stages: FETCH (read the instruction from memory), DECODE (understand what it means), and EXECUTE (perform the action). This cycle repeats for every single instruction.",
-  },
-  {
-    icon: Zap,
-    title: "What is the ALU?",
-    content: "The Arithmetic Logic Unit handles all math and logic operations — addition, subtraction, comparisons, and bitwise operations. When you see ADD or SUB instructions, the ALU is doing the work.",
-  },
-  {
+    id: "loading-storing",
+    title: "Loading & Storing Data",
     icon: HardDrive,
-    title: "Memory & Addresses",
-    content: "Memory is like a grid of numbered boxes. Each box has an address (00, 01, 02...) and can hold a number (0-255) or an instruction. The CPU reads from and writes to specific addresses.",
+    difficulty: "beginner",
+    description: "Move data between memory and the CPU's accumulator register.",
+    concepts: ["LDA", "STA", "Accumulator", "Memory Address"],
+    theory:
+      "The Accumulator (A) is the CPU's main working register — it's where calculations happen. LDA loads a value FROM memory INTO A. STA stores A's value INTO memory. Think of A as your hand: LDA picks something up, STA puts it down.",
+    code: `00: LDA 10
+01: STA 11
+02: HLT
+10: 42
+11: 00`,
+    challenge: "After running, address 11 should contain 42. Why?",
   },
   {
-    icon: Flag,
-    title: "Flags & Conditional Jumps",
-    content: "Flags are special indicators. The Zero flag (Z) is set when a calculation result is 0. The Carry flag (CY) is set when a result overflows. JZ and JC use these flags to decide whether to jump.",
+    id: "arithmetic",
+    title: "Arithmetic Operations",
+    icon: Zap,
+    difficulty: "beginner",
+    description: "Add and subtract numbers using the ALU.",
+    concepts: ["ADD", "SUB", "ALU", "Zero Flag", "Carry Flag"],
+    theory:
+      "The Arithmetic Logic Unit (ALU) handles math. ADD takes a value from memory and adds it to the Accumulator. SUB subtracts it. After each operation, flags are updated: the Zero flag (Z) is set if the result is 0, and the Carry flag (CY) is set if the result overflows past 255 or goes below 0.",
+    code: SAMPLE_PROGRAMS.addition.code,
+    challenge: "Modify the values at addresses 10 and 11 to compute 200 + 100. What happens to the Carry flag?",
+  },
+  {
+    id: "registers",
+    title: "Register Transfers",
+    icon: Layers,
+    difficulty: "beginner",
+    description: "Copy data between registers using MOV, and increment/decrement with INR/DCR.",
+    concepts: ["MOV", "INR", "DCR", "Register B", "Register C"],
+    theory:
+      "Besides the Accumulator, the CPU has registers B and C for temporary storage. MOV copies data between registers (e.g., MOV B,A copies A into B). INR adds 1 to a register; DCR subtracts 1. Registers are the CPU's fastest storage — much quicker than memory.",
+    code: SAMPLE_PROGRAMS.registerMove.code,
+    challenge: "Track register B and C values through each step. What ends up in address 12?",
+  },
+  {
+    id: "conditional-jumps",
+    title: "Decisions & Branching",
+    icon: GitBranch,
+    difficulty: "intermediate",
+    description: "Make the CPU choose different paths based on flag values.",
+    concepts: ["JMP", "JZ", "JNZ", "Zero Flag", "Branching"],
+    theory:
+      "JMP is an unconditional jump — the CPU goes to a different address no matter what. JZ jumps only IF the Zero flag is set (Z=1). This lets the CPU make decisions! Compare two values with SUB: if they're equal, the result is 0, Z is set, and JZ will jump. This is how all if/else logic works at the hardware level.",
+    code: SAMPLE_PROGRAMS.conditionalJump.code,
+    challenge: "Change address 10 from 05 to 03. Does the program take the same path? Why?",
+  },
+  {
+    id: "loops",
+    title: "Loops & Counting",
+    icon: Repeat,
+    difficulty: "intermediate",
+    description: "Create loops by combining jumps with decrements.",
+    concepts: ["DCR", "JZ", "JMP", "Loop Counter"],
+    theory:
+      "A loop is just a jump backward! Load a counter value, decrement it each iteration, check if it's zero with JZ, and jump back with JMP if not. This pattern — load, modify, test, jump — is the foundation of every loop in every programming language.",
+    code: SAMPLE_PROGRAMS.countdown.code,
+    challenge: "Change the starting value at address 10 to 10. How many steps does the loop take?",
+  },
+  {
+    id: "bitwise",
+    title: "Bitwise Logic",
+    icon: Binary,
+    difficulty: "advanced",
+    description: "Perform AND, OR, and XOR at the bit level.",
+    concepts: ["AND", "OR", "XOR", "Binary", "Bit Masking"],
+    theory:
+      "Bitwise operations work on individual bits. AND keeps a bit only if BOTH inputs are 1. OR keeps a bit if EITHER is 1. XOR keeps a bit if inputs DIFFER. These are essential for masking, toggling, and checking individual bits — used everywhere from graphics to encryption.",
+    code: SAMPLE_PROGRAMS.bitwiseOps.code,
+    advanced: true,
+    challenge: "170 in binary is 10101010, and 85 is 01010101. Predict the AND, OR, and XOR results before running.",
+  },
+  {
+    id: "subroutines",
+    title: "Subroutines & Stack",
+    icon: Brain,
+    difficulty: "advanced",
+    description: "Call reusable code blocks and return with the stack.",
+    concepts: ["CALL", "RET", "PUSH", "POP", "Stack"],
+    theory:
+      "A subroutine is a reusable block of code. CALL jumps to the subroutine and pushes the return address onto the stack. RET pops that address and jumps back. The stack is a last-in-first-out (LIFO) data structure — like a stack of plates. PUSH puts a value on top; POP takes it off.",
+    code: SAMPLE_PROGRAMS.subroutine.code,
+    advanced: true,
+    challenge: "The subroutine doubles the accumulator. What value ends up at address 21?",
   },
 ];
+
+const lessonMetas: LessonMeta[] = lessons.map((l) => ({ id: l.id, title: l.title }));
+
+const difficultyColors: Record<string, string> = {
+  beginner: "bg-accent/15 text-accent border-accent/20",
+  intermediate: "bg-warning/15 text-warning border-warning/20",
+  advanced: "bg-primary/15 text-primary border-primary/20",
+};
+
+/* ── Component ────────────────────────────────────────────── */
 
 export default function LearnPage() {
+  const navigate = useNavigate();
+  const [completed, setCompleted] = useState<string[]>(getCompletedLessons);
+  const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
+
+  const toggleLesson = (id: string) => {
+    setExpandedLesson((prev) => (prev === id ? null : id));
+  };
+
+  const handleComplete = useCallback((id: string) => {
+    markLessonComplete(id);
+    setCompleted(getCompletedLessons());
+  }, []);
+
+  const handleReset = useCallback(() => {
+    resetProgress();
+    setCompleted([]);
+  }, []);
+
+  const handleTryInSimulator = (code: string, advanced?: boolean) => {
+    const encoded = encodeURIComponent(code);
+    navigate(`/simulator?mode=${advanced ? "advanced" : "beginner"}&code=${encoded}`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -73,116 +179,198 @@ export default function LearnPage() {
           </div>
           <div>
             <h1 className="font-display text-3xl font-bold">Learn</h1>
-            <p className="text-sm text-muted-foreground">Understanding how a CPU works, step by step</p>
+            <p className="text-sm text-muted-foreground">
+              Interactive lessons — understand how a CPU works by doing
+            </p>
           </div>
         </div>
 
-        <div className="mt-8 flex items-center gap-3 mb-10">
+        {/* Quick actions */}
+        <div className="mt-6 flex items-center gap-3 mb-8">
           <Button asChild className="rounded-xl gap-2 bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link to="/simulator?mode=beginner">Try Beginner Mode →</Link>
+            <Link to="/simulator?mode=beginner">Open Simulator →</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-xl gap-2">
-            <Link to="/simulator?mode=advanced">Open Advanced Lab →</Link>
+            <Link to="/simulator?mode=advanced">Advanced Lab →</Link>
           </Button>
         </div>
 
-        {/* Core Concepts */}
-        <section className="mb-12">
-          <h2 className="font-display text-xl font-bold mb-5">Core Concepts</h2>
-          <div className="space-y-4">
-            {concepts.map((c) => (
-              <div key={c.title} className="glass-card p-5">
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <c.icon className="h-4 w-4 text-primary" />
+        {/* Progress Tracker */}
+        <div className="mb-10">
+          <ProgressTracker lessons={lessonMetas} completed={completed} onReset={handleReset} />
+        </div>
+
+        {/* Lessons */}
+        <section className="space-y-4">
+          {lessons.map((lesson, index) => {
+            const isExpanded = expandedLesson === lesson.id;
+            const isDone = completed.includes(lesson.id);
+            const Icon = lesson.icon;
+
+            return (
+              <motion.div
+                key={lesson.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.04, duration: 0.4 }}
+                className={`glass-card overflow-hidden transition-shadow ${
+                  isExpanded ? "card-glow" : ""
+                }`}
+              >
+                {/* Card header — clickable */}
+                <button
+                  onClick={() => toggleLesson(lesson.id)}
+                  className="w-full text-left p-5 flex items-start gap-4 group"
+                >
+                  <div
+                    className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      isDone ? "bg-accent/15" : "bg-primary/10"
+                    }`}
+                  >
+                    {isDone ? (
+                      <Rocket className="h-4 w-4 text-accent" />
+                    ) : (
+                      <Icon className="h-4 w-4 text-primary" />
+                    )}
                   </div>
-                  <div>
-                    <h3 className="font-display font-semibold text-sm mb-1">{c.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{c.content}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <h3 className="font-display font-semibold text-sm">
+                        <span className="text-muted-foreground mr-1.5">{index + 1}.</span>
+                        {lesson.title}
+                      </h3>
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] px-1.5 py-0 ${difficultyColors[lesson.difficulty]}`}
+                      >
+                        {lesson.difficulty}
+                      </Badge>
+                      {isDone && (
+                        <Badge className="text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
+                          ✓ Done
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-1">
+                      {lesson.description}
+                    </p>
+                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                      {lesson.concepts.map((c) => (
+                        <span
+                          key={c}
+                          className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  <ChevronDown
+                    className={`h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-300 mt-1 ${
+                      isExpanded ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* Expanded content */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5 space-y-5 border-t pt-5">
+                        {/* Theory */}
+                        <div>
+                          <h4 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                            How it works
+                          </h4>
+                          <p className="text-sm text-foreground/80 leading-relaxed">
+                            {lesson.theory}
+                          </p>
+                        </div>
+
+                        {/* Mini simulator */}
+                        <div>
+                          <h4 className="font-display text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                            Try it — step through the code
+                          </h4>
+                          <MiniSimulator code={lesson.code} advanced={lesson.advanced} />
+                        </div>
+
+                        {/* Challenge */}
+                        {lesson.challenge && (
+                          <div className="rounded-xl bg-warning/5 border border-warning/15 p-4">
+                            <h4 className="font-display text-xs font-semibold text-warning mb-1">
+                              🧩 Challenge
+                            </h4>
+                            <p className="text-sm text-foreground/70">
+                              {lesson.challenge}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-3 pt-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-lg gap-1.5 text-xs"
+                            onClick={() =>
+                              handleTryInSimulator(lesson.code, lesson.advanced)
+                            }
+                          >
+                            <Rocket className="h-3 w-3" />
+                            Open in Simulator
+                          </Button>
+                          {!isDone && (
+                            <Button
+                              size="sm"
+                              className="rounded-lg gap-1.5 text-xs bg-accent hover:bg-accent/90 text-accent-foreground"
+                              onClick={() => handleComplete(lesson.id)}
+                            >
+                              Mark as Complete
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </section>
 
-        {/* Memory Format */}
-        <section className="mb-12">
-          <h2 className="font-display text-xl font-bold mb-4">Memory Format</h2>
-          <div className="glass-card p-5">
-            <p className="text-sm text-muted-foreground mb-3">
-              Programs are written as address-value pairs. Each line starts with a two-digit address followed by a colon:
-            </p>
-            <pre className="rounded-xl bg-muted/50 p-4 font-mono text-sm text-foreground">
-{`00: LDA 10    ← instruction at address 00
-01: ADD 11    ← instruction at address 01
-10: 05        ← data value at address 10`}
-            </pre>
-          </div>
-        </section>
-
-        {/* Basic Instructions */}
-        <section className="mb-12">
-          <h2 className="font-display text-xl font-bold mb-4">Basic Instructions</h2>
-          <div className="space-y-2">
-            {basicInstructions.map((inst) => (
-              <div key={inst.opcode} className="glass-card p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <code className="font-mono font-bold text-primary text-sm">{inst.opcode}</code>
-                  <code className="font-mono text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">{inst.example}</code>
-                </div>
-                <p className="text-sm text-muted-foreground">{inst.desc}</p>
-                <p className="text-xs text-accent mt-1">💡 Simply: {inst.simple}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Advanced Instructions */}
-        <section className="mb-12">
-          <h2 className="font-display text-xl font-bold mb-4">
-            Advanced Instructions
-            <span className="text-xs font-normal text-muted-foreground ml-2">(Advanced mode only)</span>
-          </h2>
-          <div className="space-y-2">
-            {advancedInstructions.map((inst) => (
-              <div key={inst.opcode} className="glass-card p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <code className="font-mono font-bold text-primary text-sm">{inst.opcode}</code>
-                  <code className="font-mono text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">{inst.example}</code>
-                </div>
-                <p className="text-sm text-muted-foreground">{inst.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Flags & Registers */}
-        <section className="mb-12">
-          <h2 className="font-display text-xl font-bold mb-4">Flags</h2>
-          <div className="grid grid-cols-2 gap-3">
+        {/* Quick reference */}
+        <section className="mt-14 mb-8">
+          <h2 className="font-display text-xl font-bold mb-5">Quick Reference</h2>
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <div className="glass-card p-4">
-              <code className="font-mono font-bold text-primary">Z (Zero)</code>
-              <p className="text-sm text-muted-foreground mt-1">Set to 1 when the result of an arithmetic operation is zero.</p>
+              <code className="font-mono font-bold text-primary text-sm">Z (Zero)</code>
+              <p className="text-xs text-muted-foreground mt-1">
+                Set when an arithmetic result is exactly 0.
+              </p>
             </div>
             <div className="glass-card p-4">
-              <code className="font-mono font-bold text-warning">CY (Carry)</code>
-              <p className="text-sm text-muted-foreground mt-1">Set to 1 when an ADD overflows beyond 255 or SUB results in a borrow.</p>
+              <code className="font-mono font-bold text-warning text-sm">CY (Carry)</code>
+              <p className="text-xs text-muted-foreground mt-1">
+                Set when ADD overflows 255 or SUB borrows.
+              </p>
             </div>
           </div>
-        </section>
-
-        <section>
-          <h2 className="font-display text-xl font-bold mb-4">Registers</h2>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { name: "A (Accumulator)", desc: "Main register for arithmetic and data operations." },
-              { name: "B", desc: "General-purpose register for temporary storage." },
-              { name: "C", desc: "General-purpose register for temporary storage." },
+              { name: "A (Accumulator)", desc: "Main register for arithmetic." },
+              { name: "B", desc: "General-purpose temp register." },
+              { name: "C", desc: "General-purpose temp register." },
             ].map((r) => (
               <div key={r.name} className="glass-card p-4">
-                <code className="font-mono font-bold text-primary">{r.name}</code>
-                <p className="text-sm text-muted-foreground mt-1">{r.desc}</p>
+                <code className="font-mono font-bold text-primary text-xs">{r.name}</code>
+                <p className="text-xs text-muted-foreground mt-1">{r.desc}</p>
               </div>
             ))}
           </div>
