@@ -70,13 +70,14 @@ export default function SimulatorPage() {
   ];
 
   const loadProgram = useCallback(() => {
-    const { memory: parsedMem, errors } = parseProgram(code, advanced);
+    const { memory: parsedMem, errors } = parseProgram(code);
     if (errors.length > 0) { errors.forEach((e) => toast.error(e)); return; }
     const initial = createInitialState();
+    initial.status = "ready";
     setCpuState(initial); setPrevState(initial); setMemory(parsedMem);
     setLogs([]); setHasProgram(true); setActiveFlow("idle"); resetStack();
     toast.success("Program loaded — ready to execute!");
-  }, [code, advanced]);
+  }, [code]);
 
   const step = useCallback(() => {
     if (cpuState.status === "halted" || cpuState.status === "error") return;
