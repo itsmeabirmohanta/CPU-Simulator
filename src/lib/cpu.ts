@@ -173,6 +173,7 @@ function encodeInstruction(instruction: string, operand?: number): number {
     case "POP": return 0x1400;
     case "CALL": return 0x1500 + (operand || 0);
     case "RET": return 0x1600;
+    case "NOP": return 0x1700;
     default:    return -1; // Invalid instruction
   }
 }
