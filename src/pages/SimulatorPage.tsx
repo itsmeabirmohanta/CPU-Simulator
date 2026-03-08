@@ -513,7 +513,7 @@ export default function SimulatorPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" data-tour="sim-memory">
                 <MemoryViewer memory={memory} currentPC={cpuState.programCounter} />
                 <ExecutionLog logs={logs} />
               </div>

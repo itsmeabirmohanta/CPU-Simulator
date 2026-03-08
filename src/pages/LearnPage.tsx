@@ -136,7 +136,7 @@ export default function LearnPage() {
         </section>
 
         {/* ── Learning Path ───────────────────────── */}
-        <section className="mt-20">
+        <section className="mt-20" data-tour="learning-path">
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Recommended Learning Path</h2>
           <p className="text-sm text-muted-foreground mb-8">
             Each module builds on the previous — follow this path for the best experience
