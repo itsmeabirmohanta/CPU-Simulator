@@ -7,6 +7,7 @@ import {
   createMemory,
   parseProgram,
   executeStep,
+  resetStack,
   SAMPLE_PROGRAMS,
 } from "@/lib/cpu";
 import Navbar from "@/components/Navbar";
@@ -18,6 +19,8 @@ import ExecutionLog from "@/components/simulator/ExecutionLog";
 import ExecutionControls from "@/components/simulator/ExecutionControls";
 import ExplanationPanel from "@/components/simulator/ExplanationPanel";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Zap } from "lucide-react";
 
 export default function SimulatorPage() {
   const [code, setCode] = useState(SAMPLE_PROGRAMS.addition.code);
@@ -27,10 +30,13 @@ export default function SimulatorPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [hasProgram, setHasProgram] = useState(false);
   const [activeFlow, setActiveFlow] = useState<"fetch" | "decode" | "execute" | "idle">("idle");
+  const [advanced, setAdvanced] = useState(false);
   const runTimerRef = useRef<number | null>(null);
 
+  const memSize = advanced ? 64 : 32;
+
   const loadProgram = useCallback(() => {
-    const { memory: parsedMem, errors } = parseProgram(code);
+    const { memory: parsedMem, errors } = parseProgram(code, advanced);
     if (errors.length > 0) {
       errors.forEach((e) => toast.error(e));
       return;
@@ -42,20 +48,20 @@ export default function SimulatorPage() {
     setLogs([]);
     setHasProgram(true);
     setActiveFlow("idle");
+    resetStack();
     toast.success("Program loaded successfully");
-  }, [code]);
+  }, [code, advanced]);
 
   const step = useCallback(() => {
     if (cpuState.status === "halted" || cpuState.status === "error") return;
     
-    // Animate phases
     setActiveFlow("fetch");
     setTimeout(() => setActiveFlow("decode"), 150);
     setTimeout(() => setActiveFlow("execute"), 300);
     setTimeout(() => setActiveFlow("idle"), 600);
 
     setPrevState(cpuState);
-    const result = executeStep(cpuState, memory);
+    const result = executeStep(cpuState, memory, advanced);
     result.log.step = logs.length + 1;
     setCpuState(result.state);
     setMemory(result.memory);
@@ -66,7 +72,7 @@ export default function SimulatorPage() {
     } else if (result.state.status === "error") {
       toast.error(result.state.errorMessage || "Execution error");
     }
-  }, [cpuState, memory, logs.length]);
+  }, [cpuState, memory, logs.length, advanced]);
 
   const run = useCallback(() => {
     setCpuState((s) => ({ ...s, status: "running" }));
@@ -101,10 +107,27 @@ export default function SimulatorPage() {
     const initial = createInitialState();
     setCpuState(initial);
     setPrevState(initial);
-    setMemory(createMemory());
+    setMemory(createMemory(memSize));
     setLogs([]);
     setHasProgram(false);
     setActiveFlow("idle");
+    resetStack();
+  }, [memSize]);
+
+  const handleToggleAdvanced = useCallback((checked: boolean) => {
+    setAdvanced(checked);
+    // Reset everything when switching modes
+    if (runTimerRef.current) clearInterval(runTimerRef.current);
+    const initial = createInitialState();
+    setCpuState(initial);
+    setPrevState(initial);
+    setMemory(createMemory(checked ? 64 : 32));
+    setLogs([]);
+    setHasProgram(false);
+    setActiveFlow("idle");
+    resetStack();
+    setCode(checked ? SAMPLE_PROGRAMS.bitwiseOps.code : SAMPLE_PROGRAMS.addition.code);
+    toast.info(checked ? "Advanced mode: 14 extra instructions + 64 memory cells" : "Basic mode: 10 core instructions + 32 memory cells");
   }, []);
 
   const currentLog = logs.length > 0 ? logs[logs.length - 1] : null;
@@ -114,10 +137,25 @@ export default function SimulatorPage() {
       <Navbar />
       <div className="container mx-auto p-4">
         {/* Header with controls */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-xl font-bold">Simulator</h1>
-            <p className="text-xs text-muted-foreground">8-bit Accumulator-Based CPU</p>
+        <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="font-display text-xl font-bold">Simulator</h1>
+              <p className="text-xs text-muted-foreground">8-bit Accumulator-Based CPU</p>
+            </div>
+            {/* Advanced Mode Toggle */}
+            <div className="flex items-center gap-2 rounded-full border bg-muted/30 px-3 py-1.5">
+              <span className={`text-[11px] font-medium transition-colors ${!advanced ? "text-foreground" : "text-muted-foreground"}`}>Basic</span>
+              <Switch
+                checked={advanced}
+                onCheckedChange={handleToggleAdvanced}
+                className="data-[state=checked]:bg-primary"
+              />
+              <span className={`text-[11px] font-medium flex items-center gap-1 transition-colors ${advanced ? "text-primary" : "text-muted-foreground"}`}>
+                <Zap className="h-3 w-3" />
+                Advanced
+              </span>
+            </div>
           </div>
           <ExecutionControls
             status={cpuState.status}
@@ -140,6 +178,7 @@ export default function SimulatorPage() {
               currentPC={cpuState.programCounter}
               isRunning={hasProgram && cpuState.status !== "ready"}
               onLoadSample={(c) => { setCode(c); reset(); }}
+              advanced={advanced}
             />
           </div>
 

@@ -34,7 +34,12 @@ export interface ParsedInstruction {
   address: number;
 }
 
-const VALID_OPCODES = ["LDA", "STA", "ADD", "SUB", "MOV", "INR", "DCR", "JMP", "JZ", "HLT"];
+const BASIC_OPCODES = ["LDA", "STA", "ADD", "SUB", "MOV", "INR", "DCR", "JMP", "JZ", "HLT"];
+const ADVANCED_OPCODES = [...BASIC_OPCODES, "AND", "OR", "XOR", "CMP", "JNZ", "JC", "PUSH", "POP", "CALL", "RET", "NOP", "CMA", "RAL", "RAR"];
+
+export function getValidOpcodes(advanced: boolean) {
+  return advanced ? ADVANCED_OPCODES : BASIC_OPCODES;
+}
 
 export function createInitialState(): CpuState {
   return {
@@ -59,9 +64,37 @@ export function createMemory(size: number = 32): MemoryCell[] {
   }));
 }
 
-export function parseProgram(source: string): { memory: MemoryCell[]; errors: string[] } {
-  const lines = source.split("\n").filter((l) => l.trim() !== "");
-  const memory = createMemory(32);
+export function validateLine(line: string, advanced: boolean, memSize: number): string | null {
+  const trimmed = line.trim();
+  if (!trimmed) return null;
+  // Allow comments
+  if (trimmed.startsWith(";") || trimmed.startsWith("//")) return null;
+
+  const match = trimmed.match(/^(\d{2}):\s*(.+)$/);
+  if (!match) return `Expected format "XX: INSTRUCTION" or "XX: VALUE"`;
+
+  const address = parseInt(match[1], 10);
+  if (address < 0 || address >= memSize) return `Address ${address} out of range (0-${memSize - 1})`;
+
+  const content = match[2].trim();
+  const numVal = parseInt(content, 10);
+  if (!isNaN(numVal) && /^\d+$/.test(content)) {
+    if (numVal > 255) return `Value ${numVal} exceeds 8-bit max (255)`;
+    return null;
+  }
+
+  const parts = content.split(/\s+/);
+  const opcode = parts[0].toUpperCase();
+  const validOps = getValidOpcodes(advanced);
+  if (!validOps.includes(opcode)) return `Unknown opcode "${opcode}"`;
+
+  return null;
+}
+
+export function parseProgram(source: string, advanced: boolean = false): { memory: MemoryCell[]; errors: string[] } {
+  const memSize = advanced ? 64 : 32;
+  const lines = source.split("\n").filter((l) => l.trim() !== "" && !l.trim().startsWith(";") && !l.trim().startsWith("//"));
+  const memory = createMemory(memSize);
   const errors: string[] = [];
 
   for (const line of lines) {
@@ -82,18 +115,17 @@ export function parseProgram(source: string): { memory: MemoryCell[]; errors: st
       continue;
     }
 
-    // Check if it's a pure number (data)
     const numVal = parseInt(content, 10);
     if (!isNaN(numVal) && /^\d+$/.test(content)) {
       memory[address] = { address, value: numVal, type: "data", changed: false };
       continue;
     }
 
-    // It's an instruction
     const parts = content.split(/\s+/);
     const opcode = parts[0].toUpperCase();
+    const validOps = getValidOpcodes(advanced);
 
-    if (!VALID_OPCODES.includes(opcode)) {
+    if (!validOps.includes(opcode)) {
       errors.push(`Invalid opcode "${opcode}" at address ${String(address).padStart(2, "0")}`);
       continue;
     }
@@ -104,9 +136,17 @@ export function parseProgram(source: string): { memory: MemoryCell[]; errors: st
   return { memory, errors };
 }
 
+// Stack for PUSH/POP/CALL/RET in advanced mode
+let stack: number[] = [];
+
+export function resetStack() {
+  stack = [];
+}
+
 export function executeStep(
   state: CpuState,
-  memory: MemoryCell[]
+  memory: MemoryCell[],
+  advanced: boolean = false
 ): { state: CpuState; memory: MemoryCell[]; log: LogEntry } {
   const newState = { ...state };
   const newMemory = memory.map((m) => ({ ...m, changed: false }));
@@ -138,7 +178,6 @@ export function executeStep(
   const changes: string[] = [];
   let explanation = "";
 
-  // FETCH phase info
   const fetchInfo = `Fetched "${instrStr}" from address ${String(pc).padStart(2, "0")}`;
 
   switch (opcode) {
@@ -152,7 +191,7 @@ export function executeStep(
       newState.accumulator = val & 0xff;
       newState.programCounter = pc + 1;
       changes.push(`A: ${oldA} → ${newState.accumulator}`);
-      explanation = `LDA ${operand}: Loaded value ${val} from memory address ${String(addr).padStart(2, "0")} into the Accumulator. A changed from ${oldA} to ${newState.accumulator}.`;
+      explanation = `LDA ${operand}: Loaded value ${val} from memory address ${String(addr).padStart(2, "0")} into the Accumulator.`;
       break;
     }
     case "STA": {
@@ -164,7 +203,7 @@ export function executeStep(
       newMemory[addr] = { ...newMemory[addr], value: newState.accumulator, changed: true };
       newState.programCounter = pc + 1;
       changes.push(`MEM[${String(addr).padStart(2, "0")}]: ${oldVal} → ${newState.accumulator}`);
-      explanation = `STA ${operand}: Stored Accumulator value ${newState.accumulator} to memory address ${String(addr).padStart(2, "0")}. Memory changed from ${oldVal} to ${newState.accumulator}.`;
+      explanation = `STA ${operand}: Stored Accumulator value ${newState.accumulator} to memory address ${String(addr).padStart(2, "0")}.`;
       break;
     }
     case "ADD": {
@@ -182,7 +221,7 @@ export function executeStep(
       changes.push(`A: ${oldA} → ${newState.accumulator}`);
       if (newState.carryFlag) changes.push(`CY: 0 → 1`);
       if (newState.zeroFlag) changes.push(`Z: 0 → 1`);
-      explanation = `ADD ${operand}: Added value ${val} (from address ${String(addr).padStart(2, "0")}) to Accumulator. ${oldA} + ${val} = ${result}. A = ${newState.accumulator}. Zero flag = ${newState.zeroFlag ? 1 : 0}. Carry flag = ${newState.carryFlag ? 1 : 0}.`;
+      explanation = `ADD ${operand}: Added value ${val} from address ${String(addr).padStart(2, "0")} to Accumulator. ${oldA} + ${val} = ${result}. A = ${newState.accumulator}. Z=${newState.zeroFlag ? 1 : 0}, CY=${newState.carryFlag ? 1 : 0}.`;
       break;
     }
     case "SUB": {
@@ -198,7 +237,7 @@ export function executeStep(
       newState.zeroFlag = newState.accumulator === 0;
       newState.programCounter = pc + 1;
       changes.push(`A: ${oldA} → ${newState.accumulator}`);
-      explanation = `SUB ${operand}: Subtracted value ${val} (from address ${String(addr).padStart(2, "0")}) from Accumulator. ${oldA} - ${val} = ${result}. A = ${newState.accumulator}. Zero flag = ${newState.zeroFlag ? 1 : 0}. Carry flag = ${newState.carryFlag ? 1 : 0}.`;
+      explanation = `SUB ${operand}: Subtracted value ${val} from Accumulator. ${oldA} - ${val} = ${result}. A = ${newState.accumulator}. Z=${newState.zeroFlag ? 1 : 0}, CY=${newState.carryFlag ? 1 : 0}.`;
       break;
     }
     case "MOV": {
@@ -222,87 +261,219 @@ export function executeStep(
 
       newState.programCounter = pc + 1;
       changes.push(`${dest}: ${oldVal} → ${srcVal}`);
-      explanation = `MOV ${dest},${src}: Moved value ${srcVal} from register ${src} to register ${dest}. ${dest} changed from ${oldVal} to ${srcVal}.`;
+      explanation = `MOV ${dest},${src}: Moved value ${srcVal} from register ${src} to register ${dest}.`;
       break;
     }
     case "INR": {
       const reg = operand.trim().toUpperCase();
-      if (reg === "A") {
-        const oldA = newState.accumulator;
-        newState.accumulator = (oldA + 1) & 0xff;
-        newState.zeroFlag = newState.accumulator === 0;
-        changes.push(`A: ${oldA} → ${newState.accumulator}`);
-        explanation = `INR A: Incremented Accumulator from ${oldA} to ${newState.accumulator}. Zero flag = ${newState.zeroFlag ? 1 : 0}.`;
-      } else if (reg === "B") {
-        const old = newState.registerB;
-        newState.registerB = (old + 1) & 0xff;
-        changes.push(`B: ${old} → ${newState.registerB}`);
-        explanation = `INR B: Incremented Register B from ${old} to ${newState.registerB}.`;
-      } else if (reg === "C") {
-        const old = newState.registerC;
-        newState.registerC = (old + 1) & 0xff;
-        changes.push(`C: ${old} → ${newState.registerC}`);
-        explanation = `INR C: Incremented Register C from ${old} to ${newState.registerC}.`;
-      } else {
-        return error(newState, newMemory, `Invalid register "${reg}" for INR at ${String(pc).padStart(2, "0")}`);
-      }
+      let oldVal = 0, newVal = 0;
+      if (reg === "A") { oldVal = newState.accumulator; newState.accumulator = (oldVal + 1) & 0xff; newVal = newState.accumulator; newState.zeroFlag = newVal === 0; }
+      else if (reg === "B") { oldVal = newState.registerB; newState.registerB = (oldVal + 1) & 0xff; newVal = newState.registerB; }
+      else if (reg === "C") { oldVal = newState.registerC; newState.registerC = (oldVal + 1) & 0xff; newVal = newState.registerC; }
+      else return error(newState, newMemory, `Invalid register "${reg}" for INR at ${String(pc).padStart(2, "0")}`);
       newState.programCounter = pc + 1;
+      changes.push(`${reg}: ${oldVal} → ${newVal}`);
+      explanation = `INR ${reg}: Incremented register ${reg} from ${oldVal} to ${newVal}.`;
       break;
     }
     case "DCR": {
       const reg = operand.trim().toUpperCase();
-      if (reg === "A") {
-        const oldA = newState.accumulator;
-        newState.accumulator = (oldA - 1) & 0xff;
-        newState.zeroFlag = newState.accumulator === 0;
-        changes.push(`A: ${oldA} → ${newState.accumulator}`);
-        explanation = `DCR A: Decremented Accumulator from ${oldA} to ${newState.accumulator}. Zero flag = ${newState.zeroFlag ? 1 : 0}.`;
-      } else if (reg === "B") {
-        const old = newState.registerB;
-        newState.registerB = (old - 1) & 0xff;
-        changes.push(`B: ${old} → ${newState.registerB}`);
-        explanation = `DCR B: Decremented Register B from ${old} to ${newState.registerB}.`;
-      } else if (reg === "C") {
-        const old = newState.registerC;
-        newState.registerC = (old - 1) & 0xff;
-        changes.push(`C: ${old} → ${newState.registerC}`);
-        explanation = `DCR C: Decremented Register C from ${old} to ${newState.registerC}.`;
-      } else {
-        return error(newState, newMemory, `Invalid register "${reg}" for DCR at ${String(pc).padStart(2, "0")}`);
-      }
+      let oldVal = 0, newVal = 0;
+      if (reg === "A") { oldVal = newState.accumulator; newState.accumulator = (oldVal - 1) & 0xff; newVal = newState.accumulator; newState.zeroFlag = newVal === 0; }
+      else if (reg === "B") { oldVal = newState.registerB; newState.registerB = (oldVal - 1) & 0xff; newVal = newState.registerB; }
+      else if (reg === "C") { oldVal = newState.registerC; newState.registerC = (oldVal - 1) & 0xff; newVal = newState.registerC; }
+      else return error(newState, newMemory, `Invalid register "${reg}" for DCR at ${String(pc).padStart(2, "0")}`);
       newState.programCounter = pc + 1;
+      changes.push(`${reg}: ${oldVal} → ${newVal}`);
+      explanation = `DCR ${reg}: Decremented register ${reg} from ${oldVal} to ${newVal}.`;
       break;
     }
     case "JMP": {
       const addr = parseInt(operand, 10);
-      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) {
-        return error(newState, newMemory, `Invalid address "${operand}" for JMP at ${String(pc).padStart(2, "0")}`);
-      }
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for JMP at ${String(pc).padStart(2, "0")}`);
       newState.programCounter = addr;
       changes.push(`PC: ${pc} → ${addr}`);
-      explanation = `JMP ${operand}: Unconditional jump. Program counter set to ${String(addr).padStart(2, "0")}.`;
+      explanation = `JMP ${operand}: Unconditional jump to address ${String(addr).padStart(2, "0")}.`;
       break;
     }
     case "JZ": {
       const addr = parseInt(operand, 10);
-      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) {
-        return error(newState, newMemory, `Invalid address "${operand}" for JZ at ${String(pc).padStart(2, "0")}`);
-      }
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for JZ at ${String(pc).padStart(2, "0")}`);
       if (state.zeroFlag) {
         newState.programCounter = addr;
-        changes.push(`PC: ${pc} → ${addr} (Z=1, jump taken)`);
-        explanation = `JZ ${operand}: Zero flag is SET. Jump taken to address ${String(addr).padStart(2, "0")}.`;
+        changes.push(`PC: ${pc} → ${addr} (Z=1)`);
+        explanation = `JZ ${operand}: Zero flag SET → jump taken to ${String(addr).padStart(2, "0")}.`;
       } else {
         newState.programCounter = pc + 1;
-        changes.push(`PC: ${pc} → ${pc + 1} (Z=0, no jump)`);
-        explanation = `JZ ${operand}: Zero flag is CLEAR. Jump not taken, continuing to next instruction.`;
+        changes.push(`PC: ${pc} → ${pc + 1} (Z=0)`);
+        explanation = `JZ ${operand}: Zero flag CLEAR → jump not taken.`;
       }
       break;
     }
     case "HLT": {
       newState.status = "halted";
       newState.programCounter = pc;
-      explanation = `HLT: Program execution halted successfully.`;
+      explanation = `HLT: Program halted successfully.`;
+      break;
+    }
+    // === ADVANCED INSTRUCTIONS ===
+    case "AND": {
+      if (!advanced) return error(newState, newMemory, `AND requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for AND`);
+      const val = Number(newMemory[addr].value);
+      const oldA = newState.accumulator;
+      newState.accumulator = (oldA & val) & 0xff;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.carryFlag = false;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`);
+      explanation = `AND ${operand}: Bitwise AND of A (${oldA}) with memory[${operand}] (${val}) = ${newState.accumulator}.`;
+      break;
+    }
+    case "OR": {
+      if (!advanced) return error(newState, newMemory, `OR requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for OR`);
+      const val = Number(newMemory[addr].value);
+      const oldA = newState.accumulator;
+      newState.accumulator = (oldA | val) & 0xff;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.carryFlag = false;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`);
+      explanation = `OR ${operand}: Bitwise OR of A (${oldA}) with memory[${operand}] (${val}) = ${newState.accumulator}.`;
+      break;
+    }
+    case "XOR": {
+      if (!advanced) return error(newState, newMemory, `XOR requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for XOR`);
+      const val = Number(newMemory[addr].value);
+      const oldA = newState.accumulator;
+      newState.accumulator = (oldA ^ val) & 0xff;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.carryFlag = false;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`);
+      explanation = `XOR ${operand}: Bitwise XOR of A (${oldA}) with memory[${operand}] (${val}) = ${newState.accumulator}.`;
+      break;
+    }
+    case "CMP": {
+      if (!advanced) return error(newState, newMemory, `CMP requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for CMP`);
+      const val = Number(newMemory[addr].value);
+      const result = newState.accumulator - val;
+      newState.zeroFlag = result === 0;
+      newState.carryFlag = result < 0;
+      newState.programCounter = pc + 1;
+      changes.push(`Z: ${newState.zeroFlag ? 1 : 0}, CY: ${newState.carryFlag ? 1 : 0}`);
+      explanation = `CMP ${operand}: Compared A (${newState.accumulator}) with memory[${operand}] (${val}). Z=${newState.zeroFlag ? 1 : 0}, CY=${newState.carryFlag ? 1 : 0}. A unchanged.`;
+      break;
+    }
+    case "JNZ": {
+      if (!advanced) return error(newState, newMemory, `JNZ requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for JNZ`);
+      if (!state.zeroFlag) {
+        newState.programCounter = addr;
+        changes.push(`PC: ${pc} → ${addr} (Z=0)`);
+        explanation = `JNZ ${operand}: Zero flag CLEAR → jump taken to ${String(addr).padStart(2, "0")}.`;
+      } else {
+        newState.programCounter = pc + 1;
+        changes.push(`PC: ${pc} → ${pc + 1} (Z=1)`);
+        explanation = `JNZ ${operand}: Zero flag SET → jump not taken.`;
+      }
+      break;
+    }
+    case "JC": {
+      if (!advanced) return error(newState, newMemory, `JC requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for JC`);
+      if (state.carryFlag) {
+        newState.programCounter = addr;
+        changes.push(`PC: ${pc} → ${addr} (CY=1)`);
+        explanation = `JC ${operand}: Carry flag SET → jump taken.`;
+      } else {
+        newState.programCounter = pc + 1;
+        changes.push(`PC: ${pc} → ${pc + 1} (CY=0)`);
+        explanation = `JC ${operand}: Carry flag CLEAR → jump not taken.`;
+      }
+      break;
+    }
+    case "PUSH": {
+      if (!advanced) return error(newState, newMemory, `PUSH requires Advanced mode`);
+      stack.push(newState.accumulator);
+      newState.programCounter = pc + 1;
+      changes.push(`Stack ← ${newState.accumulator}`);
+      explanation = `PUSH: Pushed Accumulator (${newState.accumulator}) onto stack. Stack depth: ${stack.length}.`;
+      break;
+    }
+    case "POP": {
+      if (!advanced) return error(newState, newMemory, `POP requires Advanced mode`);
+      if (stack.length === 0) return error(newState, newMemory, `Stack underflow at POP`);
+      const oldA = newState.accumulator;
+      newState.accumulator = stack.pop()!;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`);
+      explanation = `POP: Popped ${newState.accumulator} from stack into Accumulator. Stack depth: ${stack.length}.`;
+      break;
+    }
+    case "CALL": {
+      if (!advanced) return error(newState, newMemory, `CALL requires Advanced mode`);
+      const addr = parseInt(operand, 10);
+      if (isNaN(addr) || addr < 0 || addr >= newMemory.length) return error(newState, newMemory, `Invalid address for CALL`);
+      stack.push(pc + 1);
+      newState.programCounter = addr;
+      changes.push(`PC: ${pc} → ${addr}, Return addr ${pc + 1} pushed`);
+      explanation = `CALL ${operand}: Pushed return address ${pc + 1} onto stack, jumped to ${String(addr).padStart(2, "0")}.`;
+      break;
+    }
+    case "RET": {
+      if (!advanced) return error(newState, newMemory, `RET requires Advanced mode`);
+      if (stack.length === 0) return error(newState, newMemory, `Stack underflow at RET`);
+      const retAddr = stack.pop()!;
+      newState.programCounter = retAddr;
+      changes.push(`PC: ${pc} → ${retAddr} (return)`);
+      explanation = `RET: Returned to address ${String(retAddr).padStart(2, "0")} from stack.`;
+      break;
+    }
+    case "NOP": {
+      if (!advanced) return error(newState, newMemory, `NOP requires Advanced mode`);
+      newState.programCounter = pc + 1;
+      explanation = `NOP: No operation. PC advanced.`;
+      break;
+    }
+    case "CMA": {
+      if (!advanced) return error(newState, newMemory, `CMA requires Advanced mode`);
+      const oldA = newState.accumulator;
+      newState.accumulator = (~oldA) & 0xff;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`);
+      explanation = `CMA: Complemented Accumulator. ~${oldA} = ${newState.accumulator}.`;
+      break;
+    }
+    case "RAL": {
+      if (!advanced) return error(newState, newMemory, `RAL requires Advanced mode`);
+      const oldA = newState.accumulator;
+      const oldCY = newState.carryFlag ? 1 : 0;
+      newState.carryFlag = (oldA & 0x80) !== 0;
+      newState.accumulator = ((oldA << 1) | oldCY) & 0xff;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`, `CY: ${oldCY} → ${newState.carryFlag ? 1 : 0}`);
+      explanation = `RAL: Rotated Accumulator left through carry. A: ${oldA} → ${newState.accumulator}, CY: ${oldCY} → ${newState.carryFlag ? 1 : 0}.`;
+      break;
+    }
+    case "RAR": {
+      if (!advanced) return error(newState, newMemory, `RAR requires Advanced mode`);
+      const oldA = newState.accumulator;
+      const oldCY = newState.carryFlag ? 1 : 0;
+      newState.carryFlag = (oldA & 0x01) !== 0;
+      newState.accumulator = ((oldA >> 1) | (oldCY << 7)) & 0xff;
+      newState.programCounter = pc + 1;
+      changes.push(`A: ${oldA} → ${newState.accumulator}`, `CY: ${oldCY} → ${newState.carryFlag ? 1 : 0}`);
+      explanation = `RAR: Rotated Accumulator right through carry. A: ${oldA} → ${newState.accumulator}, CY: ${oldCY} → ${newState.carryFlag ? 1 : 0}.`;
       break;
     }
     default:
@@ -334,6 +505,7 @@ export const SAMPLE_PROGRAMS = {
   addition: {
     name: "Addition",
     description: "Adds two numbers from memory",
+    advanced: false,
     code: `00: LDA 10
 01: ADD 11
 02: STA 12
@@ -345,6 +517,7 @@ export const SAMPLE_PROGRAMS = {
   subtraction: {
     name: "Subtraction",
     description: "Subtracts two numbers from memory",
+    advanced: false,
     code: `00: LDA 10
 01: SUB 11
 02: STA 12
@@ -356,6 +529,7 @@ export const SAMPLE_PROGRAMS = {
   conditionalJump: {
     name: "Conditional Jump",
     description: "Demonstrates JZ branching",
+    advanced: false,
     code: `00: LDA 10
 01: SUB 11
 02: JZ 05
@@ -372,6 +546,7 @@ export const SAMPLE_PROGRAMS = {
   registerMove: {
     name: "Register Transfer",
     description: "Moves data between registers",
+    advanced: false,
     code: `00: LDA 10
 01: MOV B,A
 02: LDA 11
@@ -387,6 +562,7 @@ export const SAMPLE_PROGRAMS = {
   countdown: {
     name: "Countdown Loop",
     description: "Decrements until zero",
+    advanced: false,
     code: `00: LDA 10
 01: DCR A
 02: JZ 04
@@ -396,4 +572,84 @@ export const SAMPLE_PROGRAMS = {
 10: 05
 11: 00`,
   },
+  bitwiseOps: {
+    name: "Bitwise Logic",
+    description: "AND, OR, XOR operations",
+    advanced: true,
+    code: `00: LDA 20
+01: AND 21
+02: STA 22
+03: LDA 20
+04: OR 21
+05: STA 23
+06: LDA 20
+07: XOR 21
+08: STA 24
+09: HLT
+20: 170
+21: 85
+22: 00
+23: 00
+24: 00`,
+  },
+  subroutine: {
+    name: "Subroutine Call",
+    description: "CALL/RET demo",
+    advanced: true,
+    code: `; Main program
+00: LDA 20
+01: CALL 10
+02: STA 21
+03: HLT
+; Subroutine: doubles A
+10: ADD 20
+11: RET
+20: 07
+21: 00`,
+  },
+  stackOps: {
+    name: "Stack Operations",
+    description: "PUSH/POP demo",
+    advanced: true,
+    code: `00: LDA 20
+01: PUSH
+02: LDA 21
+03: PUSH
+04: POP
+05: STA 22
+06: POP
+07: STA 23
+08: HLT
+20: 42
+21: 99
+22: 00
+23: 00`,
+  },
+};
+
+export const INSTRUCTION_HINTS: Record<string, { syntax: string; desc: string }> = {
+  LDA: { syntax: "LDA addr", desc: "Load value from memory into Accumulator" },
+  STA: { syntax: "STA addr", desc: "Store Accumulator value to memory" },
+  ADD: { syntax: "ADD addr", desc: "Add memory value to Accumulator" },
+  SUB: { syntax: "SUB addr", desc: "Subtract memory value from Accumulator" },
+  MOV: { syntax: "MOV dst,src", desc: "Move between registers (A, B, C)" },
+  INR: { syntax: "INR reg", desc: "Increment register by 1" },
+  DCR: { syntax: "DCR reg", desc: "Decrement register by 1" },
+  JMP: { syntax: "JMP addr", desc: "Unconditional jump" },
+  JZ:  { syntax: "JZ addr", desc: "Jump if Zero flag is set" },
+  HLT: { syntax: "HLT", desc: "Halt execution" },
+  AND: { syntax: "AND addr", desc: "Bitwise AND with memory value" },
+  OR:  { syntax: "OR addr", desc: "Bitwise OR with memory value" },
+  XOR: { syntax: "XOR addr", desc: "Bitwise XOR with memory value" },
+  CMP: { syntax: "CMP addr", desc: "Compare A with memory (sets flags only)" },
+  JNZ: { syntax: "JNZ addr", desc: "Jump if Zero flag is clear" },
+  JC:  { syntax: "JC addr", desc: "Jump if Carry flag is set" },
+  PUSH: { syntax: "PUSH", desc: "Push Accumulator onto stack" },
+  POP:  { syntax: "POP", desc: "Pop stack into Accumulator" },
+  CALL: { syntax: "CALL addr", desc: "Call subroutine at address" },
+  RET:  { syntax: "RET", desc: "Return from subroutine" },
+  NOP:  { syntax: "NOP", desc: "No operation" },
+  CMA:  { syntax: "CMA", desc: "Complement Accumulator (bitwise NOT)" },
+  RAL:  { syntax: "RAL", desc: "Rotate Accumulator left through carry" },
+  RAR:  { syntax: "RAR", desc: "Rotate Accumulator right through carry" },
 };
