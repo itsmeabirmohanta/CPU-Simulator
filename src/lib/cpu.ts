@@ -42,7 +42,7 @@ export function createInitialState(): CpuState {
     registerB: 0,
     registerC: 0,
     programCounter: 0,
-    status: "running",
+    status: "ready",
     memorySize: MEMORY_SIZE,
   };
 }
@@ -55,7 +55,7 @@ export function createMemory(size: number = MEMORY_SIZE): MemoryCell[] {
   return memory;
 }
 
-export function parseProgram(code: string, advanced: boolean): { memory: MemoryCell[]; errors: string[] } {
+export function parseProgram(code: string, _advanced?: boolean): { memory: MemoryCell[]; errors: string[] } {
   const memory = createMemory(MEMORY_SIZE);
   const errors: string[] = [];
   const lines = code.split("\n");
@@ -64,16 +64,18 @@ export function parseProgram(code: string, advanced: boolean): { memory: MemoryC
     line = line.trim();
     if (!line || line.startsWith(";")) return;
 
-    const parts = line.split(":");
-    if (parts.length !== 2) {
+    const colonIdx = line.indexOf(":");
+    if (colonIdx === -1) {
       errors.push(`Invalid syntax on line ${i + 1}: ${line}`);
       return;
     }
 
-    const addressStr = parts[0]?.trim();
+    const addressStr = line.substring(0, colonIdx).trim();
     // Strip inline comments (anything after ;)
-    const rawInstr = parts.slice(1).join(":").trim();
-    const instructionStr = rawInstr.includes(";") ? rawInstr.substring(0, rawInstr.indexOf(";")).trim() : rawInstr;
+    let instructionStr = line.substring(colonIdx + 1).trim();
+    if (instructionStr.includes(";")) {
+      instructionStr = instructionStr.substring(0, instructionStr.indexOf(";")).trim();
+    }
 
     const address = parseInt(addressStr);
     if (isNaN(address) || address < 0 || address >= MEMORY_SIZE) {
@@ -81,38 +83,61 @@ export function parseProgram(code: string, advanced: boolean): { memory: MemoryC
       return;
     }
 
-    let value: number;
-    if (advanced) {
-      // Advanced mode: Parse assembly instructions
-      const [opcode, operandStr] = instructionStr.split(" ");
-      const instruction = opcode.toUpperCase();
+    if (!instructionStr) return;
 
-      if (!instruction) {
-        errors.push(`Missing instruction on line ${i + 1}`);
+    // Try parsing as a plain number (data value)
+    const numValue = parseInt(instructionStr);
+    if (!isNaN(numValue) && String(numValue) === instructionStr) {
+      if (numValue < 0 || numValue > 65535) {
+        errors.push(`Value out of range on line ${i + 1}: ${instructionStr}`);
         return;
       }
+      memory[address].value = numValue;
+      return;
+    }
 
-      let operand: number | undefined;
-      if (operandStr) {
-        operand = parseInt(operandStr);
-        if (isNaN(operand) || operand < 0 || operand > 255) {
-          errors.push(`Invalid operand on line ${i + 1}: ${operandStr}`);
-          return;
-        }
-      }
+    // Parse as assembly instruction
+    const parts = instructionStr.split(/[\s,]+/);
+    const opcode = parts[0].toUpperCase();
 
-      value = encodeInstruction(instruction, operand);
-      if (value === -1) {
-        errors.push(`Unknown instruction on line ${i + 1}: ${instruction}`);
+    if (!opcode) {
+      errors.push(`Missing instruction on line ${i + 1}`);
+      return;
+    }
+
+    // Handle MOV specially: MOV B,A -> operand encodes src/dst
+    let operand: number | undefined;
+    if (opcode === "MOV") {
+      const regMap: Record<string, number> = { A: 0, B: 1, C: 2 };
+      const dst = parts[1]?.toUpperCase();
+      const src = parts[2]?.toUpperCase();
+      if (dst && src && dst in regMap && src in regMap) {
+        operand = (regMap[dst] << 4) | regMap[src];
+      } else {
+        errors.push(`Invalid MOV operands on line ${i + 1}: ${instructionStr}`);
         return;
       }
-    } else {
-      // Beginner mode: Parse direct byte values
-      value = parseInt(instructionStr);
-      if (isNaN(value) || value < 0 || value > 255) {
-        errors.push(`Invalid value on line ${i + 1}: ${instructionStr}`);
+    } else if (opcode === "INR" || opcode === "DCR") {
+      const regMap: Record<string, number> = { A: 0, B: 1, C: 2 };
+      const reg = parts[1]?.toUpperCase();
+      if (reg && reg in regMap) {
+        operand = regMap[reg];
+      } else {
+        errors.push(`Invalid register on line ${i + 1}: ${parts[1]}`);
         return;
       }
+    } else if (parts[1]) {
+      operand = parseInt(parts[1]);
+      if (isNaN(operand) || operand < 0 || operand > 255) {
+        errors.push(`Invalid operand on line ${i + 1}: ${parts[1]}`);
+        return;
+      }
+    }
+
+    const value = encodeInstruction(opcode, operand);
+    if (value === -1) {
+      errors.push(`Unknown instruction on line ${i + 1}: ${opcode}`);
+      return;
     }
 
     memory[address].value = value;
@@ -155,325 +180,241 @@ function encodeInstruction(instruction: string, operand?: number): number {
 export function executeStep(
   state: CpuState,
   memory: MemoryCell[],
-  advanced: boolean,
+  _advanced?: boolean,
 ): { state: CpuState; memory: MemoryCell[]; log: LogEntry } {
   if (state.status !== "running") {
     return { state, memory, log: { step: 0, instruction: "Halted", changes: [] } };
   }
 
   const instructionAddress = state.programCounter;
-  let instruction = memory[instructionAddress].value;
+  const instruction = memory[instructionAddress].value;
   let logMessage = "";
   const changes: string[] = [];
-  let newState = { ...state }; // Create a copy of the state
+  const newState = { ...state };
 
-  if (advanced) {
-    const opcode = instruction & 0xF00; // Extract the opcode (most significant 4 bits)
-    const operand = instruction & 0x0FF; // Extract the operand (least significant 8 bits)
-    instruction = opcode;
+  const opcode = instruction & 0xFF00;
+  const operand = instruction & 0x00FF;
 
-    switch (opcode) {
-      case 0x000: // HLT
-        newState.status = "halted";
-        logMessage = "HLT";
-        break;
+  switch (opcode) {
+    case 0x000: // HLT
+      newState.status = "halted";
+      logMessage = "HLT";
+      break;
 
-      case 0x100: // LDA <memory_address>
-        newState.accumulator = memory[operand].value;
-        newState.programCounter += 1;
-        logMessage = `LDA ${operand}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
+    case 0x100: // LDA
+      newState.accumulator = memory[operand].value;
+      newState.programCounter += 1;
+      logMessage = `LDA ${operand}`;
+      changes.push(`A = ${newState.accumulator}`);
+      break;
 
-      case 0x200: // STA <memory_address>
-        memory[operand].value = newState.accumulator;
-        newState.programCounter += 1;
-        logMessage = `STA ${operand}`;
-        changes.push(`mem[${operand}] = ${newState.accumulator}`);
-        break;
+    case 0x200: // STA
+      memory[operand].value = newState.accumulator;
+      newState.programCounter += 1;
+      logMessage = `STA ${operand}`;
+      changes.push(`mem[${operand}] = ${newState.accumulator}`);
+      break;
 
-      case 0x300: // ADD <memory_address>
-        newState.accumulator += memory[operand].value;
-        if (newState.accumulator > 255) {
-          newState.accumulator &= 255; // Overflow
-        }
-        newState.programCounter += 1;
-        logMessage = `ADD ${operand}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
+    case 0x300: // ADD
+      newState.accumulator += memory[operand].value;
+      newState.carryFlag = newState.accumulator > 255;
+      newState.accumulator &= 255;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.programCounter += 1;
+      logMessage = `ADD ${operand}`;
+      changes.push(`A = ${newState.accumulator}`);
+      break;
 
-      case 0x400: // SUB <memory_address>
-        newState.accumulator -= memory[operand].value;
-        if (newState.accumulator < 0) {
-          newState.accumulator = 0; // Underflow
-        }
-        newState.programCounter += 1;
-        logMessage = `SUB ${operand}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
+    case 0x400: // SUB
+      const subResult = newState.accumulator - memory[operand].value;
+      newState.carryFlag = subResult < 0;
+      newState.accumulator = subResult < 0 ? (subResult + 256) & 255 : subResult & 255;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.programCounter += 1;
+      logMessage = `SUB ${operand}`;
+      changes.push(`A = ${newState.accumulator}`);
+      break;
 
-      case 0x500: // JMP <memory_address>
+    case 0x500: // JMP
+      newState.programCounter = operand;
+      logMessage = `JMP ${operand}`;
+      changes.push(`PC = ${operand}`);
+      break;
+
+    case 0x600: // JZ
+      if (newState.zeroFlag || newState.accumulator === 0) {
         newState.programCounter = operand;
-        logMessage = `JMP ${operand}`;
         changes.push(`PC = ${operand}`);
-        break;
-
-      case 0x600: // JZ <memory_address>
-        if (newState.accumulator === 0) {
-          newState.programCounter = operand;
-          changes.push(`PC = ${operand}`);
-        } else {
-          newState.programCounter += 1;
-        }
-        logMessage = `JZ ${operand}`;
-        break;
-
-      case 0x700: // JNZ <memory_address>
-        if (newState.accumulator !== 0) {
-          newState.programCounter = operand;
-          changes.push(`PC = ${operand}`);
-        } else {
-          newState.programCounter += 1;
-        }
-        logMessage = `JNZ ${operand}`;
-        break;
-
-      case 0x800: { // JC <memory_address>
-          // Carry flag is simulated by checking state's carryFlag
-          const carry = state.carryFlag === true;
-
-          if (carry) {
-              newState.programCounter = operand;
-              changes.push(`PC = ${operand} (Carry)`);
-          } else {
-              newState.programCounter += 1;
-          }
-          logMessage = `JC ${operand}`;
-          break;
+      } else {
+        newState.programCounter += 1;
       }
+      logMessage = `JZ ${operand}`;
+      break;
 
-      case 0x900: { // MOV <reg1>, <reg2>
-        const reg1 = (operand >> 4) & 0x0F; // First nibble
-        const reg2 = operand & 0x0F;        // Second nibble
-
-        let sourceValue: number;
-        if (reg2 === 0x0) sourceValue = newState.accumulator;
-        else if (reg2 === 0x1) sourceValue = newState.registerB;
-        else if (reg2 === 0x2) sourceValue = newState.registerC;
-        else {
-          newState.status = "error";
-          logMessage = `MOV error: invalid source register ${reg2}`;
-          break;
-        }
-
-        if (reg1 === 0x0) newState.accumulator = sourceValue;
-        else if (reg1 === 0x1) newState.registerB = sourceValue;
-        else if (reg1 === 0x2) newState.registerC = sourceValue;
-        else {
-          newState.status = "error";
-          logMessage = `MOV error: invalid dest register ${reg1}`;
-          break;
-        }
-
+    case 0x700: // JNZ
+      if (!newState.zeroFlag && newState.accumulator !== 0) {
+        newState.programCounter = operand;
+        changes.push(`PC = ${operand}`);
+      } else {
         newState.programCounter += 1;
-        logMessage = `MOV ${["A", "B", "C"][reg1]}, ${["A", "B", "C"][reg2]}`;
-        changes.push(`${["A", "B", "C"][reg1]} = ${sourceValue}`);
-        break;
       }
+      logMessage = `JNZ ${operand}`;
+      break;
 
-      case 0xA00: { // INR <register>
-        const reg = operand & 0x0F;
-        if (reg === 0x0) {
-          newState.accumulator = (newState.accumulator + 1) & 255;
-          changes.push(`A = ${newState.accumulator}`);
-        }
-        else if (reg === 0x1) {
-          newState.registerB = (newState.registerB + 1) & 255;
-          changes.push(`B = ${newState.registerB}`);
-        }
-        else if (reg === 0x2) {
-          newState.registerC = (newState.registerC + 1) & 255;
-          changes.push(`C = ${newState.registerC}`);
-        }
-        else {
-          newState.status = "error";
-          logMessage = `Invalid register for INR: ${reg}`;
-          break;
-        }
+    case 0x800: // JC
+      if (newState.carryFlag) {
+        newState.programCounter = operand;
+        changes.push(`PC = ${operand} (Carry)`);
+      } else {
         newState.programCounter += 1;
-        logMessage = `INR ${["A", "B", "C"][reg]}`;
-        break;
       }
+      logMessage = `JC ${operand}`;
+      break;
 
-      case 0xB00: { // DCR <register>
-        const reg = operand & 0x0F;
-        if (reg === 0x0) {
-          newState.accumulator = (newState.accumulator - 1 + 256) & 255;
-          changes.push(`A = ${newState.accumulator}`);
-        }
-        else if (reg === 0x1) {
-          newState.registerB = (newState.registerB - 1 + 256) & 255;
-          changes.push(`B = ${newState.registerB}`);
-        }
-        else if (reg === 0x2) {
-          newState.registerC = (newState.registerC - 1 + 256) & 255;
-          changes.push(`C = ${newState.registerC}`);
-        }
-        else {
-          newState.status = "error";
-          logMessage = `Invalid register for DCR: ${reg}`;
-          break;
-        }
-        newState.programCounter += 1;
-        logMessage = `DCR ${["A", "B", "C"][reg]}`;
-        break;
-      }
+    case 0x900: { // MOV
+      const reg1 = (operand >> 4) & 0x0F;
+      const reg2 = operand & 0x0F;
+      let sourceValue: number;
+      if (reg2 === 0) sourceValue = newState.accumulator;
+      else if (reg2 === 1) sourceValue = newState.registerB;
+      else if (reg2 === 2) sourceValue = newState.registerC;
+      else { newState.status = "error"; logMessage = `MOV error: invalid source register ${reg2}`; break; }
 
-      case 0xC00: // CMA (Complement Accumulator)
-        newState.accumulator = 255 - newState.accumulator;
-        newState.programCounter += 1;
-        logMessage = "CMA";
-        changes.push(`A = ${newState.accumulator}`);
-        break;
+      if (reg1 === 0) newState.accumulator = sourceValue;
+      else if (reg1 === 1) newState.registerB = sourceValue;
+      else if (reg1 === 2) newState.registerC = sourceValue;
+      else { newState.status = "error"; logMessage = `MOV error: invalid dest register ${reg1}`; break; }
 
-      case 0xD00: // CMP <memory_address>
-        const value = memory[operand].value;
-        const diff = newState.accumulator - value;
-        // Flags are implicit in the state, so this is mostly for show in the log
-        logMessage = `CMP ${operand}`;
-        changes.push(`Compared A with mem[${operand}]`);
-        newState.programCounter += 1;
-        break;
-
-      case 0xE00: // RAL (Rotate Accumulator Left)
-        const leftmostBit = newState.accumulator >> 7; // Get the leftmost bit
-        newState.accumulator = (newState.accumulator << 1) & 255 | leftmostBit; // Rotate left
-        newState.programCounter += 1;
-        logMessage = "RAL";
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-
-      case 0xF00: // RAR (Rotate Accumulator Right)
-        const rightmostBit = newState.accumulator & 1; // Get the rightmost bit
-        newState.accumulator = (newState.accumulator >> 1) | (rightmostBit << 7); // Rotate right
-        newState.programCounter += 1;
-        logMessage = "RAR";
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-
-      case 0x1000: // AND <memory_address>
-        newState.accumulator &= memory[operand].value;
-        newState.programCounter += 1;
-        logMessage = `AND ${operand}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-
-      case 0x1100: // OR <memory_address>
-        newState.accumulator |= memory[operand].value;
-        newState.programCounter += 1;
-        logMessage = `OR ${operand}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-
-      case 0x1200: // XOR <memory_address>
-        newState.accumulator ^= memory[operand].value;
-        newState.programCounter += 1;
-        logMessage = `XOR ${operand}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-
-      case 0x1300: // PUSH
-        if (stackPointer < 0) {
-            newState.status = "error";
-            logMessage = "Stack overflow!";
-            break;
-        }
-        memory[stackPointer].value = newState.accumulator;
-        stackPointer--;
-        newState.programCounter += 1;
-        logMessage = "PUSH";
-        changes.push(`Pushed A=${newState.accumulator} to stack`);
-        break;
-
-      case 0x1400: // POP
-        if (stackPointer >= MEMORY_SIZE - 1) {
-            newState.status = "error";
-            logMessage = "Stack underflow!";
-            break;
-        }
-        stackPointer++;
-        newState.accumulator = memory[stackPointer].value;
-        newState.programCounter += 1;
-        logMessage = "POP";
-        changes.push(`Popped A=${newState.accumulator} from stack`);
-        break;
-
-      case 0x1500: // CALL <memory_address>
-        if (stackPointer < 1) {
-            newState.status = "error";
-            logMessage = "Stack overflow (CALL)!";
-            break;
-        }
-        memory[stackPointer].value = newState.programCounter + 1; // Store return address
-        stackPointer--;
-        newState.programCounter = operand; // Jump to subroutine
-        logMessage = `CALL ${operand}`;
-        changes.push(`CALL ${operand}, pushed return address`);
-        break;
-
-      case 0x1600: // RET
-        if (stackPointer >= MEMORY_SIZE - 1) {
-            newState.status = "error";
-            logMessage = "Stack underflow (RET)!";
-            break;
-        }
-        stackPointer++;
-        newState.programCounter = memory[stackPointer].value; // Restore return address
-        logMessage = "RET";
-        changes.push(`RET to ${newState.programCounter}`);
-        break;
-
-      default:
-        newState.status = "error";
-        logMessage = `Error: Unknown opcode ${opcode.toString(16)}`;
-        break;
+      newState.programCounter += 1;
+      logMessage = `MOV ${["A", "B", "C"][reg1]}, ${["A", "B", "C"][reg2]}`;
+      changes.push(`${["A", "B", "C"][reg1]} = ${sourceValue}`);
+      break;
     }
-  } else {
-    // --- BEGINNER MODE ---
-    switch (instruction) {
-      case 0x00: // HLT
-        newState.status = "halted";
-        logMessage = "HLT";
-        break;
-      case 0x01: // LDA <memory_address>
-        const address = memory[state.programCounter + 1]?.value;
-        newState.accumulator = memory[address].value;
-        newState.programCounter += 2;
-        logMessage = `LDA ${address}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-      case 0x02: // STA <memory_address>
-        const storeAddress = memory[state.programCounter + 1]?.value;
-        memory[storeAddress].value = newState.accumulator;
-        newState.programCounter += 2;
-        logMessage = `STA ${storeAddress}`;
-        changes.push(`mem[${storeAddress}] = ${newState.accumulator}`);
-        break;
-      case 0x03: // ADD <memory_address>
-        const addAddress = memory[state.programCounter + 1]?.value;
-        newState.accumulator += memory[addAddress].value;
-        if (newState.accumulator > 255) {
-          newState.accumulator &= 255; // Overflow
-        }
-        newState.programCounter += 2;
-        logMessage = `ADD ${addAddress}`;
-        changes.push(`A = ${newState.accumulator}`);
-        break;
-      default:
-        newState.status = "error";
-        logMessage = `Error: Unknown instruction ${instruction.toString(16)}`;
-        break;
+
+    case 0xA00: { // INR
+      const reg = operand & 0x0F;
+      if (reg === 0) { newState.accumulator = (newState.accumulator + 1) & 255; changes.push(`A = ${newState.accumulator}`); }
+      else if (reg === 1) { newState.registerB = (newState.registerB + 1) & 255; changes.push(`B = ${newState.registerB}`); }
+      else if (reg === 2) { newState.registerC = (newState.registerC + 1) & 255; changes.push(`C = ${newState.registerC}`); }
+      else { newState.status = "error"; logMessage = `Invalid register for INR: ${reg}`; break; }
+      newState.zeroFlag = (reg === 0 ? newState.accumulator : reg === 1 ? newState.registerB : newState.registerC) === 0;
+      newState.programCounter += 1;
+      logMessage = `INR ${["A", "B", "C"][reg]}`;
+      break;
     }
+
+    case 0xB00: { // DCR
+      const reg = operand & 0x0F;
+      if (reg === 0) { newState.accumulator = (newState.accumulator - 1 + 256) & 255; changes.push(`A = ${newState.accumulator}`); }
+      else if (reg === 1) { newState.registerB = (newState.registerB - 1 + 256) & 255; changes.push(`B = ${newState.registerB}`); }
+      else if (reg === 2) { newState.registerC = (newState.registerC - 1 + 256) & 255; changes.push(`C = ${newState.registerC}`); }
+      else { newState.status = "error"; logMessage = `Invalid register for DCR: ${reg}`; break; }
+      newState.zeroFlag = (reg === 0 ? newState.accumulator : reg === 1 ? newState.registerB : newState.registerC) === 0;
+      newState.programCounter += 1;
+      logMessage = `DCR ${["A", "B", "C"][reg]}`;
+      break;
+    }
+
+    case 0xC00: // CMA
+      newState.accumulator = 255 - newState.accumulator;
+      newState.programCounter += 1;
+      logMessage = "CMA";
+      changes.push(`A = ${newState.accumulator}`);
+      break;
+
+    case 0xD00: { // CMP
+      const cmpVal = memory[operand].value;
+      const cmpDiff = newState.accumulator - cmpVal;
+      newState.zeroFlag = cmpDiff === 0;
+      newState.carryFlag = cmpDiff < 0;
+      newState.programCounter += 1;
+      logMessage = `CMP ${operand}`;
+      changes.push(`Compared A(${newState.accumulator}) with mem[${operand}](${cmpVal})`);
+      break;
+    }
+
+    case 0xE00: { // RAL
+      const leftBit = newState.accumulator >> 7;
+      newState.accumulator = ((newState.accumulator << 1) & 255) | leftBit;
+      newState.programCounter += 1;
+      logMessage = "RAL";
+      changes.push(`A = ${newState.accumulator}`);
+      break;
+    }
+
+    case 0xF00: { // RAR
+      const rightBit = newState.accumulator & 1;
+      newState.accumulator = (newState.accumulator >> 1) | (rightBit << 7);
+      newState.programCounter += 1;
+      logMessage = "RAR";
+      changes.push(`A = ${newState.accumulator}`);
+      break;
+    }
+
+    case 0x1000: // AND
+      newState.accumulator &= memory[operand].value;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.programCounter += 1;
+      logMessage = `AND ${operand}`;
+      changes.push(`A = ${newState.accumulator}`);
+      break;
+
+    case 0x1100: // OR
+      newState.accumulator |= memory[operand].value;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.programCounter += 1;
+      logMessage = `OR ${operand}`;
+      changes.push(`A = ${newState.accumulator}`);
+      break;
+
+    case 0x1200: // XOR
+      newState.accumulator ^= memory[operand].value;
+      newState.zeroFlag = newState.accumulator === 0;
+      newState.programCounter += 1;
+      logMessage = `XOR ${operand}`;
+      changes.push(`A = ${newState.accumulator}`);
+      break;
+
+    case 0x1300: // PUSH
+      if (stackPointer < 0) { newState.status = "error"; logMessage = "Stack overflow!"; break; }
+      memory[stackPointer].value = newState.accumulator;
+      stackPointer--;
+      newState.programCounter += 1;
+      logMessage = "PUSH";
+      changes.push(`Pushed A=${newState.accumulator} to stack`);
+      break;
+
+    case 0x1400: // POP
+      if (stackPointer >= MEMORY_SIZE - 1) { newState.status = "error"; logMessage = "Stack underflow!"; break; }
+      stackPointer++;
+      newState.accumulator = memory[stackPointer].value;
+      newState.programCounter += 1;
+      logMessage = "POP";
+      changes.push(`Popped A=${newState.accumulator} from stack`);
+      break;
+
+    case 0x1500: // CALL
+      if (stackPointer < 1) { newState.status = "error"; logMessage = "Stack overflow (CALL)!"; break; }
+      memory[stackPointer].value = newState.programCounter + 1;
+      stackPointer--;
+      newState.programCounter = operand;
+      logMessage = `CALL ${operand}`;
+      changes.push(`CALL ${operand}, pushed return address`);
+      break;
+
+    case 0x1600: // RET
+      if (stackPointer >= MEMORY_SIZE - 1) { newState.status = "error"; logMessage = "Stack underflow (RET)!"; break; }
+      stackPointer++;
+      newState.programCounter = memory[stackPointer].value;
+      logMessage = "RET";
+      changes.push(`RET to ${newState.programCounter}`);
+      break;
+
+    default:
+      newState.status = "error";
+      newState.errorMessage = `Unknown opcode 0x${opcode.toString(16)}`;
+      logMessage = `Error: Unknown opcode 0x${opcode.toString(16)}`;
+      break;
   }
 
   return { state: newState, memory, log: { step: instructionAddress, instruction: logMessage, changes } };
