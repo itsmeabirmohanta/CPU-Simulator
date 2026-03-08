@@ -149,6 +149,7 @@ export default function LearnPage() {
   const navigate = useNavigate();
   const [completed, setCompleted] = useState<string[]>(getCompletedLessons);
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
+  const { showWalkthrough, dismissWalkthrough, restartWalkthrough } = useWalkthrough();
 
   const toggleLesson = (id: string) => {
     setExpandedLesson((prev) => (prev === id ? null : id));
