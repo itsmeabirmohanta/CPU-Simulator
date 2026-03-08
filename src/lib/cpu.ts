@@ -173,6 +173,7 @@ function encodeInstruction(instruction: string, operand?: number): number {
     case "POP": return 0x1400;
     case "CALL": return 0x1500 + (operand || 0);
     case "RET": return 0x1600;
+    case "NOP": return 0x1700;
     default:    return -1; // Invalid instruction
   }
 }
@@ -410,6 +411,11 @@ export function executeStep(
       changes.push(`RET to ${newState.programCounter}`);
       break;
 
+    case 0x1700: // NOP
+      newState.programCounter += 1;
+      logMessage = "NOP";
+      break;
+
     default:
       newState.status = "error";
       newState.errorMessage = `Unknown opcode 0x${opcode.toString(16)}`;
@@ -432,29 +438,30 @@ interface SampleProgram {
 export const SAMPLE_PROGRAMS: Record<string, SampleProgram> = {
   addition: {
     name: "Addition",
-    code: `; Load value 10, add value 11, store result in 12
+    code: `; Load two numbers and add them
 00: LDA 10
 01: ADD 11
 02: STA 12
 03: HLT
 10: 15 ; First number
 11: 28 ; Second number
-12: 00 ; Result`,
+12: 0  ; Result`,
   },
   registerMove: {
     name: "Register Move",
-    code: `; Move value from A to B, increment B, store B in memory
+    code: `; Move value to B, increment B, move back to A, store
 00: LDA 10
 01: MOV B,A
 02: INR B
-03: STA 11
-04: HLT
-10: 42
-11: 00`,
+03: MOV A,B
+04: STA 11
+05: HLT
+10: 42 ; Input
+11: 0  ; Result (should be 43)`,
   },
   conditionalJump: {
     name: "Conditional Jump",
-    code: `; Load value, compare with another, jump if equal
+    code: `; Compare two values, jump if equal
 00: LDA 10
 01: SUB 11
 02: JZ 05
@@ -467,166 +474,189 @@ export const SAMPLE_PROGRAMS: Record<string, SampleProgram> = {
 11: 05
 12: 01
 13: 99
-14: 00`,
+14: 0`,
   },
   countdown: {
     name: "Countdown Loop",
-    code: `; A simple countdown loop
-00: LDA 10  ; Load initial value
-01: STA 11  ; Store in counter
-02: LDA 12  ; Load decrement value
-03: SUB 11  ; Subtract from counter
-04: STA 11  ; Update counter
-05: JZ 08   ; Jump if zero
-06: JMP 02  ; Loop back
-07: HLT     ; End if zero
-08: HLT
-10: 05      ; Initial value
-11: 00      ; Counter
-12: 01      ; Decrement value`,
+    code: `; Count down from 5 to 0
+00: LDA 10
+01: SUB 11
+02: STA 10
+03: JZ 05
+04: JMP 00
+05: HLT
+10: 05 ; Counter (starts at 5)
+11: 01 ; Decrement value`,
   },
   bitwiseOps: {
     name: "Bitwise Operations",
-    code: `; Bitwise AND, OR, XOR
-00: LDA 10
-01: AND 11
-02: STA 12
-03: LDA 10
-04: OR 11
-05: STA 13
-06: LDA 10
-07: XOR 11
-08: STA 14
+    code: `; Bitwise AND, OR, XOR on two values
+00: LDA 20
+01: AND 21
+02: STA 22
+03: LDA 20
+04: OR 21
+05: STA 23
+06: LDA 20
+07: XOR 21
+08: STA 24
 09: HLT
-10: 170 ; 10101010
-11: 85  ; 01010101
-12: 0   ; AND result
-13: 0   ; OR result
-14: 0   ; XOR result`,
+20: 170 ; 10101010
+21: 85  ; 01010101
+22: 0   ; AND result
+23: 0   ; OR result
+24: 0   ; XOR result`,
   },
   subroutine: {
     name: "Subroutine Call",
-    code: `; Call a subroutine to double the accumulator
-00: LDA 20  ; Load value
-01: CALL 10 ; Call subroutine
-02: STA 21  ; Store result
-03: HLT     ; End
-10: MOV B,A ; Subroutine: save A
-11: ADD A   ; Double A
-12: MOV A,B ; Restore A
-13: RET     ; Return
-20: 10      ; Initial value
-21: 0       ; Result`,
+    code: `; Call a subroutine to double a value
+00: LDA 30
+01: STA 20
+02: CALL 10
+03: STA 31
+04: HLT
+; Subroutine: double the value at mem[20]
+10: LDA 20
+11: ADD 20
+12: RET
+20: 0  ; Temp
+30: 10 ; Input value
+31: 0  ; Result (should be 20)`,
   },
   multiplication: {
     name: "Multiplication by Repeated Addition",
-    code: `; Multiply 4 × 3 by repeated addition
+    code: `; Multiply 4 x 3 by repeated addition
 ; Result = 4 + 4 + 4 = 12
-00: LDA 15
+00: LDA 20
 01: MOV B,A
-02: LDA 14
+02: LDA 21
 03: MOV C,A
-04: LDA 16
-05: ADD 15
-06: DCR C
-07: JZ 10
-08: JMP 05
-09: NOP
-10: STA 17
-11: HLT
-14: 03
-15: 04
-16: 00
-17: 00`,
+04: LDA 22
+05: ADD 20
+06: STA 22
+07: DCR C
+08: JZ 11
+09: JMP 05
+10: NOP
+11: LDA 22
+12: STA 23
+13: HLT
+20: 04 ; Multiplicand
+21: 03 ; Multiplier
+22: 0  ; Running sum
+23: 0  ; Result`,
   },
   findMax: {
     name: "Find Max of Two Numbers",
-    code: `; Find max of two numbers
-00: LDA 10
-01: SUB 11
+    code: `; Find the larger of two numbers
+00: LDA 20
+01: SUB 21
 02: JC 06
-03: LDA 10
-04: STA 12
+03: LDA 20
+04: STA 22
 05: HLT
-06: LDA 11
-07: STA 12
+06: LDA 21
+07: STA 22
 08: HLT
-10: 15
-11: 23
-12: 00`,
+20: 15 ; First number
+21: 23 ; Second number
+22: 0  ; Result (max)`,
   },
   fibonacci: {
-    name: "Fibonacci Sequence",
-    code: `; Fibonacci sequence
-00: LDA 10  ; Load n
-01: MOV B,A ; B = n
-02: LDA 11  ; A = 0 (first)
-03: STA 13  ; mem[13] = 0
-04: LDA 12  ; A = 1 (second)
-05: STA 14  ; mem[14] = 1
-06: MOV C,A ; C = 1
-07: DCR B   ; B = n-1
-08: JZ 15   ; if n <= 1, halt
-09: ADD 13  ; A = A + mem[13]
-10: STA 15  ; Store next fib
-11: MOV B,A ; B = next fib
-12: LDA 13  ; A = mem[13]
-13: MOV 14,A ; mem[14] = mem[13]
-14: MOV 15,B ; mem[15] = next fib
-15: DCR B   ; B = B - 1
-16: JNZ 09  ; Loop if not zero
-17: HLT
-10: 10      ; n = 10
-11: 00      ; First = 0
-12: 01      ; Second = 1
-13: 00      ; mem[13]
-14: 00      ; mem[14]
-15: 00      ; Next fib`,
+    name: "Fibonacci (first 5 terms)",
+    code: `; Generate Fibonacci: 1 1 2 3 5
+; mem[30-34] will hold the sequence
+00: LDA 40
+01: STA 30
+02: STA 31
+03: LDA 40
+04: ADD 30
+05: STA 32
+06: LDA 31
+07: ADD 32
+08: STA 33
+09: LDA 32
+10: ADD 33
+11: STA 34
+12: HLT
+30: 0  ; fib[0]
+31: 0  ; fib[1]
+32: 0  ; fib[2]
+33: 0  ; fib[3]
+34: 0  ; fib[4]
+40: 01 ; Initial value 1`,
   },
   bubbleSort3: {
     name: "Bubble Sort of 3 Numbers",
-    code: `; Bubble sort of 3 numbers
-00: LDA 10  ; Load A
-01: CMP 11  ; Compare with B
-02: JC 06   ; Jump if A < B
-03: LDA 11  ; Swap A and B
-04: STA 10
-05: STA 11
-06: LDA 11  ; Load B
-07: CMP 12  ; Compare with C
-08: JC 12   ; Jump if B < C
-09: LDA 12  ; Swap B and C
-10: STA 11
-11: STA 12
-12: LDA 10  ; Load A
-13: CMP 11  ; Compare with B
-14: JC 18   ; Jump if A < B
-15: LDA 11  ; Swap A and B
-16: STA 10
-17: STA 11
-18: HLT
-10: 25      ; A
-11: 10      ; B
-12: 15      ; C`,
+    code: `; Sort 3 numbers in ascending order
+; Uses temp at mem[33] for swaps
+00: LDA 30
+01: SUB 31
+02: JC 09
+; Swap mem[30] and mem[31]
+03: LDA 31
+04: STA 33
+05: LDA 30
+06: STA 31
+07: LDA 33
+08: STA 30
+09: LDA 31
+10: SUB 32
+11: JC 18
+; Swap mem[31] and mem[32]
+12: LDA 32
+13: STA 33
+14: LDA 31
+15: STA 32
+16: LDA 33
+17: STA 31
+; Second pass: check 30 vs 31 again
+18: LDA 30
+19: SUB 31
+20: JC 27
+21: LDA 31
+22: STA 33
+23: LDA 30
+24: STA 31
+25: LDA 33
+26: STA 30
+27: HLT
+30: 25 ; A
+31: 10 ; B
+32: 15 ; C
+33: 0  ; Temp`,
   },
   bitCount: {
     name: "Bit Counting",
-    code: `; Count set bits
-00: LDA 10  ; Load value
-01: MOV B,A ; B = value
-02: LDA 11  ; A = 0 (count)
-03: MOV C,A ; C = 0
-04: AND 01  ; A = A & B
-05: JZ 08   ; If zero, done
-06: INR C   ; Increment count
-07: RAR     ; Shift right
-08: DCR B   ; Decrement B
-09: JNZ 04  ; Loop if not zero
-10: MOV A,C ; A = count
-11: STA 12  ; Store count
-12: HLT
-10: 170     ; Value
-11: 00      ; Count`,
+    code: `; Count the number of set bits in a value
+; Uses AND with 1, rotate right, repeat 8 times
+00: LDA 30
+01: MOV B,A
+02: LDA 31
+03: MOV C,A
+; Loop: check lowest bit
+04: MOV A,B
+05: AND 32
+06: JZ 08
+07: INR C
+08: MOV A,B
+09: RAR
+10: MOV B,A
+11: DCR A
+12: LDA 33
+13: SUB 31
+14: STA 33
+15: LDA 33
+16: JZ 18
+17: JMP 04
+18: MOV A,C
+19: STA 34
+20: HLT
+30: 170 ; Value to count bits of (10101010 = 4 bits)
+31: 0   ; Initial count
+32: 01  ; Mask (value 1)
+33: 08  ; Loop counter (8 bits)
+34: 0   ; Result`,
   },
 };
 
