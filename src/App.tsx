@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import SimulatorPage from "./pages/SimulatorPage";
 import LearnPage from "./pages/LearnPage";
 import AboutPage from "./pages/AboutPage";
+import LearnModulePage from "./pages/LearnModulePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/simulator" element={<SimulatorPage />} />
           <Route path="/learn" element={<LearnPage />} />
+          <Route path="/learn/:moduleId" element={<LearnModulePage />} />
           <Route path="/help" element={<LearnPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="*" element={<NotFound />} />
