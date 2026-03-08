@@ -18,7 +18,7 @@ function ControlBtn({ onClick, disabled, children, variant = "default" }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
         variant === "primary"
           ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
           : "bg-muted hover:bg-muted/80 text-foreground"
@@ -38,22 +38,22 @@ export default function ExecutionControls({
   return (
     <div className="flex items-center gap-1.5">
       <ControlBtn onClick={onLoad} disabled={isRunning}>
-        <Upload className="h-3 w-3" /> Load
+        <Upload className="h-3.5 w-3.5" /> Load
       </ControlBtn>
       <ControlBtn onClick={onStep} disabled={!hasProgram || isHaltedOrError || isRunning}>
-        <SkipForward className="h-3 w-3" /> Step
+        <SkipForward className="h-3.5 w-3.5" /> Step
       </ControlBtn>
       {isRunning ? (
         <ControlBtn onClick={onPause}>
-          <Pause className="h-3 w-3" /> Pause
+          <Pause className="h-3.5 w-3.5" /> Pause
         </ControlBtn>
       ) : (
         <ControlBtn onClick={onRun} disabled={!hasProgram || isHaltedOrError} variant="primary">
-          <Play className="h-3 w-3" /> Run
+          <Play className="h-3.5 w-3.5" /> Run
         </ControlBtn>
       )}
       <ControlBtn onClick={onReset}>
-        <RotateCcw className="h-3 w-3" />
+        <RotateCcw className="h-3.5 w-3.5" />
       </ControlBtn>
     </div>
   );

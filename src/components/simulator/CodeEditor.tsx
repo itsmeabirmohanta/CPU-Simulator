@@ -1,6 +1,7 @@
 import { SAMPLE_PROGRAMS, validateLine, getValidOpcodes, INSTRUCTION_HINTS } from "@/lib/cpu";
 import { motion } from "framer-motion";
 import { useState, useRef, useCallback } from "react";
+import { Code2 } from "lucide-react";
 
 interface CodeEditorProps {
   code: string;
@@ -92,20 +93,23 @@ export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoa
   const filteredSamples = Object.entries(SAMPLE_PROGRAMS).filter(([, p]) => !p.advanced || advanced);
 
   return (
-    <div className="sim-panel flex flex-col h-full">
+    <div className="glass-card flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="sim-panel-header">
-        <span className="sim-panel-title">Editor</span>
+      <div className="px-4 py-2.5 border-b bg-muted/20 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Code2 className="h-3.5 w-3.5 text-primary" />
+          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Editor</span>
+        </div>
         <div className="flex items-center gap-2">
           {errorCount > 0 && (
-            <span className="text-[10px] text-destructive font-mono">{errorCount} err</span>
+            <span className="text-[10px] text-destructive font-mono bg-destructive/10 px-1.5 py-0.5 rounded">{errorCount} err</span>
           )}
           <span className="text-[10px] text-muted-foreground font-mono">{lines.filter(l => l.trim()).length} lines</span>
         </div>
       </div>
 
       {/* Sample programs tabs */}
-      <div className="flex items-center gap-0 border-b bg-muted/20 overflow-x-auto">
+      <div className="flex items-center gap-0 border-b bg-muted/10 overflow-x-auto">
         {filteredSamples.map(([key, prog]) => (
           <button
             key={key}
@@ -114,7 +118,7 @@ export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoa
             className={`px-3 py-1.5 text-[11px] font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeSample === key
                 ? "border-primary text-primary bg-primary/5"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
             } disabled:opacity-40`}
             title={prog.description}
           >
@@ -126,7 +130,6 @@ export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoa
       {/* Code area */}
       <div className="flex-1 relative sim-editor-bg overflow-hidden">
         {isRunning ? (
-          /* Read-only execution view */
           <div className="h-full overflow-y-auto">
             {lines.map((line, i) => {
               const lineAddr = line.trim().match(/^(\d{2}):/);
@@ -159,7 +162,6 @@ export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoa
             })}
           </div>
         ) : (
-          /* Editable view with overlay syntax highlighting */
           <div className="relative h-full min-h-[320px]">
             {/* Syntax overlay */}
             <div
@@ -201,7 +203,7 @@ export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoa
       </div>
 
       {/* Status bar */}
-      <div className="px-3 py-1 border-t bg-muted/30 flex items-center justify-between text-[10px] font-mono text-muted-foreground">
+      <div className="px-3.5 py-1.5 border-t bg-muted/20 flex items-center justify-between text-[10px] font-mono text-muted-foreground">
         <span>Ln {cursorLine + 1} · {advanced ? "ADV" : "BASIC"} · {memSize} cells</span>
         {hint && (
           <span className="text-primary/80">

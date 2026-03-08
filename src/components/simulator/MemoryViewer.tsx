@@ -8,20 +8,20 @@ interface MemoryViewerProps {
 
 export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
   return (
-    <div className="sim-panel">
-      <div className="sim-panel-header">
-        <span className="sim-panel-title">Memory</span>
+    <div className="glass-card overflow-hidden">
+      <div className="px-4 py-2.5 border-b bg-muted/20 flex items-center justify-between">
+        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Memory</span>
         <span className="text-[10px] font-mono text-muted-foreground">{memory.length} cells</span>
       </div>
-      <div className="p-2 max-h-[320px] overflow-y-auto">
+      <div className="p-3 max-h-[320px] overflow-y-auto">
         {/* Header */}
-        <div className="grid grid-cols-8 gap-0.5 mb-1">
+        <div className="grid grid-cols-8 gap-0.5 mb-1.5">
           {Array.from({ length: 8 }, (_, i) => (
             <div key={i} className="text-center text-[8px] font-mono text-muted-foreground/50 uppercase">+{i}</div>
           ))}
         </div>
         {/* Cells */}
-        <div className="grid grid-cols-8 gap-0.5">
+        <div className="grid grid-cols-8 gap-1">
           {memory.map((cell) => {
             const isPC = cell.address === currentPC;
             const isEmpty = cell.value === 0 && cell.type === "data";
@@ -30,8 +30,8 @@ export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
             return (
               <motion.div
                 key={cell.address}
-                className={`relative flex flex-col items-center justify-center rounded px-0.5 py-1 font-mono transition-all duration-200 cursor-default ${
-                  isPC ? "bg-primary/15 ring-1 ring-primary/50" :
+                className={`relative flex flex-col items-center justify-center rounded-lg px-0.5 py-1.5 font-mono transition-all duration-200 cursor-default ${
+                  isPC ? "bg-primary/15 ring-1 ring-primary/50 shadow-sm" :
                   cell.changed ? "bg-warning/10 ring-1 ring-warning/40" :
                   isInstr ? "bg-primary/[0.04]" :
                   isEmpty ? "opacity-25" : ""
@@ -55,7 +55,7 @@ export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
                 </span>
                 {isPC && (
                   <motion.div
-                    className="absolute -bottom-px left-0 right-0 h-[2px] bg-primary rounded-full"
+                    className="absolute -bottom-px left-1 right-1 h-[2px] bg-primary rounded-full"
                     layoutId="mem-pc"
                   />
                 )}
@@ -64,7 +64,7 @@ export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
           })}
         </div>
         {/* Legend */}
-        <div className="flex items-center gap-3 mt-2 pt-2 border-t text-[9px] text-muted-foreground/60">
+        <div className="flex items-center gap-3 mt-3 pt-2.5 border-t text-[9px] text-muted-foreground/60">
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> PC</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded bg-primary/30" /> Code</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded bg-warning/50" /> Modified</span>

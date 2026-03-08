@@ -94,14 +94,9 @@ export default function SimulatorPage() {
 
   const handleModeSwitch = useCallback((newMode: "beginner" | "advanced") => {
     setMode(newMode);
-    // Keep the loaded program, just adjust memory size if needed
     if (newMode === "beginner" && advanced) {
-      // switching from advanced to beginner
       setCode(SAMPLE_PROGRAMS.addition.code);
       reset();
-    } else if (newMode === "advanced" && !advanced) {
-      // switching from beginner to advanced
-      // keep current code
     }
   }, [advanced, reset]);
 
@@ -155,33 +150,24 @@ export default function SimulatorPage() {
 
           {/* Controls */}
           <div className="flex items-center gap-1.5">
-            {mode === "beginner" ? (
-              <>
-                <CtrlBtn onClick={loadProgram} disabled={isRunning}>
-                  <Upload className="h-3.5 w-3.5" /> Load
-                </CtrlBtn>
-                <CtrlBtn onClick={step} disabled={!hasProgram || isHaltedOrError || isRunning}>
-                  <SkipForward className="h-3.5 w-3.5" /> Next Step
-                </CtrlBtn>
-                {isRunning ? (
-                  <CtrlBtn onClick={pause}>
-                    <Pause className="h-3.5 w-3.5" /> Pause
-                  </CtrlBtn>
-                ) : (
-                  <CtrlBtn onClick={run} disabled={!hasProgram || isHaltedOrError} variant="primary">
-                    <Play className="h-3.5 w-3.5" /> Auto Play
-                  </CtrlBtn>
-                )}
-                <CtrlBtn onClick={reset}>
-                  <RotateCcw className="h-3.5 w-3.5" />
-                </CtrlBtn>
-              </>
+            <CtrlBtn onClick={loadProgram} disabled={isRunning}>
+              <Upload className="h-3.5 w-3.5" /> Load
+            </CtrlBtn>
+            <CtrlBtn onClick={step} disabled={!hasProgram || isHaltedOrError || isRunning}>
+              <SkipForward className="h-3.5 w-3.5" /> {mode === "beginner" ? "Next Step" : "Step"}
+            </CtrlBtn>
+            {isRunning ? (
+              <CtrlBtn onClick={pause}>
+                <Pause className="h-3.5 w-3.5" /> Pause
+              </CtrlBtn>
             ) : (
-              <ExecutionControls
-                status={cpuState.status} onLoad={loadProgram} onStep={step}
-                onRun={run} onPause={pause} onReset={reset} hasProgram={hasProgram}
-              />
+              <CtrlBtn onClick={run} disabled={!hasProgram || isHaltedOrError} variant="primary">
+                <Play className="h-3.5 w-3.5" /> {mode === "beginner" ? "Auto Play" : "Run"}
+              </CtrlBtn>
             )}
+            <CtrlBtn onClick={reset}>
+              <RotateCcw className="h-3.5 w-3.5" />
+            </CtrlBtn>
           </div>
         </div>
       </div>
@@ -189,9 +175,8 @@ export default function SimulatorPage() {
       {/* Main content */}
       <div className="container mx-auto px-4 py-3">
         {mode === "beginner" ? (
-          /* ===== BEGINNER MODE ===== */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ height: "calc(100vh - 130px)" }}>
-            {/* Left: Sample Selector */}
+            {/* Left: Sample Selector + Code Editor */}
             <div className="lg:col-span-3 flex flex-col gap-2 min-h-0 overflow-y-auto">
               <div className="glass-card p-4">
                 <div className="font-display font-bold text-sm mb-3">📝 Choose a Program</div>
@@ -213,10 +198,37 @@ export default function SimulatorPage() {
                 </div>
               </div>
 
-              {/* Program Preview */}
-              <div className="glass-card p-4 flex-1 min-h-0">
-                <div className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider mb-2">Program Code</div>
-                <pre className="font-mono text-[11px] text-foreground/80 leading-relaxed whitespace-pre-wrap">{code}</pre>
+              {/* Editable Code */}
+              <div className="glass-card flex-1 min-h-0 flex flex-col overflow-hidden">
+                <div className="px-4 py-2 border-b bg-muted/20 flex items-center justify-between">
+                  <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider">✏️ Edit Code</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">{code.split("\n").filter(l => l.trim()).length} lines</span>
+                </div>
+                <div className="flex-1 min-h-0 relative">
+                  {hasProgram && cpuState.status !== "ready" ? (
+                    <div className="h-full overflow-y-auto p-3">
+                      {code.split("\n").map((line, i) => {
+                        const lineAddr = line.trim().match(/^(\d{2}):/);
+                        const addr = lineAddr ? parseInt(lineAddr[1], 10) : -1;
+                        const isActive = addr === cpuState.programCounter;
+                        return (
+                          <div key={i} className={`font-mono text-[12px] leading-6 px-2 rounded ${isActive ? "bg-primary/10 text-primary font-bold" : "text-foreground/70"}`}>
+                            {isActive && <span className="text-primary mr-1">▸</span>}
+                            {line}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      className="absolute inset-0 w-full h-full bg-transparent font-mono text-[12px] leading-6 p-3 resize-none focus:outline-none border-0 text-foreground"
+                      spellCheck={false}
+                      placeholder="Write assembly code here..."
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
@@ -245,7 +257,7 @@ export default function SimulatorPage() {
               />
             </div>
 
-            {/* Center: CPU Diagram + Registers */}
+            {/* Center: CPU Visualization + Registers + Explanation */}
             <div className="lg:col-span-4 flex flex-col gap-3 min-h-0 overflow-y-auto">
               <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
               <CpuStatePanel state={cpuState} previousState={prevState} />
