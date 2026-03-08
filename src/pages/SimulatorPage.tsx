@@ -17,8 +17,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Slider } from "@/components/ui/slider";
 import {
   GraduationCap, Cpu, Play, Pause, SkipForward, RotateCcw, Upload,
-  Keyboard, ChevronRight, Gauge, Share2, Download,
+  Keyboard, ChevronRight, Gauge, Share2, Download, HelpCircle,
 } from "lucide-react";
+import SimulatorTour, { useSimulatorTour } from "@/components/simulator/SimulatorTour";
 
 const SPEED_LABELS: Record<number, string> = { 0: "0.25×", 1: "0.5×", 2: "1×", 3: "2×", 4: "4×" };
 const SPEED_MS: Record<number, number> = { 0: 3200, 1: 1600, 2: 800, 3: 400, 4: 200 };
