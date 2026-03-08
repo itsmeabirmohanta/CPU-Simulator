@@ -15,6 +15,7 @@ import { modules, getTotalLessonCount } from "@/lib/curriculum";
 import { getModuleProgress } from "@/components/learn/LessonProgress";
 import ModuleCard from "@/components/learn/ModuleCard";
 import GuidedWalkthrough, { useWalkthrough } from "@/components/learn/GuidedWalkthrough";
+import { HelpCircle as HelpIcon } from "lucide-react";
 
 export default function LearnPage() {
   const [overallProgress, setOverallProgress] = useState(getOverallProgress);
@@ -56,7 +57,7 @@ export default function LearnPage() {
             </div>
 
             {/* Stat chips */}
-            <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap mb-8">
+            <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap mb-8" data-tour="stats">
               {[
                 { icon: Layers, label: `${modules.length} Modules`, color: "bg-primary/10 text-primary" },
                 { icon: BookOpen, label: `${totalLessons} Lessons`, color: "bg-accent/10 text-accent" },
@@ -77,7 +78,7 @@ export default function LearnPage() {
                   <Rocket className="h-4 w-4" /> Start Learning
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full gap-2 px-6">
+              <Button asChild size="lg" variant="outline" className="rounded-full gap-2 px-6" data-tour="open-sim">
                 <Link to="/simulator?mode=beginner">
                   <Cpu className="h-4 w-4" /> Open Simulator
                 </Link>
@@ -123,18 +124,19 @@ export default function LearnPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {modules.map((mod, i) => (
-              <ModuleCard
-                key={mod.id}
-                module={mod}
-                completedCount={getModuleProgress(mod.id).length}
-                index={i}
-              />
+              <div key={mod.id} data-tour={i === 0 ? "module-0" : undefined}>
+                <ModuleCard
+                  module={mod}
+                  completedCount={getModuleProgress(mod.id).length}
+                  index={i}
+                />
+              </div>
             ))}
           </div>
         </section>
 
         {/* ── Learning Path ───────────────────────── */}
-        <section className="mt-20">
+        <section className="mt-20" data-tour="learning-path">
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Recommended Learning Path</h2>
           <p className="text-sm text-muted-foreground mb-8">
             Each module builds on the previous — follow this path for the best experience

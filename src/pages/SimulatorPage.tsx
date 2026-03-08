@@ -17,8 +17,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Slider } from "@/components/ui/slider";
 import {
   GraduationCap, Cpu, Play, Pause, SkipForward, RotateCcw, Upload,
-  Keyboard, ChevronRight, Gauge, Share2, Download,
+  Keyboard, ChevronRight, Gauge, Share2, Download, HelpCircle,
 } from "lucide-react";
+import SimulatorTour, { useSimulatorTour } from "@/components/simulator/SimulatorTour";
 
 const SPEED_LABELS: Record<number, string> = { 0: "0.25×", 1: "0.5×", 2: "1×", 3: "2×", 4: "4×" };
 const SPEED_MS: Record<number, number> = { 0: 3200, 1: 1600, 2: 800, 3: 400, 4: 200 };
@@ -40,6 +41,7 @@ export default function SimulatorPage() {
 
   const [mode, setMode] = useState<"beginner" | "advanced">(loadSaved("cpuverse-mode", initialMode) as "beginner" | "advanced");
   const advanced = mode === "advanced";
+  const { showTour, dismissTour, restartTour } = useSimulatorTour(mode);
 
   const [code, setCode] = useState(sharedCode || loadSaved("cpuverse-code", SAMPLE_PROGRAMS.addition.code));
   const [cpuState, setCpuState] = useState<CpuState>(createInitialState());
@@ -203,13 +205,14 @@ export default function SimulatorPage() {
     <TooltipProvider delayDuration={300}>
       <div className="min-h-screen bg-background">
         <Navbar />
+        <SimulatorTour active={showTour} mode={mode} onDismiss={dismissTour} />
 
         {/* Toolbar */}
         <div className="border-b bg-card/60 backdrop-blur-sm sticky top-14 z-40">
           <div className="container mx-auto px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0">
             {/* Left: Mode Toggle + Status */}
             <div className="flex items-center justify-between sm:justify-start gap-3">
-              <div className="flex items-center rounded-xl bg-muted/50 p-0.5 relative">
+              <div className="flex items-center rounded-xl bg-muted/50 p-0.5 relative" data-tour="sim-mode-toggle">
                 <button
                   onClick={() => handleModeSwitch("beginner")}
                   className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
@@ -242,7 +245,7 @@ export default function SimulatorPage() {
             </div>
 
             {/* Right: Controls */}
-            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto" data-tour="sim-controls">
               {/* Speed control */}
               <div className="hidden md:flex items-center gap-2 mr-2 px-2 border-r border-border/50">
                 <Gauge className="h-3 w-3 text-muted-foreground" />
@@ -359,6 +362,19 @@ export default function SimulatorPage() {
                 </TooltipTrigger>
                 <TooltipContent>Keyboard shortcuts (?)</TooltipContent>
               </Tooltip>
+
+              {/* Tour button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={restartTour}
+                    className="hidden md:inline-flex items-center p-2 rounded-lg hover:bg-muted/50 text-muted-foreground transition-colors"
+                  >
+                    <HelpCircle className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Guided tour</TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
@@ -415,7 +431,7 @@ export default function SimulatorPage() {
             /* ===== BEGINNER MODE ===== */
             <div className="flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:min-h-[calc(100vh-160px)]">
               {/* Left sidebar */}
-              <div className="lg:col-span-3 flex flex-col gap-2">
+              <div className="lg:col-span-3 flex flex-col gap-2" data-tour="sim-samples">
                 <div className="glass-card p-3 sm:p-4">
                   <div className="font-display font-bold text-sm mb-2 sm:mb-3">📝 Choose a Program</div>
                   <div className="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
@@ -470,7 +486,7 @@ export default function SimulatorPage() {
               </div>
 
               {/* Visual CPU */}
-              <div className="lg:col-span-9 overflow-y-auto">
+              <div className="lg:col-span-9 overflow-y-auto" data-tour="sim-visual">
                 <BeginnerVisualCPU
                   state={cpuState} previousState={prevState} memory={memory}
                   activeFlow={activeFlow} currentLog={currentLog} logs={logs}
@@ -481,7 +497,7 @@ export default function SimulatorPage() {
             /* ===== ADVANCED MODE ===== */
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="min-h-[350px] sm:min-h-[450px]">
+                <div className="min-h-[350px] sm:min-h-[450px]" data-tour="sim-editor">
                   <CodeEditor
                     code={code} onChange={setCode} currentPC={cpuState.programCounter}
                     isRunning={hasProgram && cpuState.status !== "ready"}
@@ -489,7 +505,7 @@ export default function SimulatorPage() {
                     advanced={advanced}
                   />
                 </div>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3" data-tour="sim-diagram">
                   <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <CpuStatePanel state={cpuState} previousState={prevState} />
@@ -498,7 +514,7 @@ export default function SimulatorPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" data-tour="sim-memory">
                 <MemoryViewer memory={memory} currentPC={cpuState.programCounter} />
                 <ExecutionLog logs={logs} />
               </div>

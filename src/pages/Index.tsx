@@ -18,22 +18,22 @@ const features = [
 ];
 
 const comparisons = [
-  { feature: "Visual CPU Blocks", beginner: true, advanced: true },
+  { feature: "Visual CPU Diagram", beginner: true, advanced: true },
   { feature: "Animated Data Flow", beginner: true, advanced: true },
-  { feature: "Plain-English Narration", beginner: true, advanced: false },
-  { feature: "Concept Helper Cards", beginner: true, advanced: false },
+  { feature: "Plain-English Explanations", beginner: true, advanced: true },
+  { feature: "Code Editor", beginner: true, advanced: true },
+  { feature: "Sample Programs", beginner: true, advanced: true },
   { feature: "Full Register Panel", beginner: false, advanced: true },
-  { feature: "Memory Grid", beginner: false, advanced: true },
-  { feature: "Execution Trace", beginner: false, advanced: true },
-  { feature: "Code Editor", beginner: false, advanced: true },
-  { feature: "Bitwise / Stack Ops", beginner: false, advanced: true },
+  { feature: "Memory Inspector", beginner: false, advanced: true },
+  { feature: "Execution Trace Log", beginner: false, advanced: true },
+  { feature: "Bitwise & Subroutine Ops", beginner: false, advanced: true },
 ];
 
 const stats = [
-  { value: 24, suffix: "", label: "Instructions Supported" },
-  { value: 2, suffix: "", label: "Learning Modes" },
-  { value: 64, suffix: "", label: "Memory Cells" },
-  { value: 100, suffix: "%", label: "Client-Side" },
+  { value: 16, suffix: "+", label: "Instructions" },
+  { value: 6, suffix: "", label: "Course Modules" },
+  { value: 256, suffix: "", label: "Memory Cells" },
+  { value: 30, suffix: "+", label: "Interactive Lessons" },
 ];
 
 const timeline = [
@@ -461,7 +461,7 @@ export default function LandingPage() {
           </div>
           <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
             <span className="text-[11px] text-muted-foreground/60 font-body">© {new Date().getFullYear()} CPUverse. Educational Project.</span>
-            <span className="text-[11px] text-muted-foreground/40 font-mono">v2.0</span>
+            <span className="text-[11px] text-muted-foreground/40 font-mono">v3.0</span>
           </div>
         </div>
       </footer>
