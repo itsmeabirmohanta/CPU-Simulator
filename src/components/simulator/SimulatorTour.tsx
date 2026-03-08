@@ -26,7 +26,7 @@ const beginnerSteps: TourStep[] = [
     selector: "[data-tour='sim-visual']",
     title: "Watch the CPU",
     description: "See registers, memory, and data flow update in real time as each instruction executes. This is your visual CPU!",
-    position: "top",
+    position: "left",
   },
 ];
 
