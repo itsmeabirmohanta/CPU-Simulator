@@ -30,10 +30,10 @@ const comparisons = [
 ];
 
 const stats = [
-  { value: 24, suffix: "", label: "Instructions Supported" },
-  { value: 2, suffix: "", label: "Learning Modes" },
-  { value: 64, suffix: "", label: "Memory Cells" },
-  { value: 100, suffix: "%", label: "Client-Side" },
+  { value: 16, suffix: "+", label: "Instructions" },
+  { value: 6, suffix: "", label: "Course Modules" },
+  { value: 256, suffix: "", label: "Memory Cells" },
+  { value: 30, suffix: "+", label: "Interactive Lessons" },
 ];
 
 const timeline = [
