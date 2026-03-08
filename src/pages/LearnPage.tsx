@@ -141,9 +141,6 @@ export default function LearnPage() {
           </p>
 
           <div className="relative">
-            {/* Connecting line */}
-            <div className="absolute top-1/2 left-0 right-0 h-px bg-border hidden md:block" />
-
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {modules.map((mod, i) => {
                 const modProgress = getModuleProgress(mod.id);
