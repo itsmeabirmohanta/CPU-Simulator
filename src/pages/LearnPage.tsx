@@ -206,7 +206,7 @@ export default function LearnPage() {
         </div>
 
         {/* Progress Tracker */}
-        <div className="mb-10">
+        <div className="mb-10" data-tour="progress">
           <ProgressTracker lessons={lessonMetas} completed={completed} onReset={handleReset} />
         </div>
 
