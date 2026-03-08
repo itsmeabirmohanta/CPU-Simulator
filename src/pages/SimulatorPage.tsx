@@ -295,6 +295,41 @@ export default function SimulatorPage() {
                 <TooltipContent>Reset (R)</TooltipContent>
               </Tooltip>
 
+              {/* Share + Export */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => {
+                      const url = `${window.location.origin}/simulator?mode=${mode}&code=${encodeURIComponent(code)}`;
+                      navigator.clipboard.writeText(url);
+                      toast.success("Share link copied to clipboard!");
+                    }}
+                    className="hidden sm:inline-flex items-center p-2 rounded-lg hover:bg-muted/50 text-muted-foreground transition-colors"
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Copy share link</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([code], { type: "text/plain" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url; a.download = "program.asm"; a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="hidden sm:inline-flex items-center p-2 rounded-lg hover:bg-muted/50 text-muted-foreground transition-colors"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Export as .asm</TooltipContent>
+              </Tooltip>
+
               {/* Step counter */}
               {logs.length > 0 && (
                 <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-primary/5 border border-primary/10 ml-1">
