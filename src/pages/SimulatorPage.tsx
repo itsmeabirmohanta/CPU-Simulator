@@ -244,7 +244,7 @@ export default function SimulatorPage() {
             </div>
 
             {/* Right: Controls */}
-            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto" data-tour="sim-controls">
               {/* Speed control */}
               <div className="hidden md:flex items-center gap-2 mr-2 px-2 border-r border-border/50">
                 <Gauge className="h-3 w-3 text-muted-foreground" />
