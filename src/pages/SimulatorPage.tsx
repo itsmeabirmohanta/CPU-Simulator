@@ -118,49 +118,53 @@ export default function SimulatorPage() {
       <Navbar />
 
       {/* Toolbar */}
-      <div className="border-b bg-card/60 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="border-b bg-card/60 backdrop-blur-sm sticky top-14 z-40">
+        <div className="container mx-auto px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0">
+          {/* Mode Toggle */}
+          <div className="flex items-center justify-between sm:justify-start gap-3">
             <div className="flex items-center rounded-xl bg-muted/50 p-0.5">
               <button
                 onClick={() => handleModeSwitch("beginner")}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
                   mode === "beginner"
                     ? "bg-accent text-accent-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <GraduationCap className="h-3.5 w-3.5" />
-                Beginner
+                <span className="hidden xs:inline">Beginner</span>
+                <span className="xs:hidden">Begin</span>
               </button>
               <button
                 onClick={() => handleModeSwitch("advanced")}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-[12px] font-semibold transition-all ${
                   mode === "advanced"
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Cpu className="h-3.5 w-3.5" />
-                Advanced
+                <span className="hidden xs:inline">Advanced</span>
+                <span className="xs:hidden">Adv</span>
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          {/* Controls */}
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
             <CtrlBtn onClick={loadProgram} disabled={isRunning}>
-              <Upload className="h-3.5 w-3.5" /> Load
+              <Upload className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Load</span>
             </CtrlBtn>
             <CtrlBtn onClick={step} disabled={!hasProgram || isHaltedOrError || isRunning}>
-              <SkipForward className="h-3.5 w-3.5" /> {mode === "beginner" ? "Next Step" : "Step"}
+              <SkipForward className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{mode === "beginner" ? "Next" : "Step"}</span>
             </CtrlBtn>
             {isRunning ? (
               <CtrlBtn onClick={pause}>
-                <Pause className="h-3.5 w-3.5" /> Pause
+                <Pause className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Pause</span>
               </CtrlBtn>
             ) : (
               <CtrlBtn onClick={run} disabled={!hasProgram || isHaltedOrError} variant="primary">
-                <Play className="h-3.5 w-3.5" /> {mode === "beginner" ? "Auto Play" : "Run"}
+                <Play className="h-3.5 w-3.5" /> <span className="hidden sm:inline">{mode === "beginner" ? "Play" : "Run"}</span>
               </CtrlBtn>
             )}
             <CtrlBtn onClick={reset}>
@@ -171,19 +175,22 @@ export default function SimulatorPage() {
       </div>
 
       {/* Main content */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         {mode === "beginner" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ height: "calc(100vh - 140px)" }}>
-            <div className="lg:col-span-3 flex flex-col gap-2 min-h-0 overflow-y-auto">
-              <div className="glass-card p-4">
-                <div className="font-display font-bold text-sm mb-3">📝 Choose a Program</div>
-                <div className="space-y-1.5">
+          /* ===== BEGINNER MODE ===== */
+          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:min-h-[calc(100vh-160px)]">
+            {/* Left sidebar: Sample Selector + Code Editor */}
+            <div className="lg:col-span-3 flex flex-col gap-2">
+              {/* Sample selector — horizontal scroll on mobile */}
+              <div className="glass-card p-3 sm:p-4">
+                <div className="font-display font-bold text-sm mb-2 sm:mb-3">📝 Choose a Program</div>
+                <div className="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
                   {beginnerSamples.map((sample) => (
                     <button
                       key={sample.key}
                       onClick={() => handleBeginnerSample(sample.key)}
                       disabled={isRunning}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl text-[12px] font-medium transition-all ${
+                      className={`whitespace-nowrap lg:whitespace-normal text-left px-3 py-2 sm:py-2.5 rounded-xl text-[12px] font-medium transition-all shrink-0 lg:shrink lg:w-full ${
                         beginnerSample === sample.key
                           ? "bg-accent/15 text-accent border border-accent/30"
                           : "hover:bg-muted/50 text-muted-foreground border border-transparent"
@@ -194,12 +201,14 @@ export default function SimulatorPage() {
                   ))}
                 </div>
               </div>
-              <div className="glass-card flex-1 min-h-0 flex flex-col overflow-hidden">
-                <div className="px-4 py-2 border-b bg-muted/20 flex items-center justify-between">
+
+              {/* Code editor */}
+              <div className="glass-card flex flex-col overflow-hidden min-h-[200px] lg:flex-1">
+                <div className="px-3 sm:px-4 py-2 border-b bg-muted/20 flex items-center justify-between">
                   <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider">✏️ Edit Code</span>
                   <span className="text-[10px] text-muted-foreground font-mono">{code.split("\n").filter(l => l.trim()).length} lines</span>
                 </div>
-                <div className="flex-1 min-h-0 relative">
+                <div className="flex-1 min-h-[160px] relative">
                   {hasProgram && cpuState.status !== "ready" ? (
                     <div className="h-full overflow-y-auto p-3">
                       {code.split("\n").map((line, i) => {
@@ -226,7 +235,9 @@ export default function SimulatorPage() {
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-9 min-h-0 overflow-y-auto">
+
+            {/* Visual CPU */}
+            <div className="lg:col-span-9 overflow-y-auto">
               <BeginnerVisualCPU
                 state={cpuState} previousState={prevState} memory={memory}
                 activeFlow={activeFlow} currentLog={currentLog} logs={logs}
@@ -235,10 +246,10 @@ export default function SimulatorPage() {
           </div>
         ) : (
           /* ===== ADVANCED MODE ===== */
-          <div className="overflow-y-auto" style={{ height: "calc(100vh - 140px)" }}>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-              {/* Left: Editor */}
-              <div className="min-h-[500px]">
+          <div className="flex flex-col gap-4">
+            {/* Top: Editor + CPU Diagram */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="min-h-[350px] sm:min-h-[450px]">
                 <CodeEditor
                   code={code} onChange={setCode} currentPC={cpuState.programCounter}
                   isRunning={hasProgram && cpuState.status !== "ready"}
@@ -246,18 +257,16 @@ export default function SimulatorPage() {
                   advanced={advanced}
                 />
               </div>
-
-              {/* Right: CPU Diagram + Registers + Explanation */}
               <div className="flex flex-col gap-3">
                 <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <CpuStatePanel state={cpuState} previousState={prevState} />
                   <ExplanationPanel currentLog={currentLog} />
                 </div>
               </div>
             </div>
 
-            {/* Bottom: Memory + Execution Trace */}
+            {/* Bottom: Memory + Trace */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <MemoryViewer memory={memory} currentPC={cpuState.programCounter} />
               <ExecutionLog logs={logs} />
@@ -276,7 +285,7 @@ function CtrlBtn({ onClick, disabled, children, variant = "default" }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+      className={`inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
         variant === "primary"
           ? "bg-accent text-accent-foreground hover:bg-accent/90 shadow-sm"
           : "bg-muted hover:bg-muted/80 text-foreground"

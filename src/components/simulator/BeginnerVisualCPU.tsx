@@ -1,6 +1,6 @@
 import { CpuState, MemoryCell, LogEntry } from "@/lib/cpu";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cpu, HardDrive, Calculator, ArrowRight, Lightbulb, BookOpen } from "lucide-react";
+import { Cpu, HardDrive, Calculator, ArrowRight, ArrowDown, Lightbulb, BookOpen } from "lucide-react";
 
 interface BeginnerVisualCPUProps {
   state: CpuState;
@@ -12,78 +12,74 @@ interface BeginnerVisualCPUProps {
 }
 
 const conceptCards = [
-  { term: "Program Counter (PC)", emoji: "📍", desc: "Points to the next instruction to execute. Like a bookmark in code." },
-  { term: "Accumulator (A)", emoji: "🧮", desc: "The main working register where math results are stored." },
-  { term: "ALU", emoji: "⚡", desc: "Arithmetic Logic Unit — the brain's calculator. Does addition, subtraction, and comparisons." },
-  { term: "Memory", emoji: "📦", desc: "Storage for both instructions (code) and data (numbers). Each cell has an address." },
-  { term: "Instruction Register", emoji: "📋", desc: "Holds the current instruction being decoded and executed." },
-  { term: "Flags", emoji: "🚩", desc: "Special indicators. Zero flag means result was 0. Carry flag means overflow." },
+  { term: "Program Counter (PC)", emoji: "📍", desc: "Points to the next instruction to execute." },
+  { term: "Accumulator (A)", emoji: "🧮", desc: "The main working register for math results." },
+  { term: "ALU", emoji: "⚡", desc: "Arithmetic Logic Unit — the calculator." },
+  { term: "Memory", emoji: "📦", desc: "Storage for instructions and data." },
+  { term: "Instruction Register", emoji: "📋", desc: "Holds the current instruction." },
+  { term: "Flags", emoji: "🚩", desc: "Indicators for zero results and overflow." },
 ];
 
 function simpleExplanation(log: LogEntry | null): string {
   if (!log) return "Press 'Next Step' to begin executing the program!";
   const expl = log.explanation;
-  // Transform technical language to beginner-friendly
-  if (expl.includes("LDA")) return `📦 The CPU is reading a number from memory and putting it in the main register (Accumulator).`;
-  if (expl.includes("STA")) return `💾 The CPU is saving the number from the Accumulator back into memory.`;
-  if (expl.includes("ADD")) return `➕ The CPU is adding a number from memory to what's already in the Accumulator.`;
+  if (expl.includes("LDA")) return `📦 The CPU is reading a number from memory and putting it in the Accumulator.`;
+  if (expl.includes("STA")) return `💾 The CPU is saving the Accumulator value back into memory.`;
+  if (expl.includes("ADD")) return `➕ The CPU is adding a number from memory to the Accumulator.`;
   if (expl.includes("SUB")) return `➖ The CPU is subtracting a number from memory from the Accumulator.`;
   if (expl.includes("MOV")) return `🔄 The CPU is copying a value from one register to another.`;
-  if (expl.includes("INR")) return `⬆️ The CPU is adding 1 to the register value.`;
-  if (expl.includes("DCR")) return `⬇️ The CPU is subtracting 1 from the register value.`;
-  if (expl.includes("JMP")) return `🔀 The CPU is jumping to a different instruction — like a "go to" command.`;
-  if (expl.includes("JZ") && expl.includes("taken")) return `🔀 The result was zero, so the CPU is jumping to a different address!`;
-  if (expl.includes("JZ") && expl.includes("not taken")) return `➡️ The result was NOT zero, so the CPU continues to the next instruction.`;
-  if (expl.includes("HLT")) return `🛑 The program is done! The CPU has stopped executing.`;
+  if (expl.includes("INR")) return `⬆️ Adding 1 to the register value.`;
+  if (expl.includes("DCR")) return `⬇️ Subtracting 1 from the register value.`;
+  if (expl.includes("JMP")) return `🔀 The CPU is jumping to a different instruction.`;
+  if (expl.includes("JZ") && expl.includes("taken")) return `🔀 Result was zero — jumping to a different address!`;
+  if (expl.includes("JZ") && expl.includes("not taken")) return `➡️ Result was NOT zero — continuing to next instruction.`;
+  if (expl.includes("HLT")) return `🛑 The program is done! The CPU has stopped.`;
   return `🔧 ${expl}`;
 }
 
 export default function BeginnerVisualCPU({ state, previousState, memory, activeFlow, currentLog, logs }: BeginnerVisualCPUProps) {
   const phases = [
-    { id: "fetch", label: "Fetch", emoji: "📥", desc: "Get instruction from memory" },
-    { id: "decode", label: "Decode", emoji: "🔍", desc: "Understand what to do" },
-    { id: "execute", label: "Execute", emoji: "⚡", desc: "Perform the action" },
+    { id: "fetch", label: "Fetch", emoji: "📥", desc: "Get instruction" },
+    { id: "decode", label: "Decode", emoji: "🔍", desc: "Understand it" },
+    { id: "execute", label: "Execute", emoji: "⚡", desc: "Perform action" },
   ];
 
-  const currentInstruction = memory[state.programCounter];
-  const instrText = currentInstruction?.type === "instruction" ? String(currentInstruction.value) : "—";
-
   return (
-    <div className="flex flex-col gap-4 h-full overflow-y-auto">
+    <div className="flex flex-col gap-3 sm:gap-4">
       {/* Phase Timeline */}
-      <div className="glass-card p-4">
-        <div className="flex items-center justify-between gap-2">
+      <div className="glass-card p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-1 sm:gap-2">
           {phases.map((phase, i) => (
-            <div key={phase.id} className="flex items-center gap-2 flex-1">
+            <div key={phase.id} className="flex items-center gap-1 sm:gap-2 flex-1">
               <motion.div
-                animate={activeFlow === phase.id ? { scale: [1, 1.1, 1] } : {}}
+                animate={activeFlow === phase.id ? { scale: [1, 1.05, 1] } : {}}
                 transition={{ duration: 0.6, repeat: activeFlow === phase.id ? Infinity : 0 }}
-                className={`flex-1 rounded-xl p-3 text-center transition-all duration-300 ${
+                className={`flex-1 rounded-xl p-2 sm:p-3 text-center transition-all duration-300 ${
                   activeFlow === phase.id
                     ? "bg-primary/15 border-2 border-primary shadow-sm glow-primary"
                     : "bg-muted/30 border-2 border-transparent"
                 }`}
               >
-                <div className="text-xl mb-1">{phase.emoji}</div>
-                <div className={`font-display font-bold text-xs ${activeFlow === phase.id ? "text-primary" : "text-muted-foreground"}`}>{phase.label}</div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">{phase.desc}</div>
+                <div className="text-lg sm:text-xl mb-0.5 sm:mb-1">{phase.emoji}</div>
+                <div className={`font-display font-bold text-[10px] sm:text-xs ${activeFlow === phase.id ? "text-primary" : "text-muted-foreground"}`}>{phase.label}</div>
+                <div className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{phase.desc}</div>
               </motion.div>
-              {i < 2 && <ArrowRight className={`h-4 w-4 shrink-0 transition-colors ${activeFlow !== "idle" ? "text-primary" : "text-muted-foreground/30"}`} />}
+              {i < 2 && <ArrowRight className={`h-3 w-3 sm:h-4 sm:w-4 shrink-0 transition-colors ${activeFlow !== "idle" ? "text-primary" : "text-muted-foreground/30"}`} />}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Visual CPU Blocks */}
-      <div className="glass-card p-5">
-        <div className="grid grid-cols-12 gap-3 items-start">
+      {/* Visual CPU Blocks — stacks vertically on mobile */}
+      <div className="glass-card p-3 sm:p-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Memory Block */}
           <motion.div
-            animate={activeFlow === "fetch" ? { scale: [1, 1.03, 1], borderColor: "hsl(var(--primary))" } : {}}
+            animate={activeFlow === "fetch" ? { scale: [1, 1.02, 1] } : {}}
             transition={{ duration: 0.8, repeat: activeFlow === "fetch" ? Infinity : 0 }}
-            className={`col-span-4 visual-block ${activeFlow === "fetch" ? "border-primary bg-primary/5 visual-block-active" : "border-border"}`}
+            className={`visual-block ${activeFlow === "fetch" ? "border-primary bg-primary/5 visual-block-active" : "border-border"}`}
           >
-            <HardDrive className={`h-8 w-8 mx-auto mb-2 ${activeFlow === "fetch" ? "text-primary" : "text-muted-foreground"}`} />
+            <HardDrive className={`h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 ${activeFlow === "fetch" ? "text-primary" : "text-muted-foreground"}`} />
             <div className="font-display font-bold text-sm mb-1">Memory</div>
             <div className="text-[10px] text-muted-foreground mb-2">Data & Instructions</div>
             <div className="space-y-1">
@@ -105,20 +101,24 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
                 );
               })}
               {memory.length > 6 && (
-                <div className="text-[10px] text-muted-foreground/40 text-center">+{memory.filter(m => m.value !== 0 || m.type !== "data").length - 6} more...</div>
+                <div className="text-[10px] text-muted-foreground/40 text-center">+{memory.filter(m => m.value !== 0 || m.type !== "data").length - 6} more</div>
               )}
             </div>
           </motion.div>
 
+          {/* Arrow down on mobile between blocks */}
+          <div className="flex sm:hidden justify-center -my-1">
+            <ArrowDown className={`h-4 w-4 ${activeFlow !== "idle" ? "text-primary" : "text-muted-foreground/30"}`} />
+          </div>
+
           {/* Center: Control + ALU */}
-          <div className="col-span-4 flex flex-col gap-3">
-            {/* Control Unit */}
+          <div className="flex flex-col gap-3">
             <motion.div
-              animate={activeFlow === "decode" ? { scale: [1, 1.03, 1] } : {}}
+              animate={activeFlow === "decode" ? { scale: [1, 1.02, 1] } : {}}
               transition={{ duration: 0.8, repeat: activeFlow === "decode" ? Infinity : 0 }}
               className={`visual-block ${activeFlow === "decode" ? "border-primary bg-primary/5 visual-block-active" : "border-border"}`}
             >
-              <Cpu className={`h-7 w-7 mx-auto mb-2 ${activeFlow === "decode" ? "text-primary" : "text-muted-foreground"}`} />
+              <Cpu className={`h-6 w-6 sm:h-7 sm:w-7 mx-auto mb-2 ${activeFlow === "decode" ? "text-primary" : "text-muted-foreground"}`} />
               <div className="font-display font-bold text-sm mb-1">Control Unit</div>
               <div className="text-[10px] text-muted-foreground mb-2">Decodes instructions</div>
               <div className="rounded-lg bg-muted/40 px-3 py-2 font-mono text-xs">
@@ -137,20 +137,23 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
               </div>
             </motion.div>
 
-            {/* ALU */}
             <motion.div
-              animate={activeFlow === "execute" ? { scale: [1, 1.03, 1] } : {}}
+              animate={activeFlow === "execute" ? { scale: [1, 1.02, 1] } : {}}
               transition={{ duration: 0.8, repeat: activeFlow === "execute" ? Infinity : 0 }}
               className={`visual-block ${activeFlow === "execute" ? "border-accent bg-accent/5 visual-block-active" : "border-border"}`}
             >
-              <Calculator className={`h-7 w-7 mx-auto mb-2 ${activeFlow === "execute" ? "text-accent" : "text-muted-foreground"}`} />
+              <Calculator className={`h-6 w-6 sm:h-7 sm:w-7 mx-auto mb-2 ${activeFlow === "execute" ? "text-accent" : "text-muted-foreground"}`} />
               <div className="font-display font-bold text-sm mb-1">ALU</div>
               <div className="text-[10px] text-muted-foreground">Arithmetic & Logic</div>
             </motion.div>
           </div>
 
-          {/* Registers */}
-          <div className="col-span-4 space-y-3">
+          <div className="flex sm:hidden justify-center -my-1">
+            <ArrowDown className={`h-4 w-4 ${activeFlow !== "idle" ? "text-primary" : "text-muted-foreground/30"}`} />
+          </div>
+
+          {/* Registers + Status */}
+          <div className="space-y-3">
             <div className="visual-block border-border">
               <div className="font-display font-bold text-sm mb-2">Registers</div>
               {[
@@ -160,7 +163,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
               ].map((reg) => (
                 <motion.div
                   key={reg.label}
-                  animate={reg.changed ? { scale: [1, 1.1, 1], backgroundColor: "hsl(var(--primary) / 0.1)" } : {}}
+                  animate={reg.changed ? { scale: [1, 1.05, 1] } : {}}
                   transition={{ duration: 0.3 }}
                   className={`rounded-lg px-3 py-1.5 flex justify-between items-center font-mono text-xs mb-1.5 ${
                     reg.changed ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/40"
@@ -181,7 +184,6 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
               ))}
             </div>
 
-            {/* Status */}
             <div className="visual-block border-border p-3">
               <div className="flex items-center justify-between text-[10px] mb-1">
                 <span className="text-muted-foreground">PC</span>
@@ -201,8 +203,8 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
       </div>
 
       {/* What's Happening Now */}
-      <div className="glass-card p-5">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="glass-card p-3 sm:p-5">
+        <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <Lightbulb className="h-4 w-4 text-warning" />
           <span className="font-display font-bold text-sm">What's Happening Now?</span>
         </div>
@@ -218,9 +220,9 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
               {simpleExplanation(currentLog)}
             </p>
             {currentLog && currentLog.changes.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
+              <div className="flex flex-wrap gap-1.5 mt-2 sm:mt-3">
                 {currentLog.changes.map((c, i) => (
-                  <span key={i} className="inline-flex items-center rounded-lg bg-primary/10 text-primary px-2.5 py-1 text-[11px] font-mono font-medium">
+                  <span key={i} className="inline-flex items-center rounded-lg bg-primary/10 text-primary px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-mono font-medium">
                     {c}
                   </span>
                 ))}
@@ -230,9 +232,9 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
         </AnimatePresence>
       </div>
 
-      {/* Step History (simplified) */}
+      {/* Step History */}
       {logs.length > 0 && (
-        <div className="glass-card p-4">
+        <div className="glass-card p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-2">
             <BookOpen className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Step History</span>
@@ -249,17 +251,17 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
       )}
 
       {/* Concept Cards */}
-      <div className="glass-card p-4">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="glass-card p-3 sm:p-4">
+        <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <BookOpen className="h-4 w-4 text-accent" />
           <span className="font-display font-bold text-sm">CPU Concepts</span>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {conceptCards.map((card) => (
-            <div key={card.term} className="rounded-xl bg-muted/30 border p-3 hover:bg-muted/50 transition-colors">
-              <div className="text-lg mb-1">{card.emoji}</div>
-              <div className="font-display font-semibold text-[11px] mb-0.5">{card.term}</div>
-              <div className="text-[10px] text-muted-foreground leading-snug">{card.desc}</div>
+            <div key={card.term} className="rounded-xl bg-muted/30 border p-2.5 sm:p-3 hover:bg-muted/50 transition-colors">
+              <div className="text-base sm:text-lg mb-0.5 sm:mb-1">{card.emoji}</div>
+              <div className="font-display font-semibold text-[10px] sm:text-[11px] mb-0.5">{card.term}</div>
+              <div className="text-[9px] sm:text-[10px] text-muted-foreground leading-snug">{card.desc}</div>
             </div>
           ))}
         </div>
