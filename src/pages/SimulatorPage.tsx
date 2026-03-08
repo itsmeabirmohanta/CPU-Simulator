@@ -118,10 +118,13 @@ export default function SimulatorPage() {
     }
   }, [beginnerSamples, reset]);
 
+  const currentLog = logs.length > 0 ? logs[logs.length - 1] : null;
+  const isHaltedOrError = cpuState.status === "halted" || cpuState.status === "error";
+  const isRunning = cpuState.status === "running";
+
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in textarea/input
       if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
 
       if (e.key === " " && !e.shiftKey) {
@@ -145,11 +148,7 @@ export default function SimulatorPage() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [hasProgram, isRunning, step, pause, run, reset, loadProgram]);
-
-  const currentLog = logs.length > 0 ? logs[logs.length - 1] : null;
-  const isHaltedOrError = cpuState.status === "halted" || cpuState.status === "error";
-  const isRunning = cpuState.status === "running";
+  }, [hasProgram, isRunning, isHaltedOrError, step, pause, run, reset, loadProgram]);
 
   // Status breadcrumb
   const statusLabel = !hasProgram
