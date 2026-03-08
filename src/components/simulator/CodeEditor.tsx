@@ -1,5 +1,6 @@
 import { SAMPLE_PROGRAMS } from "@/lib/cpu";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface CodeEditorProps {
   code: string;
@@ -9,28 +10,64 @@ interface CodeEditorProps {
   onLoadSample: (code: string) => void;
 }
 
+function SyntaxLine({ line, isActive, lineIndex }: { line: string; isActive: boolean; lineIndex: number }) {
+  // Simple syntax coloring
+  const trimmed = line.trim();
+  if (!trimmed) return <span>&nbsp;</span>;
+
+  const addrMatch = trimmed.match(/^(\d{2}):\s*(.*)/);
+  if (!addrMatch) return <span className="text-muted-foreground">{line}</span>;
+
+  const addr = addrMatch[1];
+  const rest = addrMatch[2];
+
+  // Check if it's data (pure number)
+  if (/^\d+$/.test(rest)) {
+    return (
+      <span>
+        <span className="text-muted-foreground">{addr}:</span>{" "}
+        <span className="text-accent">{rest}</span>
+      </span>
+    );
+  }
+
+  // It's an instruction
+  const parts = rest.split(/\s+/);
+  const opcode = parts[0];
+  const operand = parts.slice(1).join(" ");
+
+  return (
+    <span>
+      <span className="text-muted-foreground">{addr}:</span>{" "}
+      <span className="text-primary font-semibold">{opcode}</span>
+      {operand && <span className="text-foreground"> {operand}</span>}
+    </span>
+  );
+}
+
 export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoadSample }: CodeEditorProps) {
   const lines = code.split("\n");
 
   return (
     <div className="panel flex flex-col h-full">
       <div className="panel-header flex items-center justify-between">
-        <span>Assembly Editor</span>
-        <div className="flex gap-1">
-          {Object.entries(SAMPLE_PROGRAMS).map(([key, prog]) => (
-            <Button
-              key={key}
-              variant="ghost"
-              size="sm"
-              className="text-[10px] h-6 px-2 normal-case tracking-normal"
-              onClick={() => onLoadSample(prog.code)}
-              disabled={isRunning}
-              title={prog.description}
-            >
-              {prog.name}
-            </Button>
-          ))}
-        </div>
+        <span>✏️ Assembly Editor</span>
+      </div>
+      {/* Sample programs */}
+      <div className="px-3 py-2 border-b flex flex-wrap gap-1.5">
+        {Object.entries(SAMPLE_PROGRAMS).map(([key, prog]) => (
+          <Button
+            key={key}
+            variant="outline"
+            size="sm"
+            className="text-[10px] h-6 px-2.5 normal-case tracking-normal rounded-full"
+            onClick={() => onLoadSample(prog.code)}
+            disabled={isRunning}
+            title={prog.description}
+          >
+            {prog.name}
+          </Button>
+        ))}
       </div>
       <div className="flex-1 relative">
         {isRunning ? (
@@ -40,9 +77,24 @@ export default function CodeEditor({ code, onChange, currentPC, isRunning, onLoa
               const addr = lineAddr ? parseInt(lineAddr[1], 10) : -1;
               const isActive = addr === currentPC;
               return (
-                <div key={i} className={isActive ? "code-line-active" : "code-line"}>
-                  {line || "\u00A0"}
-                </div>
+                <motion.div
+                  key={i}
+                  className={`flex items-center ${isActive ? "code-line-active" : "code-line"}`}
+                  animate={isActive ? { backgroundColor: ["hsl(var(--primary) / 0.1)", "hsl(var(--primary) / 0.2)", "hsl(var(--primary) / 0.1)"] } : {}}
+                  transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
+                >
+                  <span className="w-6 text-[10px] text-muted-foreground/50 select-none shrink-0">{i + 1}</span>
+                  {isActive && (
+                    <motion.span
+                      className="text-primary mr-1"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      ▶
+                    </motion.span>
+                  )}
+                  <SyntaxLine line={line} isActive={isActive} lineIndex={i} />
+                </motion.div>
               );
             })}
           </div>
