@@ -47,7 +47,7 @@ export function createInitialState(): CpuState {
   };
 }
 
-export function createMemory(size: number): MemoryCell[] {
+export function createMemory(size: number = MEMORY_SIZE): MemoryCell[] {
   const memory: MemoryCell[] = [];
   for (let i = 0; i < size; i++) {
     memory.push({ address: i, value: 0 });
