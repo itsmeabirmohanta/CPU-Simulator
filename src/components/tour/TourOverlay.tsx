@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -17,18 +17,40 @@ interface TourOverlayProps {
   onDismiss: () => void;
 }
 
+function isInViewport(rect: DOMRect) {
+  return rect.top >= 0 && rect.bottom <= window.innerHeight;
+}
+
+function resolvePosition(rect: DOMRect, preferred: string): string {
+  const spaceAbove = rect.top;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceLeft = rect.left;
+  const spaceRight = window.innerWidth - rect.right;
+  const minSpace = 120;
+
+  if (preferred === "top" && spaceAbove < minSpace) return "bottom";
+  if (preferred === "bottom" && spaceBelow < minSpace) return "top";
+  if (preferred === "right" && spaceRight < minSpace) return spaceLeft > minSpace ? "left" : "bottom";
+  if (preferred === "left" && spaceLeft < minSpace) return spaceRight > minSpace ? "right" : "bottom";
+  return preferred;
+}
+
 function getTooltipStyle(rect: DOMRect, position: string): React.CSSProperties {
   const gap = 14;
+  const pos = resolvePosition(rect, position);
   const base: React.CSSProperties = { position: "fixed", zIndex: 10002 };
-  switch (position) {
+  const maxW = Math.min(360, window.innerWidth - 32);
+  const clampLeft = (l: number) => Math.max(16, Math.min(l, window.innerWidth - maxW - 16));
+
+  switch (pos) {
     case "bottom":
-      return { ...base, top: rect.bottom + gap, left: Math.max(16, Math.min(rect.left, window.innerWidth - 380)), maxWidth: Math.min(360, window.innerWidth - 32) };
+      return { ...base, top: Math.min(rect.bottom + gap, window.innerHeight - 180), left: clampLeft(rect.left), maxWidth: maxW };
     case "top":
-      return { ...base, bottom: window.innerHeight - rect.top + gap, left: Math.max(16, Math.min(rect.left, window.innerWidth - 380)), maxWidth: Math.min(360, window.innerWidth - 32) };
+      return { ...base, bottom: Math.max(window.innerHeight - rect.top + gap, 16), left: clampLeft(rect.left), maxWidth: maxW };
     case "right":
-      return { ...base, top: rect.top, left: rect.right + gap, maxWidth: 320 };
+      return { ...base, top: Math.max(16, Math.min(rect.top, window.innerHeight - 200)), left: Math.min(rect.right + gap, window.innerWidth - 340), maxWidth: 320 };
     case "left":
-      return { ...base, top: rect.top, right: window.innerWidth - rect.left + gap, maxWidth: 320 };
+      return { ...base, top: Math.max(16, Math.min(rect.top, window.innerHeight - 200)), right: Math.max(16, window.innerWidth - rect.left + gap), maxWidth: 320 };
     default:
       return base;
   }
@@ -37,29 +59,56 @@ function getTooltipStyle(rect: DOMRect, position: string): React.CSSProperties {
 export default function TourOverlay({ active, steps, onDismiss }: TourOverlayProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
+  const skipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateHighlight = useCallback((stepIndex: number) => {
     const step = steps[stepIndex];
     if (!step) return;
     const el = document.querySelector(step.selector);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => setHighlightRect(el.getBoundingClientRect()), 350);
-    } else {
-      setHighlightRect(null);
+    if (!el) {
+      // Auto-skip missing elements after a short delay
+      skipTimerRef.current = setTimeout(() => {
+        if (stepIndex < steps.length - 1) {
+          setCurrentStep(stepIndex + 1);
+        } else {
+          onDismiss();
+        }
+      }, 200);
+      return;
     }
-  }, [steps]);
+    const rect = el.getBoundingClientRect();
+    if (!isInViewport(rect)) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => setHighlightRect(el.getBoundingClientRect()), 400);
+    } else {
+      setHighlightRect(rect);
+    }
+  }, [steps, onDismiss]);
 
   useEffect(() => {
     if (!active) {
       setCurrentStep(0);
+      setHighlightRect(null);
       return;
     }
+    if (skipTimerRef.current) clearTimeout(skipTimerRef.current);
     updateHighlight(currentStep);
-    const handleResize = () => updateHighlight(currentStep);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [active, currentStep, updateHighlight]);
+
+    const refresh = () => {
+      const step = steps[currentStep];
+      if (!step) return;
+      const el = document.querySelector(step.selector);
+      if (el) setHighlightRect(el.getBoundingClientRect());
+    };
+
+    window.addEventListener("resize", refresh);
+    window.addEventListener("scroll", refresh, true);
+    return () => {
+      window.removeEventListener("resize", refresh);
+      window.removeEventListener("scroll", refresh, true);
+      if (skipTimerRef.current) clearTimeout(skipTimerRef.current);
+    };
+  }, [active, currentStep, updateHighlight, steps]);
 
   if (!active || steps.length === 0) return null;
 

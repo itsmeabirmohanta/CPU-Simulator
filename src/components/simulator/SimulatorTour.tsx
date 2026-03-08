@@ -59,7 +59,7 @@ const advancedSteps: TourStep[] = [
     selector: "[data-tour='sim-memory']",
     title: "Inspect Memory & Trace",
     description: "View all 256 memory cells and the full execution log. Search by address and export your trace for review.",
-    position: "top",
+    position: "bottom",
   },
 ];
 
