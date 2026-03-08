@@ -173,7 +173,7 @@ export const modules: Module[] = [
         concepts: ["Accumulator", "Register B", "Register C", "MOV", "INR", "DCR"],
         theory: "Besides the Accumulator, the CPU has registers B and C for temporary storage. MOV copies data between registers (e.g., MOV B,A copies A into B). INR adds 1 to a register; DCR subtracts 1. Registers are the CPU's fastest storage — much quicker than memory. Using registers efficiently is key to writing fast programs.",
         code: SAMPLE_PROGRAMS.registerMove.code,
-        challenge: "Track register B and C values through each step. What ends up in address 12?",
+        challenge: "Track register B and C values through each step. What ends up in address 11?",
         estimatedMinutes: 8,
       },
       {
