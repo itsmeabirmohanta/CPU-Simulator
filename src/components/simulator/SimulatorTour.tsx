@@ -26,7 +26,7 @@ const beginnerSteps: TourStep[] = [
     selector: "[data-tour='sim-visual']",
     title: "Watch the CPU",
     description: "See registers, memory, and data flow update in real time as each instruction executes. This is your visual CPU!",
-    position: "top",
+    position: "left",
   },
 ];
 
@@ -59,7 +59,7 @@ const advancedSteps: TourStep[] = [
     selector: "[data-tour='sim-memory']",
     title: "Inspect Memory & Trace",
     description: "View all 256 memory cells and the full execution log. Search by address and export your trace for review.",
-    position: "top",
+    position: "bottom",
   },
 ];
 
