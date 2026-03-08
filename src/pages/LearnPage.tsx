@@ -15,6 +15,7 @@ import { modules, getTotalLessonCount } from "@/lib/curriculum";
 import { getModuleProgress } from "@/components/learn/LessonProgress";
 import ModuleCard from "@/components/learn/ModuleCard";
 import GuidedWalkthrough, { useWalkthrough } from "@/components/learn/GuidedWalkthrough";
+import { HelpCircle as HelpIcon } from "lucide-react";
 
 export default function LearnPage() {
   const [overallProgress, setOverallProgress] = useState(getOverallProgress);
