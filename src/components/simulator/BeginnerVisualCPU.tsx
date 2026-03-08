@@ -25,7 +25,7 @@ const conceptCards = [
 
 function simpleExplanation(log: LogEntry | null): string {
   if (!log) return "Press 'Load' then 'Next' to begin executing the program!";
-  const expl = log.explanation;
+  const expl = log.explanation || log.instruction || "";
   if (expl.includes("LDA")) return `📦 The CPU is reading a number from memory and putting it in the Accumulator.`;
   if (expl.includes("STA")) return `💾 The CPU is saving the Accumulator value back into memory.`;
   if (expl.includes("ADD")) return `➕ The CPU is adding a number from memory to the Accumulator.`;
