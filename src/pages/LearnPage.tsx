@@ -220,6 +220,7 @@ export default function LearnPage() {
             return (
               <motion.div
                 key={lesson.id}
+                data-tour={`lesson-${index}`}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.04, duration: 0.4 }}
