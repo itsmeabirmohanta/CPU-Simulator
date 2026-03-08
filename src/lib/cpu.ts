@@ -248,6 +248,7 @@ export function executeStep(
           }
           logMessage = `JC ${operand}`;
           break;
+      }
 
       case 0x900: { // MOV <reg1>, <reg2>
         const reg1 = (operand >> 4) & 0x0F; // First nibble
