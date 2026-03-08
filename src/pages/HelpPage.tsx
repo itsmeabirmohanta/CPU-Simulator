@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 
-const instructions = [
+const basicInstructions = [
   { opcode: "LDA addr", desc: "Load the value at memory address into the Accumulator.", example: "LDA 10" },
   { opcode: "STA addr", desc: "Store the Accumulator value into memory address.", example: "STA 12" },
   { opcode: "ADD addr", desc: "Add the value at memory address to the Accumulator. Updates Z and CY flags.", example: "ADD 11" },
@@ -11,6 +11,23 @@ const instructions = [
   { opcode: "JMP addr", desc: "Unconditional jump — sets PC to the given address.", example: "JMP 00" },
   { opcode: "JZ addr", desc: "Jump to address if the Zero flag is set (Z=1).", example: "JZ 05" },
   { opcode: "HLT", desc: "Halt execution. The CPU stops processing.", example: "HLT" },
+];
+
+const advancedInstructions = [
+  { opcode: "AND addr", desc: "Bitwise AND of Accumulator with memory value. Resets CY.", example: "AND 10" },
+  { opcode: "OR addr", desc: "Bitwise OR of Accumulator with memory value. Resets CY.", example: "OR 10" },
+  { opcode: "XOR addr", desc: "Bitwise XOR of Accumulator with memory value. Resets CY.", example: "XOR 10" },
+  { opcode: "CMP addr", desc: "Compare Accumulator with memory value. Sets Z and CY flags. A unchanged.", example: "CMP 10" },
+  { opcode: "JNZ addr", desc: "Jump if Zero flag is clear (Z=0).", example: "JNZ 05" },
+  { opcode: "JC addr", desc: "Jump if Carry flag is set (CY=1).", example: "JC 05" },
+  { opcode: "PUSH", desc: "Push Accumulator value onto the stack.", example: "PUSH" },
+  { opcode: "POP", desc: "Pop top of stack into Accumulator.", example: "POP" },
+  { opcode: "CALL addr", desc: "Call subroutine. Pushes return address onto stack.", example: "CALL 10" },
+  { opcode: "RET", desc: "Return from subroutine. Pops return address from stack.", example: "RET" },
+  { opcode: "NOP", desc: "No operation. Just advances the program counter.", example: "NOP" },
+  { opcode: "CMA", desc: "Complement (bitwise NOT) the Accumulator.", example: "CMA" },
+  { opcode: "RAL", desc: "Rotate Accumulator left through Carry flag.", example: "RAL" },
+  { opcode: "RAR", desc: "Rotate Accumulator right through Carry flag.", example: "RAR" },
 ];
 
 export default function HelpPage() {
