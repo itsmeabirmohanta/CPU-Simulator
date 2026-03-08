@@ -204,6 +204,7 @@ export default function SimulatorPage() {
     <TooltipProvider delayDuration={300}>
       <div className="min-h-screen bg-background">
         <Navbar />
+        <SimulatorTour active={showTour} mode={mode} onDismiss={dismissTour} />
 
         {/* Toolbar */}
         <div className="border-b bg-card/60 backdrop-blur-sm sticky top-14 z-40">
