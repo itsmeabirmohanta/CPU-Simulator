@@ -1,6 +1,7 @@
 import { LogEntry } from "@/lib/cpu";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { Terminal } from "lucide-react";
 
 interface ExecutionLogProps {
   logs: LogEntry[];
@@ -16,18 +17,21 @@ export default function ExecutionLog({ logs }: ExecutionLogProps) {
   }, [logs.length]);
 
   return (
-    <div className="glass-card overflow-hidden">
-      <div className="px-4 py-2.5 border-b bg-muted/20 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Execution Trace</span>
+    <div className="glass-card overflow-hidden h-full flex flex-col">
+      <div className="px-4 py-2 border-b bg-muted/20 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <Terminal className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Execution Trace</span>
+        </div>
         <span className="text-[10px] font-mono text-muted-foreground">{logs.length} steps</span>
       </div>
-      <div ref={scrollRef} className="max-h-[200px] overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {logs.length === 0 ? (
-          <div className="p-6 text-center text-xs text-muted-foreground/60">
+          <div className="p-8 text-center text-xs text-muted-foreground/40">
             Execute instructions to see trace output
           </div>
         ) : (
-          <div className="divide-y divide-border/40">
+          <div className="divide-y divide-border/30">
             <AnimatePresence>
               {logs.map((log, i) => (
                 <motion.div
@@ -35,15 +39,15 @@ export default function ExecutionLog({ logs }: ExecutionLogProps) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ duration: 0.15 }}
-                  className="px-3.5 py-2 font-mono text-[11px] flex items-start gap-2.5"
+                  className="px-4 py-2 font-mono text-[11px] flex items-start gap-3"
                 >
-                  <span className="text-muted-foreground/40 shrink-0 w-5 text-right tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-muted-foreground/30 shrink-0 w-5 text-right tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                   <div className="flex-1 min-w-0">
                     <span className="text-foreground font-medium">{log.instruction}</span>
                     {log.changes.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {log.changes.map((c, j) => (
-                          <span key={j} className="text-[10px] text-primary/80 bg-primary/5 rounded px-1.5 py-0.5">{c}</span>
+                          <span key={j} className="text-[10px] text-primary/70 bg-primary/5 rounded-md px-1.5 py-0.5">{c}</span>
                         ))}
                       </div>
                     )}
