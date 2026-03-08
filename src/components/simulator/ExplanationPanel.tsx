@@ -8,20 +8,23 @@ interface ExplanationPanelProps {
 
 export default function ExplanationPanel({ currentLog }: ExplanationPanelProps) {
   return (
-    <div className="glass-card overflow-hidden">
-      <div className="px-4 py-2.5 border-b bg-muted/20 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Explanation</span>
+    <div className="glass-card overflow-hidden h-full flex flex-col">
+      <div className="px-4 py-2 border-b bg-muted/20 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <Lightbulb className="h-3 w-3 text-warning" />
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Explanation</span>
+        </div>
         {currentLog && (
           <div className="flex items-center gap-1">
             <PhaseDot label="F" active />
-            <span className="text-muted-foreground/30 text-[8px]">→</span>
+            <span className="text-muted-foreground/20 text-[7px]">→</span>
             <PhaseDot label="D" active />
-            <span className="text-muted-foreground/30 text-[8px]">→</span>
+            <span className="text-muted-foreground/20 text-[7px]">→</span>
             <PhaseDot label="E" active />
           </div>
         )}
       </div>
-      <div className="p-4 min-h-[60px]">
+      <div className="p-3 flex-1 overflow-y-auto">
         <AnimatePresence mode="wait">
           {currentLog ? (
             <motion.div
@@ -30,15 +33,15 @@ export default function ExplanationPanel({ currentLog }: ExplanationPanelProps) 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="space-y-2.5"
+              className="space-y-2"
             >
-              <p className="text-[12px] text-foreground/90 leading-relaxed whitespace-pre-line font-mono">
+              <p className="text-[11px] text-foreground/85 leading-relaxed whitespace-pre-line font-mono">
                 {currentLog.explanation}
               </p>
               {currentLog.changes.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1">
                   {currentLog.changes.map((c, j) => (
-                    <span key={j} className="inline-block rounded-lg bg-primary/10 text-primary px-2 py-0.5 text-[10px] font-mono font-medium">
+                    <span key={j} className="inline-block rounded-md bg-primary/8 text-primary px-1.5 py-0.5 text-[9px] font-mono font-medium">
                       {c}
                     </span>
                   ))}
@@ -46,10 +49,9 @@ export default function ExplanationPanel({ currentLog }: ExplanationPanelProps) 
               )}
             </motion.div>
           ) : (
-            <div className="flex items-center gap-2 text-muted-foreground/50">
-              <Lightbulb className="h-3.5 w-3.5" />
-              <p className="text-[11px]">Step through code to see instruction explanations</p>
-            </div>
+            <p className="text-[10px] text-muted-foreground/40 text-center py-4">
+              Step through code to see explanations
+            </p>
           )}
         </AnimatePresence>
       </div>
@@ -59,8 +61,8 @@ export default function ExplanationPanel({ currentLog }: ExplanationPanelProps) 
 
 function PhaseDot({ label, active }: { label: string; active: boolean }) {
   return (
-    <span className={`inline-flex items-center justify-center h-4.5 w-4.5 rounded-full text-[8px] font-bold font-mono ${
-      active ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground/40"
+    <span className={`inline-flex items-center justify-center h-4 w-4 rounded-full text-[7px] font-bold font-mono ${
+      active ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground/30"
     }`}>
       {label}
     </span>

@@ -121,7 +121,6 @@ export default function SimulatorPage() {
       <div className="border-b bg-card/60 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {/* Mode Toggle */}
             <div className="flex items-center rounded-xl bg-muted/50 p-0.5">
               <button
                 onClick={() => handleModeSwitch("beginner")}
@@ -148,7 +147,6 @@ export default function SimulatorPage() {
             </div>
           </div>
 
-          {/* Controls */}
           <div className="flex items-center gap-1.5">
             <CtrlBtn onClick={loadProgram} disabled={isRunning}>
               <Upload className="h-3.5 w-3.5" /> Load
@@ -173,10 +171,9 @@ export default function SimulatorPage() {
       </div>
 
       {/* Main content */}
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-4">
         {mode === "beginner" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ height: "calc(100vh - 130px)" }}>
-            {/* Left: Sample Selector + Code Editor */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ height: "calc(100vh - 140px)" }}>
             <div className="lg:col-span-3 flex flex-col gap-2 min-h-0 overflow-y-auto">
               <div className="glass-card p-4">
                 <div className="font-display font-bold text-sm mb-3">📝 Choose a Program</div>
@@ -197,8 +194,6 @@ export default function SimulatorPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Editable Code */}
               <div className="glass-card flex-1 min-h-0 flex flex-col overflow-hidden">
                 <div className="px-4 py-2 border-b bg-muted/20 flex items-center justify-between">
                   <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider">✏️ Edit Code</span>
@@ -231,41 +226,42 @@ export default function SimulatorPage() {
                 </div>
               </div>
             </div>
-
-            {/* Right: Visual CPU */}
             <div className="lg:col-span-9 min-h-0 overflow-y-auto">
               <BeginnerVisualCPU
-                state={cpuState}
-                previousState={prevState}
-                memory={memory}
-                activeFlow={activeFlow}
-                currentLog={currentLog}
-                logs={logs}
+                state={cpuState} previousState={prevState} memory={memory}
+                activeFlow={activeFlow} currentLog={currentLog} logs={logs}
               />
             </div>
           </div>
         ) : (
-          /* ===== ADVANCED MODE ===== */
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ height: "calc(100vh - 130px)" }}>
-            {/* Left: Editor */}
-            <div className="lg:col-span-4 min-h-0">
-              <CodeEditor
-                code={code} onChange={setCode} currentPC={cpuState.programCounter}
-                isRunning={hasProgram && cpuState.status !== "ready"}
-                onLoadSample={(c) => { setCode(c); reset(); }}
-                advanced={advanced}
-              />
+          /* ===== ADVANCED MODE — Spacious 2-row layout ===== */
+          <div className="flex flex-col gap-4" style={{ height: "calc(100vh - 140px)" }}>
+            {/* Top row: Editor + CPU Diagram side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
+              {/* Editor — full height */}
+              <div className="min-h-0">
+                <CodeEditor
+                  code={code} onChange={setCode} currentPC={cpuState.programCounter}
+                  isRunning={hasProgram && cpuState.status !== "ready"}
+                  onLoadSample={(c) => { setCode(c); reset(); }}
+                  advanced={advanced}
+                />
+              </div>
+
+              {/* Right side: CPU Diagram + Registers + Flags */}
+              <div className="min-h-0 flex flex-col gap-3 overflow-y-auto pr-1">
+                <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
+
+                {/* Registers + Explanation side by side */}
+                <div className="grid grid-cols-2 gap-3">
+                  <CpuStatePanel state={cpuState} previousState={prevState} />
+                  <ExplanationPanel currentLog={currentLog} />
+                </div>
+              </div>
             </div>
 
-            {/* Center: CPU Visualization + Registers + Explanation */}
-            <div className="lg:col-span-4 flex flex-col gap-3 min-h-0 overflow-y-auto">
-              <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
-              <CpuStatePanel state={cpuState} previousState={prevState} />
-              <ExplanationPanel currentLog={currentLog} />
-            </div>
-
-            {/* Right: Memory + Log */}
-            <div className="lg:col-span-4 flex flex-col gap-3 min-h-0 overflow-y-auto">
+            {/* Bottom row: Memory + Execution Trace side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[280px] shrink-0">
               <MemoryViewer memory={memory} currentPC={cpuState.programCounter} />
               <ExecutionLog logs={logs} />
             </div>

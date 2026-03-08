@@ -8,16 +8,16 @@ interface MemoryViewerProps {
 
 export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
   return (
-    <div className="glass-card overflow-hidden">
-      <div className="px-4 py-2.5 border-b bg-muted/20 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Memory</span>
+    <div className="glass-card overflow-hidden h-full flex flex-col">
+      <div className="px-4 py-2 border-b bg-muted/20 flex items-center justify-between shrink-0">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Memory</span>
         <span className="text-[10px] font-mono text-muted-foreground">{memory.length} cells</span>
       </div>
-      <div className="p-3 max-h-[320px] overflow-y-auto">
+      <div className="p-3 flex-1 overflow-y-auto">
         {/* Header */}
-        <div className="grid grid-cols-8 gap-0.5 mb-1.5">
+        <div className="grid grid-cols-8 gap-1 mb-1.5">
           {Array.from({ length: 8 }, (_, i) => (
-            <div key={i} className="text-center text-[8px] font-mono text-muted-foreground/50 uppercase">+{i}</div>
+            <div key={i} className="text-center text-[8px] font-mono text-muted-foreground/40 uppercase">+{i}</div>
           ))}
         </div>
         {/* Cells */}
@@ -31,22 +31,22 @@ export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
               <motion.div
                 key={cell.address}
                 className={`relative flex flex-col items-center justify-center rounded-lg px-0.5 py-1.5 font-mono transition-all duration-200 cursor-default ${
-                  isPC ? "bg-primary/15 ring-1 ring-primary/50 shadow-sm" :
-                  cell.changed ? "bg-warning/10 ring-1 ring-warning/40" :
+                  isPC ? "bg-primary/15 ring-1 ring-primary/40 shadow-sm" :
+                  cell.changed ? "bg-warning/10 ring-1 ring-warning/30" :
                   isInstr ? "bg-primary/[0.04]" :
-                  isEmpty ? "opacity-25" : ""
+                  isEmpty ? "opacity-20" : ""
                 }`}
-                animate={cell.changed ? { scale: [1, 1.08, 1] } : {}}
+                animate={cell.changed ? { scale: [1, 1.06, 1] } : {}}
                 transition={{ duration: 0.25 }}
                 title={`[${String(cell.address).padStart(2, "0")}] = ${cell.value} (${cell.type})`}
               >
-                <span className="text-[7px] text-muted-foreground/50 leading-none mb-0.5">
+                <span className="text-[7px] text-muted-foreground/40 leading-none mb-0.5">
                   {String(cell.address).padStart(2, "0")}
                 </span>
                 <span className={`text-[10px] font-semibold leading-none ${
                   isPC ? "text-primary" :
                   cell.changed ? "text-warning" :
-                  isInstr ? "text-primary/80" : "text-foreground/70"
+                  isInstr ? "text-primary/70" : "text-foreground/60"
                 }`}>
                   {typeof cell.value === "string"
                     ? cell.value.length > 3 ? cell.value.substring(0, 3) : cell.value
@@ -64,7 +64,7 @@ export default function MemoryViewer({ memory, currentPC }: MemoryViewerProps) {
           })}
         </div>
         {/* Legend */}
-        <div className="flex items-center gap-3 mt-3 pt-2.5 border-t text-[9px] text-muted-foreground/60">
+        <div className="flex items-center gap-4 mt-3 pt-2 border-t text-[9px] text-muted-foreground/50">
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> PC</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded bg-primary/30" /> Code</span>
           <span className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded bg-warning/50" /> Modified</span>
