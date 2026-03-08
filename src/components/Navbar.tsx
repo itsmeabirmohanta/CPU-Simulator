@@ -36,7 +36,7 @@ export default function Navbar() {
               key={link.to}
               to={link.to}
               className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all ${
-                location.pathname === link.to
+                (link.to === "/" ? location.pathname === "/" : location.pathname.startsWith(link.to))
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               }`}
