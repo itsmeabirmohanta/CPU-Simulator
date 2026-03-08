@@ -234,12 +234,11 @@ export default function SimulatorPage() {
             </div>
           </div>
         ) : (
-          /* ===== ADVANCED MODE — Spacious 2-row layout ===== */
-          <div className="flex flex-col gap-4" style={{ height: "calc(100vh - 140px)" }}>
-            {/* Top row: Editor + CPU Diagram side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
-              {/* Editor — full height */}
-              <div className="min-h-0">
+          /* ===== ADVANCED MODE ===== */
+          <div className="overflow-y-auto" style={{ height: "calc(100vh - 140px)" }}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+              {/* Left: Editor */}
+              <div className="min-h-[500px]">
                 <CodeEditor
                   code={code} onChange={setCode} currentPC={cpuState.programCounter}
                   isRunning={hasProgram && cpuState.status !== "ready"}
@@ -248,11 +247,9 @@ export default function SimulatorPage() {
                 />
               </div>
 
-              {/* Right side: CPU Diagram + Registers + Flags */}
-              <div className="min-h-0 flex flex-col gap-3 overflow-y-auto pr-1">
+              {/* Right: CPU Diagram + Registers + Explanation */}
+              <div className="flex flex-col gap-3">
                 <CpuDiagram state={cpuState} previousState={prevState} activeFlow={activeFlow} />
-
-                {/* Registers + Explanation side by side */}
                 <div className="grid grid-cols-2 gap-3">
                   <CpuStatePanel state={cpuState} previousState={prevState} />
                   <ExplanationPanel currentLog={currentLog} />
@@ -260,8 +257,8 @@ export default function SimulatorPage() {
               </div>
             </div>
 
-            {/* Bottom row: Memory + Execution Trace side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[280px] shrink-0">
+            {/* Bottom: Memory + Execution Trace */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <MemoryViewer memory={memory} currentPC={cpuState.programCounter} />
               <ExecutionLog logs={logs} />
             </div>
