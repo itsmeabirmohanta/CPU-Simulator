@@ -496,7 +496,7 @@ export default function SimulatorPage() {
             /* ===== ADVANCED MODE ===== */
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="min-h-[350px] sm:min-h-[450px]">
+                <div className="min-h-[350px] sm:min-h-[450px]" data-tour="sim-editor">
                   <CodeEditor
                     code={code} onChange={setCode} currentPC={cpuState.programCounter}
                     isRunning={hasProgram && cpuState.status !== "ready"}
