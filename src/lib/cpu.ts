@@ -686,3 +686,72 @@ export const SAMPLE_PROGRAMS: Record<string, SampleProgram> = {
 11: 00      ; Count`,
   },
 };
+
+/* ── Validation & Hints ───────────────────────────────────────────────────── */
+
+const BASIC_OPCODES = ["LDA", "STA", "ADD", "SUB", "JMP", "JZ", "JNZ", "JC", "MOV", "INR", "DCR", "HLT", "NOP"];
+const ADVANCED_OPCODES = [...BASIC_OPCODES, "AND", "OR", "XOR", "CMP", "CMA", "RAL", "RAR", "PUSH", "POP", "CALL", "RET"];
+
+export function getValidOpcodes(advanced: boolean): string[] {
+  return advanced ? ADVANCED_OPCODES : BASIC_OPCODES;
+}
+
+export function validateLine(line: string, advanced: boolean, memSize: number): string | null {
+  line = line.trim();
+  if (!line || line.startsWith(";") || line.startsWith("//")) return null;
+
+  const colonIdx = line.indexOf(":");
+  if (colonIdx === -1) return "Missing address prefix (e.g. 00:)";
+
+  const addrStr = line.substring(0, colonIdx).trim();
+  const addr = parseInt(addrStr);
+  if (isNaN(addr) || addr < 0 || addr >= memSize) return `Invalid address: ${addrStr}`;
+
+  const rest = line.substring(colonIdx + 1).trim();
+  if (!rest) return null; // empty value is ok
+
+  // Check if it's a pure number (data)
+  const num = parseInt(rest);
+  if (!isNaN(num)) {
+    if (num < 0 || num > 255) return "Value must be 0–255";
+    return null;
+  }
+
+  // Check if it's a valid instruction
+  const parts = rest.split(/\s+/);
+  const opcode = parts[0].toUpperCase();
+  const validOps = getValidOpcodes(advanced);
+
+  // Handle MOV specially (MOV B,A format)
+  if (opcode === "MOV") return null;
+
+  if (!validOps.includes(opcode)) return `Unknown instruction: ${opcode}`;
+  return null;
+}
+
+export const INSTRUCTION_HINTS: Record<string, { syntax: string; desc: string }> = {
+  LDA: { syntax: "LDA addr", desc: "Load value from memory into Accumulator" },
+  STA: { syntax: "STA addr", desc: "Store Accumulator value to memory" },
+  ADD: { syntax: "ADD addr", desc: "Add memory value to Accumulator" },
+  SUB: { syntax: "SUB addr", desc: "Subtract memory value from Accumulator" },
+  MOV: { syntax: "MOV dst,src", desc: "Move between registers (A, B, C)" },
+  INR: { syntax: "INR reg", desc: "Increment register by 1" },
+  DCR: { syntax: "DCR reg", desc: "Decrement register by 1" },
+  JMP: { syntax: "JMP addr", desc: "Unconditional jump" },
+  JZ:  { syntax: "JZ addr", desc: "Jump if Zero flag is set" },
+  JNZ: { syntax: "JNZ addr", desc: "Jump if Zero flag is clear" },
+  JC:  { syntax: "JC addr", desc: "Jump if Carry flag is set" },
+  HLT: { syntax: "HLT", desc: "Halt execution" },
+  AND: { syntax: "AND addr", desc: "Bitwise AND with memory value" },
+  OR:  { syntax: "OR addr", desc: "Bitwise OR with memory value" },
+  XOR: { syntax: "XOR addr", desc: "Bitwise XOR with memory value" },
+  CMP: { syntax: "CMP addr", desc: "Compare A with memory (sets flags only)" },
+  CMA: { syntax: "CMA", desc: "Complement Accumulator (bitwise NOT)" },
+  RAL: { syntax: "RAL", desc: "Rotate Accumulator left through carry" },
+  RAR: { syntax: "RAR", desc: "Rotate Accumulator right through carry" },
+  PUSH: { syntax: "PUSH", desc: "Push Accumulator onto stack" },
+  POP:  { syntax: "POP", desc: "Pop stack into Accumulator" },
+  CALL: { syntax: "CALL addr", desc: "Call subroutine at address" },
+  RET:  { syntax: "RET", desc: "Return from subroutine" },
+  NOP:  { syntax: "NOP", desc: "No operation" },
+};
