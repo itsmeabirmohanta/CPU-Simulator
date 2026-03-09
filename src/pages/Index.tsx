@@ -112,7 +112,7 @@ function LiveCPUPreview() {
               block.active ? "bg-primary/[0.06] shadow-lg" : "bg-card/50"
             }`}
           >
-            <div className="text-2xl mb-2">{block.icon}</div>
+            <div className="flex justify-center mb-2"><block.Icon className={`h-6 w-6 ${block.active ? "text-primary" : "text-muted-foreground"}`} /></div>
             <div className="font-display font-bold text-sm mb-1">{block.label}</div>
             <motion.div
               key={block.value}
