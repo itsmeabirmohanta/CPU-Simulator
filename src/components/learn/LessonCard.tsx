@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Rocket, ExternalLink } from "lucide-react";
+import { ChevronDown, Rocket, ExternalLink, Puzzle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,8 +58,8 @@ export default function LessonCard({ lesson, index, isCompleted, onComplete }: L
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h3 className="font-display font-bold text-sm">{lesson.title}</h3>
             {isCompleted && (
-              <Badge className="text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
-                ✓ Done
+              <Badge className="flex items-center gap-1 text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
+                <CheckCircle2 className="h-2.5 w-2.5" /> Done
               </Badge>
             )}
             {lesson.code && (
@@ -121,9 +121,9 @@ export default function LessonCard({ lesson, index, isCompleted, onComplete }: L
 
               {/* Challenge */}
               {lesson.challenge && (
-                <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/15 p-4">
-                  <h4 className="font-display text-xs font-semibold text-yellow-600 dark:text-yellow-400 mb-1.5">
-                    🧩 Challenge
+                <div className="rounded-xl bg-warning/5 border border-warning/20 p-4">
+                  <h4 className="font-display text-xs font-semibold text-warning mb-1.5 flex items-center gap-1.5">
+                    <Puzzle className="h-3.5 w-3.5" /> Challenge
                   </h4>
                   <p className="text-sm text-foreground/70">{lesson.challenge}</p>
                 </div>

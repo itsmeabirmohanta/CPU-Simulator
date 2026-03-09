@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Cpu, Play, GraduationCap, ArrowRight, Zap, Eye, Brain, Layers, Sparkles, BookOpen, ChevronRight, Github, Terminal, Clock, Code2, Monitor } from "lucide-react";
+import { Cpu, Play, GraduationCap, ArrowRight, Zap, Eye, Brain, Layers, Sparkles, BookOpen, ChevronRight, Github, Terminal, Clock, Code2, Monitor, HardDrive, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -97,9 +97,9 @@ function LiveCPUPreview() {
       {/* CPU blocks */}
       <div className="grid grid-cols-3 gap-3 md:gap-5">
         {[
-          { label: "Memory", value: v.mem, active: activePhase === "fetch", icon: "📦" },
-          { label: "Control Unit", value: v.cu, active: activePhase === "decode", icon: "🎛️" },
-          { label: "ALU", value: v.alu, active: activePhase === "execute", icon: "⚡" },
+          { label: "Memory", value: v.mem, active: activePhase === "fetch", Icon: HardDrive },
+          { label: "Control Unit", value: v.cu, active: activePhase === "decode", Icon: Cpu },
+          { label: "ALU", value: v.alu, active: activePhase === "execute", Icon: Zap },
         ].map((block) => (
           <motion.div
             key={block.label}
@@ -112,7 +112,7 @@ function LiveCPUPreview() {
               block.active ? "bg-primary/[0.06] shadow-lg" : "bg-card/50"
             }`}
           >
-            <div className="text-2xl mb-2">{block.icon}</div>
+            <div className="flex justify-center mb-2"><block.Icon className={`h-6 w-6 ${block.active ? "text-primary" : "text-muted-foreground"}`} /></div>
             <div className="font-display font-bold text-sm mb-1">{block.label}</div>
             <motion.div
               key={block.value}
@@ -342,10 +342,10 @@ export default function LandingPage() {
               <div key={c.feature} className={`grid grid-cols-3 gap-0 transition-colors hover:bg-muted/20 ${i < comparisons.length - 1 ? "border-b border-border/50" : ""}`}>
                 <div className="p-3.5 text-xs text-muted-foreground font-body">{c.feature}</div>
                 <div className="p-3.5 text-center text-sm">
-                  {c.beginner ? <span className="text-accent font-bold">✓</span> : <span className="text-muted-foreground/20">—</span>}
+                  {c.beginner ? <span className="text-accent font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
                 </div>
                 <div className="p-3.5 text-center text-sm">
-                  {c.advanced ? <span className="text-primary font-bold">✓</span> : <span className="text-muted-foreground/20">—</span>}
+                  {c.advanced ? <span className="text-primary font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
                 </div>
               </div>
             ))}

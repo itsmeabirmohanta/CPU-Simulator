@@ -1,7 +1,7 @@
 import { CpuState, MemoryCell, LogEntry } from "@/lib/cpu";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Cpu, HardDrive, Calculator, ArrowRight, ArrowDown, Lightbulb, BookOpen, ChevronDown, ChevronUp, Sparkles, Info } from "lucide-react";
+import { Cpu, HardDrive, Calculator, ArrowRight, ArrowDown, Lightbulb, BookOpen, ChevronDown, ChevronUp, Sparkles, Info, MapPin, Sigma, Zap, Package, ClipboardList, Flag, Download, Search, CheckCircle2, Target } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 
@@ -15,29 +15,29 @@ interface BeginnerVisualCPUProps {
 }
 
 const conceptCards = [
-  { term: "Program Counter (PC)", emoji: "📍", desc: "Points to the next instruction to execute.", detail: "The PC automatically increments after each instruction unless a jump (JMP, JZ) changes it. It's like a bookmark telling the CPU where to read next." },
-  { term: "Accumulator (A)", emoji: "🧮", desc: "The main working register for math results.", detail: "Most arithmetic operations (ADD, SUB) use the Accumulator as one operand and store the result back in it. Think of it as the CPU's scratchpad." },
-  { term: "ALU", emoji: "⚡", desc: "Arithmetic Logic Unit — the calculator.", detail: "The ALU performs all math (addition, subtraction) and logic (AND, OR, comparisons). It also sets flags based on results." },
-  { term: "Memory", emoji: "📦", desc: "Storage for instructions and data.", detail: "Memory holds both the program instructions and data values. Each cell has an address (like a street address) and a value." },
-  { term: "Instruction Register", emoji: "📋", desc: "Holds the current instruction.", detail: "After fetching, the instruction is loaded into the IR where the Control Unit decodes it to figure out what operation to perform." },
-  { term: "Flags", emoji: "🚩", desc: "Indicators for zero results and overflow.", detail: "The Zero flag (Z) is set when a result equals 0. The Carry flag (CY) is set on overflow/underflow. Conditional jumps like JZ check these flags." },
+  { term: "Program Counter (PC)", Icon: MapPin, desc: "Points to the next instruction to execute.", detail: "The PC automatically increments after each instruction unless a jump (JMP, JZ) changes it. It's like a bookmark telling the CPU where to read next." },
+  { term: "Accumulator (A)", Icon: Sigma, desc: "The main working register for math results.", detail: "Most arithmetic operations (ADD, SUB) use the Accumulator as one operand and store the result back in it. Think of it as the CPU's scratchpad." },
+  { term: "ALU", Icon: Zap, desc: "Arithmetic Logic Unit — the calculator.", detail: "The ALU performs all math (addition, subtraction) and logic (AND, OR, comparisons). It also sets flags based on results." },
+  { term: "Memory", Icon: Package, desc: "Storage for instructions and data.", detail: "Memory holds both the program instructions and data values. Each cell has an address (like a street address) and a value." },
+  { term: "Instruction Register", Icon: ClipboardList, desc: "Holds the current instruction.", detail: "After fetching, the instruction is loaded into the IR where the Control Unit decodes it to figure out what operation to perform." },
+  { term: "Flags", Icon: Flag, desc: "Indicators for zero results and overflow.", detail: "The Zero flag (Z) is set when a result equals 0. The Carry flag (CY) is set on overflow/underflow. Conditional jumps like JZ check these flags." },
 ];
 
 function simpleExplanation(log: LogEntry | null): string {
   if (!log) return "Press 'Load' then 'Next' to begin executing the program!";
   const expl = log.explanation || log.instruction || "";
-  if (expl.includes("LDA")) return `📦 The CPU is reading a number from memory and putting it in the Accumulator.`;
-  if (expl.includes("STA")) return `💾 The CPU is saving the Accumulator value back into memory.`;
-  if (expl.includes("ADD")) return `➕ The CPU is adding a number from memory to the Accumulator.`;
-  if (expl.includes("SUB")) return `➖ The CPU is subtracting a number from memory from the Accumulator.`;
-  if (expl.includes("MOV")) return `🔄 The CPU is copying a value from one register to another.`;
-  if (expl.includes("INR")) return `⬆️ Adding 1 to the register value.`;
-  if (expl.includes("DCR")) return `⬇️ Subtracting 1 from the register value.`;
-  if (expl.includes("JMP")) return `🔀 The CPU is jumping to a different instruction.`;
-  if (expl.includes("JZ") && expl.includes("taken")) return `🔀 Result was zero — jumping to a different address!`;
-  if (expl.includes("JZ") && expl.includes("not taken")) return `➡️ Result was NOT zero — continuing to next instruction.`;
-  if (expl.includes("HLT")) return `🛑 The program is done! The CPU has stopped.`;
-  return `🔧 ${expl}`;
+  if (expl.includes("LDA")) return `Loading a number from memory into the Accumulator.`;
+  if (expl.includes("STA")) return `Saving the Accumulator value back into memory.`;
+  if (expl.includes("ADD")) return `Adding a number from memory to the Accumulator.`;
+  if (expl.includes("SUB")) return `Subtracting a number from memory from the Accumulator.`;
+  if (expl.includes("MOV")) return `Copying a value from one register to another.`;
+  if (expl.includes("INR")) return `Adding 1 to the register value.`;
+  if (expl.includes("DCR")) return `Subtracting 1 from the register value.`;
+  if (expl.includes("JMP")) return `The CPU is jumping to a different instruction.`;
+  if (expl.includes("JZ") && expl.includes("taken")) return `Result was zero — jumping to a different address!`;
+  if (expl.includes("JZ") && expl.includes("not taken")) return `Result was NOT zero — continuing to next instruction.`;
+  if (expl.includes("HLT")) return `The program is done! The CPU has stopped.`;
+  return expl;
 }
 
 // Count total instructions in memory for progress
@@ -119,9 +119,9 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   const phases = [
-    { id: "fetch", label: "Fetch", emoji: "📥", desc: "Get instruction from memory" },
-    { id: "decode", label: "Decode", emoji: "🔍", desc: "Understand the instruction" },
-    { id: "execute", label: "Execute", emoji: "⚡", desc: "Perform the action" },
+    { id: "fetch", label: "Fetch", Icon: Download, desc: "Get instruction from memory" },
+    { id: "decode", label: "Decode", Icon: Search, desc: "Understand the instruction" },
+    { id: "execute", label: "Execute", Icon: Zap, desc: "Perform the action" },
   ];
 
   const totalInstr = countInstructions(memory);
@@ -148,7 +148,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
             animate={{ opacity: 1, y: 0 }}
             className="mt-2 text-[11px] text-success font-medium flex items-center gap-1.5"
           >
-            ✅ Program completed successfully!
+            <CheckCircle2 className="h-3.5 w-3.5" /> Program completed successfully!
           </motion.div>
         )}
       </div>
@@ -167,7 +167,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
                     : "bg-muted/30 border-2 border-transparent"
                 }`}
               >
-                <div className="text-lg sm:text-xl mb-0.5 sm:mb-1">{phase.emoji}</div>
+                <div className="flex justify-center mb-0.5 sm:mb-1"><phase.Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${activeFlow === phase.id ? "text-primary" : "text-muted-foreground"}`} /></div>
                 <div className={`font-display font-bold text-[10px] sm:text-xs ${activeFlow === phase.id ? "text-primary" : "text-muted-foreground"}`}>{phase.label}</div>
                 <div className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{phase.desc}</div>
               </motion.div>
@@ -369,8 +369,8 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
             transition={{ delay: 0.5 }}
             className="mt-4 p-3 rounded-xl bg-accent/5 border border-accent/20"
           >
-            <p className="text-xs text-accent font-medium">
-              🎯 <strong>Try it yourself!</strong> Edit the data values in the code editor (e.g., change the numbers at addresses 10-11) and re-run to see different results.
+            <p className="text-xs text-accent font-medium flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5 shrink-0" /> <span><strong>Try it yourself!</strong> Edit the data values in the code editor (e.g., change the numbers at addresses 10-11) and re-run to see different results.</span>
             </p>
           </motion.div>
         )}
@@ -415,7 +415,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-base sm:text-lg">{card.emoji}</span>
+                    <card.Icon className="h-4 w-4 text-primary shrink-0" />
                     <span className="font-display font-semibold text-[10px] sm:text-[11px]">{card.term}</span>
                   </div>
                   {isExpanded ? (

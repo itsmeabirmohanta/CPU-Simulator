@@ -6,7 +6,7 @@ import ProgressTracker, {
 } from "@/components/learn/LessonProgress";
 import {
   BookOpen, Cpu, Rocket, HelpCircle, ArrowRight, GraduationCap,
-  Clock, Video, Layers,
+  Clock, Video, Layers, CheckCircle2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -174,7 +174,7 @@ export default function LearnPage() {
                       {mod.title.length > 20 ? mod.title.split(" ").slice(0, 3).join(" ") : mod.title}
                     </span>
                     {modComplete && (
-                      <span className="text-[9px] text-accent font-medium mt-1.5">✓ Complete</span>
+                      <span className="text-[9px] text-accent font-medium mt-1.5 flex items-center gap-0.5"><CheckCircle2 className="h-2.5 w-2.5" /> Complete</span>
                     )}
                     {modStarted && !modComplete && (
                       <span className="text-[9px] text-primary font-medium mt-1.5">

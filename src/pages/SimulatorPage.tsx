@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import {
   GraduationCap, Cpu, Play, Pause, SkipForward, RotateCcw, Upload,
   Keyboard, ChevronRight, Gauge, Share2, Download, HelpCircle,
+  Plus, Shuffle, RefreshCw, ClipboardList, X as XIcon, Trophy, FileText, CheckCircle2,
 } from "lucide-react";
 import SimulatorTour, { useSimulatorTour } from "@/components/simulator/SimulatorTour";
 
@@ -63,12 +64,12 @@ export default function SimulatorPage() {
   useEffect(() => { save("cpuverse-speed", speedLevel); }, [speedLevel]);
 
   const beginnerSamples = [
-    { key: "addition", label: "➕ Add Two Numbers", code: SAMPLE_PROGRAMS.addition.code },
-    { key: "conditionalJump", label: "🔀 Conditional Jump", code: SAMPLE_PROGRAMS.conditionalJump.code },
-    { key: "countdown", label: "🔄 Countdown Loop", code: SAMPLE_PROGRAMS.countdown.code },
-    { key: "registerMove", label: "📋 Register Transfer", code: SAMPLE_PROGRAMS.registerMove.code },
-    { key: "multiplication", label: "✖️ Multiplication", code: SAMPLE_PROGRAMS.multiplication.code },
-    { key: "findMax", label: "🏆 Find Max", code: SAMPLE_PROGRAMS.findMax.code },
+    { key: "addition", label: "Add Two Numbers", Icon: Plus, code: SAMPLE_PROGRAMS.addition.code },
+    { key: "conditionalJump", label: "Conditional Jump", Icon: Shuffle, code: SAMPLE_PROGRAMS.conditionalJump.code },
+    { key: "countdown", label: "Countdown Loop", Icon: RefreshCw, code: SAMPLE_PROGRAMS.countdown.code },
+    { key: "registerMove", label: "Register Transfer", Icon: ClipboardList, code: SAMPLE_PROGRAMS.registerMove.code },
+    { key: "multiplication", label: "Multiplication", Icon: XIcon, code: SAMPLE_PROGRAMS.multiplication.code },
+    { key: "findMax", label: "Find Max", Icon: Trophy, code: SAMPLE_PROGRAMS.findMax.code },
   ];
 
   const loadProgram = useCallback(() => {
@@ -99,7 +100,7 @@ export default function SimulatorPage() {
       : cpuState.status === "running" ? "running" : "ready";
     setCpuState({ ...result.state, status: finalStatus }); setMemory(result.memory);
     setLogs((prev) => [...prev, result.log]);
-    if (result.state.status === "halted") toast.success("✅ Program completed!");
+    if (result.state.status === "halted") toast.success("Program completed successfully!");
     else if (result.state.status === "error") toast.error(result.state.errorMessage || "Error");
   }, [cpuState, memory, logs.length, hasProgram]);
 
@@ -433,19 +434,20 @@ export default function SimulatorPage() {
               {/* Left sidebar */}
               <div className="lg:col-span-3 flex flex-col gap-2" data-tour="sim-samples">
                 <div className="glass-card p-3 sm:p-4">
-                  <div className="font-display font-bold text-sm mb-2 sm:mb-3">📝 Choose a Program</div>
+                  <div className="font-display font-bold text-sm mb-2 sm:mb-3 flex items-center gap-2"><FileText className="h-3.5 w-3.5 text-primary" /> Choose a Program</div>
                   <div className="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
                     {beginnerSamples.map((sample) => (
                       <button
                         key={sample.key}
                         onClick={() => handleBeginnerSample(sample.key)}
                         disabled={isRunning}
-                        className={`whitespace-nowrap lg:whitespace-normal text-left px-3 py-2 sm:py-2.5 rounded-xl text-[12px] font-medium transition-all shrink-0 lg:shrink lg:w-full ${
+                        className={`whitespace-nowrap lg:whitespace-normal text-left px-3 py-2 sm:py-2.5 rounded-xl text-[12px] font-medium transition-all shrink-0 lg:shrink lg:w-full flex items-center gap-2 ${
                           beginnerSample === sample.key
                             ? "bg-accent/15 text-accent border border-accent/30"
                             : "hover:bg-muted/50 text-muted-foreground border border-transparent"
                         } disabled:opacity-40`}
                       >
+                        <sample.Icon className="h-3 w-3 shrink-0" />
                         {sample.label}
                       </button>
                     ))}
@@ -454,7 +456,7 @@ export default function SimulatorPage() {
 
                 <div className="glass-card flex flex-col overflow-hidden min-h-[200px] lg:flex-1">
                   <div className="px-3 sm:px-4 py-2 border-b bg-muted/20 flex items-center justify-between">
-                    <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider">✏️ Edit Code</span>
+                    <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><FileText className="h-3 w-3" /> Edit Code</span>
                     <span className="text-[10px] text-muted-foreground font-mono">{code.split("\n").filter(l => l.trim()).length} lines</span>
                   </div>
                   <div className="flex-1 min-h-[160px] relative">
