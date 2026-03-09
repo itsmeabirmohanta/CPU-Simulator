@@ -52,7 +52,7 @@ export const modules: Module[] = [
     title: "Foundations of Computing",
     icon: BookOpen,
     difficulty: "beginner",
-    description: "Start from the very beginning — understand what a computer really is, how binary works, and the fundamental architecture that powers every device.",
+    description: "Start from the very beginning, understand what a computer really is, how binary works, and the fundamental architecture that powers every device.",
     prerequisites: [],
     videos: [
       {
