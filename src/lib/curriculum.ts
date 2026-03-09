@@ -208,7 +208,7 @@ export const modules: Module[] = [
     title: "Assembly & Machine Code",
     icon: Terminal,
     difficulty: "intermediate",
-    description: "Write real assembly programs — learn the language that talks directly to the CPU, one instruction at a time.",
+    description: "Write real assembly programs, learn the language that talks directly to the CPU, one instruction at a time.",
     prerequisites: ["inside-cpu"],
     videos: [
       {
