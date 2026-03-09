@@ -297,7 +297,7 @@ export const modules: Module[] = [
     title: "Control Flow & Algorithms",
     icon: GitBranch,
     difficulty: "intermediate",
-    description: "Make the CPU think — conditional jumps, loops, and your first real algorithms.",
+    description: "Make the CPU think, conditional jumps, loops, and your first real algorithms.",
     prerequisites: ["assembly"],
     videos: [
       {

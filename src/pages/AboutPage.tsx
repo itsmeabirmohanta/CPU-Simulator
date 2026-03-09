@@ -17,14 +17,14 @@ const fadeUp = {
 };
 
 const features = [
-{ icon: Cpu, title: "Unified CPU Engine", desc: "A single simulation engine powers both Beginner and Advanced modes — same accuracy, different views." },
+{ icon: Cpu, title: "Unified CPU Engine", desc: "A single simulation engine powers both Beginner and Advanced modes, same accuracy, different views." },
 { icon: GraduationCap, title: "6-Module Curriculum", desc: "University-level course from binary basics to pipelining, with 30+ hands-on lessons." },
 { icon: Eye, title: "Visual Execution", desc: "Watch registers, memory, and data buses update in real time as each instruction runs." },
 { icon: Terminal, title: "Inline Code Editor", desc: "Write, validate, and run assembly programs with syntax highlighting and real-time error checking." },
 { icon: Keyboard, title: "Keyboard Shortcuts", desc: "Power-user controls: Space to step, Shift+Space to run, L to load, R to reset." },
-{ icon: Share2, title: "Shareable Links", desc: "Share any program via URL — code and mode are encoded in the link for instant collaboration." },
+{ icon: Share2, title: "Shareable Links", desc: "Share any program via URL, code and mode are encoded in the link for instant collaboration." },
 { icon: BarChart3, title: "Progress Tracking", desc: "Your lesson completion is saved locally. Pick up where you left off across sessions." },
-{ icon: Lightbulb, title: "Plain-English Explanations", desc: "Every instruction is explained in simple terms — what it does, why, and what changed." }];
+{ icon: Lightbulb, title: "Plain-English Explanations", desc: "Every instruction is explained in simple terms what it does, why, and what changed." }];
 
 
 const instructions = [
