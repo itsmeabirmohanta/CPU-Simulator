@@ -52,7 +52,7 @@ export const modules: Module[] = [
     title: "Foundations of Computing",
     icon: BookOpen,
     difficulty: "beginner",
-    description: "Start from the very beginning — understand what a computer really is, how binary works, and the fundamental architecture that powers every device.",
+    description: "Start from the very beginning, understand what a computer really is, how binary works, and the fundamental architecture that powers every device.",
     prerequisites: [],
     videos: [
       {
@@ -123,7 +123,7 @@ export const modules: Module[] = [
     title: "Inside the CPU",
     icon: Cpu,
     difficulty: "beginner",
-    description: "Zoom into the processor — understand registers, the ALU, the control unit, and the fetch-decode-execute cycle that drives everything.",
+    description: "Zoom into the processor, understand registers, the ALU, the control unit, and the fetch-decode-execute cycle that drives everything.",
     prerequisites: ["foundations"],
     videos: [
       {
@@ -208,7 +208,7 @@ export const modules: Module[] = [
     title: "Assembly & Machine Code",
     icon: Terminal,
     difficulty: "intermediate",
-    description: "Write real assembly programs — learn the language that talks directly to the CPU, one instruction at a time.",
+    description: "Write real assembly programs, learn the language that talks directly to the CPU, one instruction at a time.",
     prerequisites: ["inside-cpu"],
     videos: [
       {
@@ -297,7 +297,7 @@ export const modules: Module[] = [
     title: "Control Flow & Algorithms",
     icon: GitBranch,
     difficulty: "intermediate",
-    description: "Make the CPU think — conditional jumps, loops, and your first real algorithms.",
+    description: "Make the CPU think, conditional jumps, loops, and your first real algorithms.",
     prerequisites: ["assembly"],
     videos: [
       {
@@ -381,7 +381,7 @@ export const modules: Module[] = [
     title: "Advanced Architecture",
     icon: Brain,
     difficulty: "advanced",
-    description: "Dive deep — bitwise operations, subroutines, the stack, pipelining, and memory hierarchy.",
+    description: "Dive deep, bitwise operations, subroutines, the stack, pipelining, and memory hierarchy.",
     prerequisites: ["control-flow"],
     videos: [
       {
@@ -466,7 +466,7 @@ export const modules: Module[] = [
     title: "Real-World Applications",
     icon: Gauge,
     difficulty: "advanced",
-    description: "Connect theory to practice — compilers, modern CPU design, optimization, and your capstone project.",
+    description: "Connect theory to practice, compilers, modern CPU design, optimization, and your capstone project.",
     prerequisites: ["advanced-arch"],
     videos: [
       {

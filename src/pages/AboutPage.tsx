@@ -17,14 +17,14 @@ const fadeUp = {
 };
 
 const features = [
-{ icon: Cpu, title: "Unified CPU Engine", desc: "A single simulation engine powers both Beginner and Advanced modes — same accuracy, different views." },
+{ icon: Cpu, title: "Unified CPU Engine", desc: "A single simulation engine powers both Beginner and Advanced modes, same accuracy, different views." },
 { icon: GraduationCap, title: "6-Module Curriculum", desc: "University-level course from binary basics to pipelining, with 30+ hands-on lessons." },
 { icon: Eye, title: "Visual Execution", desc: "Watch registers, memory, and data buses update in real time as each instruction runs." },
 { icon: Terminal, title: "Inline Code Editor", desc: "Write, validate, and run assembly programs with syntax highlighting and real-time error checking." },
 { icon: Keyboard, title: "Keyboard Shortcuts", desc: "Power-user controls: Space to step, Shift+Space to run, L to load, R to reset." },
-{ icon: Share2, title: "Shareable Links", desc: "Share any program via URL — code and mode are encoded in the link for instant collaboration." },
+{ icon: Share2, title: "Shareable Links", desc: "Share any program via URL, code and mode are encoded in the link for instant collaboration." },
 { icon: BarChart3, title: "Progress Tracking", desc: "Your lesson completion is saved locally. Pick up where you left off across sessions." },
-{ icon: Lightbulb, title: "Plain-English Explanations", desc: "Every instruction is explained in simple terms — what it does, why, and what changed." }];
+{ icon: Lightbulb, title: "Plain-English Explanations", desc: "Every instruction is explained in simple terms what it does, why, and what changed." }];
 
 
 const instructions = [
@@ -86,7 +86,7 @@ export default function AboutPage() {
             </motion.div>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">About CPU Simulator</h1>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6">
-              An interactive, visual CPU simulator and curriculum designed to make computer architecture accessible to everyone — from curious beginners to university students.
+              An interactive, visual CPU simulator and curriculum designed to make computer architecture accessible to everyone, from curious beginners to university students.
             </p>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <motion.div whileHover={{ scale: 1.04, y: -1 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
@@ -116,7 +116,7 @@ export default function AboutPage() {
           
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Why CPU Simulator?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Understanding how a CPU works is fundamental to computer science, yet most resources are either too abstract or too complex. CPU Simulator bridges this gap with a purpose-built 8-bit simulator that lets you <strong className="text-foreground">see</strong> every fetch, decode, and execute cycle — then reinforces concepts through a structured, progressive curriculum.
+            Understanding how a CPU works is fundamental to computer science, yet most resources are either too abstract or too complex. CPU Simulator bridges this gap with a purpose-built 8-bit simulator that lets you <strong className="text-foreground">see</strong> every fetch, decode, and execute cycle,  then reinforces concepts through a structured, progressive curriculum.
           </p>
         </motion.section>
 
