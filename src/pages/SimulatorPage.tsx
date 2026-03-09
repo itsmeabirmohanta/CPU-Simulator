@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import {
   GraduationCap, Cpu, Play, Pause, SkipForward, RotateCcw, Upload,
   Keyboard, ChevronRight, Gauge, Share2, Download, HelpCircle,
+  Plus, Shuffle, RefreshCw, ClipboardList, X as XIcon, Trophy, FileText, CheckCircle2,
 } from "lucide-react";
 import SimulatorTour, { useSimulatorTour } from "@/components/simulator/SimulatorTour";
 
