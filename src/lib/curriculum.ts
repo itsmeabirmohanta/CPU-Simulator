@@ -381,7 +381,7 @@ export const modules: Module[] = [
     title: "Advanced Architecture",
     icon: Brain,
     difficulty: "advanced",
-    description: "Dive deep — bitwise operations, subroutines, the stack, pipelining, and memory hierarchy.",
+    description: "Dive deep, bitwise operations, subroutines, the stack, pipelining, and memory hierarchy.",
     prerequisites: ["control-flow"],
     videos: [
       {
