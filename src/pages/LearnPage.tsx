@@ -6,7 +6,7 @@ import ProgressTracker, {
 } from "@/components/learn/LessonProgress";
 import {
   BookOpen, Cpu, Rocket, HelpCircle, ArrowRight, GraduationCap,
-  Clock, Video, Layers,
+  Clock, Video, Layers, CheckCircle2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
