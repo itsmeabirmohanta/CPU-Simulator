@@ -97,9 +97,9 @@ function LiveCPUPreview() {
       {/* CPU blocks */}
       <div className="grid grid-cols-3 gap-3 md:gap-5">
         {[
-          { label: "Memory", value: v.mem, active: activePhase === "fetch", icon: "📦" },
-          { label: "Control Unit", value: v.cu, active: activePhase === "decode", icon: "🎛️" },
-          { label: "ALU", value: v.alu, active: activePhase === "execute", icon: "⚡" },
+          { label: "Memory", value: v.mem, active: activePhase === "fetch", Icon: HardDrive },
+          { label: "Control Unit", value: v.cu, active: activePhase === "decode", Icon: Cpu },
+          { label: "ALU", value: v.alu, active: activePhase === "execute", Icon: Zap },
         ].map((block) => (
           <motion.div
             key={block.label}
