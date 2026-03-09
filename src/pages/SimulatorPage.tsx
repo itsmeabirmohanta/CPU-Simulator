@@ -456,7 +456,7 @@ export default function SimulatorPage() {
 
                 <div className="glass-card flex flex-col overflow-hidden min-h-[200px] lg:flex-1">
                   <div className="px-3 sm:px-4 py-2 border-b bg-muted/20 flex items-center justify-between">
-                    <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider">✏️ Edit Code</span>
+                    <span className="font-display font-bold text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><FileText className="h-3 w-3" /> Edit Code</span>
                     <span className="text-[10px] text-muted-foreground font-mono">{code.split("\n").filter(l => l.trim()).length} lines</span>
                   </div>
                   <div className="flex-1 min-h-[160px] relative">
