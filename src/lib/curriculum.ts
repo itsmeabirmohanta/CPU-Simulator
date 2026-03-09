@@ -123,7 +123,7 @@ export const modules: Module[] = [
     title: "Inside the CPU",
     icon: Cpu,
     difficulty: "beginner",
-    description: "Zoom into the processor — understand registers, the ALU, the control unit, and the fetch-decode-execute cycle that drives everything.",
+    description: "Zoom into the processor, understand registers, the ALU, the control unit, and the fetch-decode-execute cycle that drives everything.",
     prerequisites: ["foundations"],
     videos: [
       {
