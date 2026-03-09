@@ -100,7 +100,7 @@ export default function SimulatorPage() {
       : cpuState.status === "running" ? "running" : "ready";
     setCpuState({ ...result.state, status: finalStatus }); setMemory(result.memory);
     setLogs((prev) => [...prev, result.log]);
-    if (result.state.status === "halted") toast.success("✅ Program completed!");
+    if (result.state.status === "halted") toast.success("Program completed successfully!");
     else if (result.state.status === "error") toast.error(result.state.errorMessage || "Error");
   }, [cpuState, memory, logs.length, hasProgram]);
 

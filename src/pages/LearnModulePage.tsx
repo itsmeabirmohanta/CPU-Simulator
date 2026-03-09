@@ -214,7 +214,7 @@ export default function LearnModulePage() {
             className="mb-14 rounded-2xl border border-accent/30 bg-accent/5 p-8 text-center"
           >
             <CheckCircle2 className="h-10 w-10 text-accent mx-auto mb-3" />
-            <h3 className="font-display text-xl font-bold mb-2">Module Complete! 🎉</h3>
+            <h3 className="font-display text-xl font-bold mb-2">Module Complete!</h3>
             <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
               You've finished all {module.lessons.length} lessons in this module.
               {nextModule ? " Continue to the next module to keep learning." : " You've completed the entire curriculum!"}
