@@ -119,9 +119,9 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   const phases = [
-    { id: "fetch", label: "Fetch", emoji: "📥", desc: "Get instruction from memory" },
-    { id: "decode", label: "Decode", emoji: "🔍", desc: "Understand the instruction" },
-    { id: "execute", label: "Execute", emoji: "⚡", desc: "Perform the action" },
+    { id: "fetch", label: "Fetch", Icon: Download, desc: "Get instruction from memory" },
+    { id: "decode", label: "Decode", Icon: Search, desc: "Understand the instruction" },
+    { id: "execute", label: "Execute", Icon: Zap, desc: "Perform the action" },
   ];
 
   const totalInstr = countInstructions(memory);
