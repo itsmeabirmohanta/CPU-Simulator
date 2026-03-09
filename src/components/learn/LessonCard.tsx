@@ -58,8 +58,8 @@ export default function LessonCard({ lesson, index, isCompleted, onComplete }: L
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h3 className="font-display font-bold text-sm">{lesson.title}</h3>
             {isCompleted && (
-              <Badge className="text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
-                ✓ Done
+              <Badge className="flex items-center gap-1 text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
+                <CheckCircle2 className="h-2.5 w-2.5" /> Done
               </Badge>
             )}
             {lesson.code && (
