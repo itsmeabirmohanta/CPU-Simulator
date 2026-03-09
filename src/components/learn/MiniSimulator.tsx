@@ -98,8 +98,8 @@ export default function MiniSimulator({ code, advanced = false }: MiniSimulatorP
             </>
           )}
           {isHalted && (
-            <span className="text-xs font-mono text-accent ml-auto">
-              ✓ Program complete
+            <span className="text-xs font-mono text-accent ml-auto flex items-center gap-1">
+              <CheckCircle2 className="h-3 w-3" /> Program complete
             </span>
           )}
         </div>

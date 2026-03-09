@@ -105,8 +105,8 @@ export default function LearnModulePage() {
                     {module.difficulty}
                   </Badge>
                   {allComplete && (
-                    <Badge className="text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
-                      ✓ Complete
+                    <Badge className="flex items-center gap-1 text-[10px] px-1.5 py-0 bg-accent/15 text-accent border-accent/20">
+                      <CheckCircle2 className="h-2.5 w-2.5" /> Complete
                     </Badge>
                   )}
                 </div>
