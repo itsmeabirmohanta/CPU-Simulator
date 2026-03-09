@@ -121,9 +121,9 @@ export default function LessonCard({ lesson, index, isCompleted, onComplete }: L
 
               {/* Challenge */}
               {lesson.challenge && (
-                <div className="rounded-xl bg-yellow-500/5 border border-yellow-500/15 p-4">
-                  <h4 className="font-display text-xs font-semibold text-yellow-600 dark:text-yellow-400 mb-1.5">
-                    🧩 Challenge
+                <div className="rounded-xl bg-warning/5 border border-warning/20 p-4">
+                  <h4 className="font-display text-xs font-semibold text-warning mb-1.5 flex items-center gap-1.5">
+                    <Puzzle className="h-3.5 w-3.5" /> Challenge
                   </h4>
                   <p className="text-sm text-foreground/70">{lesson.challenge}</p>
                 </div>
