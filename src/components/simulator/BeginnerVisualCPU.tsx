@@ -167,7 +167,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
                     : "bg-muted/30 border-2 border-transparent"
                 }`}
               >
-                <div className="text-lg sm:text-xl mb-0.5 sm:mb-1">{phase.emoji}</div>
+                <div className="flex justify-center mb-0.5 sm:mb-1"><phase.Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${activeFlow === phase.id ? "text-primary" : "text-muted-foreground"}`} /></div>
                 <div className={`font-display font-bold text-[10px] sm:text-xs ${activeFlow === phase.id ? "text-primary" : "text-muted-foreground"}`}>{phase.label}</div>
                 <div className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{phase.desc}</div>
               </motion.div>
