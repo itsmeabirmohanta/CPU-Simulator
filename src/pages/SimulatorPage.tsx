@@ -64,12 +64,12 @@ export default function SimulatorPage() {
   useEffect(() => { save("cpuverse-speed", speedLevel); }, [speedLevel]);
 
   const beginnerSamples = [
-    { key: "addition", label: "➕ Add Two Numbers", code: SAMPLE_PROGRAMS.addition.code },
-    { key: "conditionalJump", label: "🔀 Conditional Jump", code: SAMPLE_PROGRAMS.conditionalJump.code },
-    { key: "countdown", label: "🔄 Countdown Loop", code: SAMPLE_PROGRAMS.countdown.code },
-    { key: "registerMove", label: "📋 Register Transfer", code: SAMPLE_PROGRAMS.registerMove.code },
-    { key: "multiplication", label: "✖️ Multiplication", code: SAMPLE_PROGRAMS.multiplication.code },
-    { key: "findMax", label: "🏆 Find Max", code: SAMPLE_PROGRAMS.findMax.code },
+    { key: "addition", label: "Add Two Numbers", Icon: Plus, code: SAMPLE_PROGRAMS.addition.code },
+    { key: "conditionalJump", label: "Conditional Jump", Icon: Shuffle, code: SAMPLE_PROGRAMS.conditionalJump.code },
+    { key: "countdown", label: "Countdown Loop", Icon: RefreshCw, code: SAMPLE_PROGRAMS.countdown.code },
+    { key: "registerMove", label: "Register Transfer", Icon: ClipboardList, code: SAMPLE_PROGRAMS.registerMove.code },
+    { key: "multiplication", label: "Multiplication", Icon: XIcon, code: SAMPLE_PROGRAMS.multiplication.code },
+    { key: "findMax", label: "Find Max", Icon: Trophy, code: SAMPLE_PROGRAMS.findMax.code },
   ];
 
   const loadProgram = useCallback(() => {
