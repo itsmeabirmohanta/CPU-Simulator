@@ -1,0 +1,23 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "outputDirectory": "dist",
+  "env": {
+    "VITE_NODE_ENV": "@vite_node_env"
+  },
+  "routes": [
+    {
+      "src": "^/assets/.*",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/(?!.*\\.).*$",
+      "destination": "/index.html"
+    }
+  ]
+}
