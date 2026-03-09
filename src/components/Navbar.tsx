@@ -16,15 +16,15 @@ export default function Navbar() {
 
   return (
     <nav className="border-b bg-card/80 backdrop-blur-xl sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between h-14 px-4">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Cpu className="h-4 w-4 text-primary" />
+      <div className="container mx-auto flex items-center justify-between h-16 px-4">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shadow-sm">
+            <Cpu className="h-5 w-5 text-primary" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display font-bold text-sm leading-none tracking-tight">CPU Simulator</span>
-            <span className="text-[9px] text-muted-foreground leading-none mt-0.5 flex items-center gap-0.5">
-              <Sparkles className="h-2 w-2" /> Visual Learning
+            <span className="font-display font-bold text-base leading-none tracking-tight">CPU Simulator</span>
+            <span className="text-[10px] text-muted-foreground leading-none mt-1 flex items-center gap-1">
+              <Sparkles className="h-2.5 w-2.5" /> Visual Learning
             </span>
           </div>
         </Link>
