@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { createInitialState, createMemory, parseProgram, executeStep, resetStack } from "@/lib/cpu";
 import type { CpuState, MemoryCell, LogEntry } from "@/lib/cpu";
 import { Button } from "@/components/ui/button";
-import { Play, RotateCcw, StepForward } from "lucide-react";
+import { Play, RotateCcw, StepForward, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MiniSimulatorProps {
