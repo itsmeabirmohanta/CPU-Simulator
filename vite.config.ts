@@ -5,6 +5,7 @@ import compression from "vite-plugin-compression";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  appType: "spa",
   server: {
     host: "::",
     port: 8080,
@@ -18,6 +19,12 @@ export default defineConfig(({ mode }) => ({
       "Referrer-Policy": "strict-origin-when-cross-origin",
       "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
     },
+    middlewareMode: false,
+  },
+  preview: {
+    host: "::",
+    port: 4173,
+    middlewareMode: false,
   },
   plugins: [
     react(),
