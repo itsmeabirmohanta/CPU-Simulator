@@ -8,48 +8,48 @@ const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6, ease: EASE } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6, ease: EASE } })
 };
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
+  visible: { transition: { staggerChildren: 0.08 } }
 };
 
 const features = [
-  { icon: Eye, title: "Animated Data Flow", desc: "Watch values travel between memory, registers, and ALU in real time with smooth animations.", gradient: "from-primary to-primary-glow" },
-  { icon: Zap, title: "Step-by-Step Execution", desc: "Walk through each fetch → decode → execute cycle at your own pace or auto-play.", gradient: "from-accent to-success" },
-  { icon: Brain, title: "Plain-English Explanations", desc: "Every instruction explained as it runs. Toggle between simple and technical language.", gradient: "from-warning to-destructive" },
-  { icon: Layers, title: "Progressive Difficulty", desc: "Start with guided Beginner Mode, then switch to Advanced for full register and flag control.", gradient: "from-success to-accent" },
-];
+{ icon: Eye, title: "Animated Data Flow", desc: "Watch values travel between memory, registers, and ALU in real time with smooth animations.", gradient: "from-primary to-primary-glow" },
+{ icon: Zap, title: "Step-by-Step Execution", desc: "Walk through each fetch → decode → execute cycle at your own pace or auto-play.", gradient: "from-accent to-success" },
+{ icon: Brain, title: "Plain-English Explanations", desc: "Every instruction explained as it runs. Toggle between simple and technical language.", gradient: "from-warning to-destructive" },
+{ icon: Layers, title: "Progressive Difficulty", desc: "Start with guided Beginner Mode, then switch to Advanced for full register and flag control.", gradient: "from-success to-accent" }];
+
 
 const comparisons = [
-  { feature: "Visual CPU Diagram", beginner: true, advanced: true },
-  { feature: "Animated Data Flow", beginner: true, advanced: true },
-  { feature: "Plain-English Explanations", beginner: true, advanced: true },
-  { feature: "Code Editor", beginner: true, advanced: true },
-  { feature: "Sample Programs", beginner: true, advanced: true },
-  { feature: "Full Register Panel", beginner: false, advanced: true },
-  { feature: "Memory Inspector", beginner: false, advanced: true },
-  { feature: "Execution Trace Log", beginner: false, advanced: true },
-  { feature: "Bitwise & Subroutine Ops", beginner: false, advanced: true },
-];
+{ feature: "Visual CPU Diagram", beginner: true, advanced: true },
+{ feature: "Animated Data Flow", beginner: true, advanced: true },
+{ feature: "Plain-English Explanations", beginner: true, advanced: true },
+{ feature: "Code Editor", beginner: true, advanced: true },
+{ feature: "Sample Programs", beginner: true, advanced: true },
+{ feature: "Full Register Panel", beginner: false, advanced: true },
+{ feature: "Memory Inspector", beginner: false, advanced: true },
+{ feature: "Execution Trace Log", beginner: false, advanced: true },
+{ feature: "Bitwise & Subroutine Ops", beginner: false, advanced: true }];
+
 
 const stats = [
-  { value: 16, suffix: "+", label: "Instructions" },
-  { value: 6, suffix: "", label: "Course Modules" },
-  { value: 256, suffix: "", label: "Memory Cells" },
-  { value: 30, suffix: "+", label: "Interactive Lessons" },
-];
+{ value: 16, suffix: "+", label: "Instructions" },
+{ value: 6, suffix: "", label: "Course Modules" },
+{ value: 256, suffix: "", label: "Memory Cells" },
+{ value: 30, suffix: "+", label: "Interactive Lessons" }];
+
 
 const timeline = [
-  { step: "01", title: "Write Assembly", desc: "Use our syntax-highlighted editor with auto-complete and instant error feedback.", icon: Code2 },
-  { step: "02", title: "Watch It Execute", desc: "See the fetch-decode-execute cycle animate in real-time across CPU components.", icon: Monitor },
-  { step: "03", title: "Understand Deeply", desc: "Read plain-English explanations and inspect registers, flags, and memory at every step.", icon: Brain },
-];
+{ step: "01", title: "Write Assembly", desc: "Use our syntax-highlighted editor with auto-complete and instant error feedback.", icon: Code2 },
+{ step: "02", title: "Watch It Execute", desc: "See the fetch-decode-execute cycle animate in real-time across CPU components.", icon: Monitor },
+{ step: "03", title: "Understand Deeply", desc: "Read plain-English explanations and inspect registers, flags, and memory at every step.", icon: Brain }];
+
 
 // Animated counter component
-function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
+function AnimatedCounter({ value, suffix = "" }: {value: number;suffix?: string;}) {
   const count = useMotionValue(0);
   const rounded = useTransform(count, (v) => Math.round(v));
   const [display, setDisplay] = useState(0);
@@ -57,7 +57,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
   useEffect(() => {
     const controls = animate(count, value, { duration: 2, ease: "easeOut" });
     const unsub = rounded.on("change", (v) => setDisplay(v));
-    return () => { controls.stop(); unsub(); };
+    return () => {controls.stop();unsub();};
   }, [value, count, rounded]);
 
   return <span className="stat-counter">{display}{suffix}</span>;
@@ -68,10 +68,10 @@ function LiveCPUPreview() {
   const [phase, setPhase] = useState(0);
   const phases = ["fetch", "decode", "execute"];
   const values = [
-    { mem: "LDA 10", cu: "Fetching...", alu: "—", a: "0" },
-    { mem: "LDA 10", cu: "LDA 10", alu: "Decoding...", a: "0" },
-    { mem: "LDA 10", cu: "LDA 10", alu: "Load → A", a: "5" },
-  ];
+  { mem: "LDA 10", cu: "Fetching...", alu: "—", a: "0" },
+  { mem: "LDA 10", cu: "LDA 10", alu: "Decoding...", a: "0" },
+  { mem: "LDA 10", cu: "LDA 10", alu: "Load → A", a: "5" }];
+
 
   useEffect(() => {
     const timer = setInterval(() => setPhase((p) => (p + 1) % 3), 1800);
@@ -85,51 +85,51 @@ function LiveCPUPreview() {
     <div className="relative">
       {/* Phase indicators */}
       <div className="flex items-center justify-center gap-3 mb-6">
-        {phases.map((p, i) => (
-          <div key={p} className="flex items-center gap-2">
+        {phases.map((p, i) =>
+        <div key={p} className="flex items-center gap-2">
             <motion.div
-              animate={{ scale: activePhase === p ? 1 : 0.9, opacity: activePhase === p ? 1 : 0.4 }}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider transition-colors ${
-                activePhase === p ? "bg-primary/15 text-primary border border-primary/30" : "text-muted-foreground"
-              }`}
-            >
+            animate={{ scale: activePhase === p ? 1 : 0.9, opacity: activePhase === p ? 1 : 0.4 }}
+            className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold uppercase tracking-wider transition-colors ${
+            activePhase === p ? "bg-primary/15 text-primary border border-primary/30" : "text-muted-foreground"}`
+            }>
+            
               {p}
             </motion.div>
             {i < 2 && <ChevronRight className="h-3 w-3 text-muted-foreground/30" />}
           </div>
-        ))}
+        )}
       </div>
 
       {/* CPU blocks */}
       <div className="grid grid-cols-3 gap-3 md:gap-5">
         {[
-          { label: "Memory", value: v.mem, active: activePhase === "fetch", Icon: HardDrive },
-          { label: "Control Unit", value: v.cu, active: activePhase === "decode", Icon: Cpu },
-          { label: "ALU", value: v.alu, active: activePhase === "execute", Icon: Zap },
-        ].map((block) => (
-          <motion.div
-            key={block.label}
-            animate={{
-              scale: block.active ? 1.03 : 1,
-              borderColor: block.active ? "hsl(var(--primary))" : "hsl(var(--border))",
-            }}
-            transition={{ duration: 0.4 }}
-            className={`rounded-2xl border-2 p-4 md:p-5 text-center transition-all duration-300 ${
-              block.active ? "bg-primary/[0.06] shadow-lg" : "bg-card/50"
-            }`}
-          >
+        { label: "Memory", value: v.mem, active: activePhase === "fetch", Icon: HardDrive },
+        { label: "Control Unit", value: v.cu, active: activePhase === "decode", Icon: Cpu },
+        { label: "ALU", value: v.alu, active: activePhase === "execute", Icon: Zap }].
+        map((block) =>
+        <motion.div
+          key={block.label}
+          animate={{
+            scale: block.active ? 1.03 : 1,
+            borderColor: block.active ? "hsl(var(--primary))" : "hsl(var(--border))"
+          }}
+          transition={{ duration: 0.4 }}
+          className={`rounded-2xl border-2 p-4 md:p-5 text-center transition-all duration-300 ${
+          block.active ? "bg-primary/[0.06] shadow-lg" : "bg-card/50"}`
+          }>
+          
             <div className="flex justify-center mb-2"><block.Icon className={`h-6 w-6 ${block.active ? "text-primary" : "text-muted-foreground"}`} /></div>
             <div className="font-display font-bold text-sm mb-1">{block.label}</div>
             <motion.div
-              key={block.value}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="font-mono text-xs text-primary mt-1 h-4"
-            >
+            key={block.value}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="font-mono text-xs text-primary mt-1 h-4">
+            
               {block.value}
             </motion.div>
           </motion.div>
-        ))}
+        )}
       </div>
 
       {/* Accumulator result */}
@@ -141,15 +141,15 @@ function LiveCPUPreview() {
             key={v.a}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="font-mono font-bold text-sm text-primary"
-          >
+            className="font-mono font-bold text-sm text-primary">
+            
             {v.a}
           </motion.span>
         </div>
         <div className="h-px flex-1 bg-border" />
       </motion.div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function LandingPage() {
@@ -167,8 +167,8 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full gradient-border bg-card/80 backdrop-blur-sm px-5 py-2 text-[12px] font-medium text-muted-foreground mb-8 shadow-sm"
-          >
+            className="inline-flex items-center gap-2 rounded-full gradient-border bg-card/80 backdrop-blur-sm px-5 py-2 text-[12px] font-medium text-muted-foreground mb-8 shadow-sm">
+            
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             Interactive 8-Bit CPU Simulator
           </motion.div>
@@ -177,8 +177,8 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.08]"
-          >
+            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.08]">
+            
             See How a CPU
             <br />
             <span className="gradient-text">Actually Thinks</span>
@@ -188,8 +188,8 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed font-body"
-          >
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed font-body">
+            
             CPU Simulator is a visual microprocessor simulator that animates every fetch, decode, and execute cycle.
             Designed for students and educators, it turns abstract CPU concepts into something you can actually see.
           </motion.p>
@@ -199,39 +199,39 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.32 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
+            className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            
             {/* Primary CTA — Start Learning */}
             <motion.div
               whileHover={{ scale: 1.04, y: -2 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="relative group"
-            >
+              className="relative group">
+              
               {/* Glow bloom behind button */}
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary via-primary-glow to-accent opacity-30 blur-md group-hover:opacity-55 transition-opacity duration-500 pointer-events-none" />
               <Link
                 to="/simulator?mode=beginner"
                 className="relative flex items-center gap-3 rounded-xl px-8 py-4 text-base font-semibold text-primary-foreground overflow-hidden shadow-lg"
                 style={{
-                  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))",
-                }}
-              >
+                  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))"
+                }}>
+                
                 {/* Shimmer sweep */}
                 <span
                   className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
                   style={{
-                    background: "linear-gradient(90deg, transparent, hsl(var(--primary-foreground)/0.12), transparent)",
-                  }}
-                />
+                    background: "linear-gradient(90deg, transparent, hsl(var(--primary-foreground)/0.12), transparent)"
+                  }} />
+                
                 <GraduationCap className="h-5 w-5 shrink-0 relative z-10" />
                 <span className="relative z-10">Start Learning</span>
                 {/* Animated arrow */}
                 <motion.span
                   animate={{ x: [0, 4, 0] }}
                   transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-                  className="relative z-10"
-                >
+                  className="relative z-10">
+                  
                   <ArrowRight className="h-4 w-4" />
                 </motion.span>
               </Link>
@@ -242,13 +242,13 @@ export default function LandingPage() {
               whileHover={{ scale: 1.04, y: -2 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="relative group"
-            >
+              className="relative group">
+              
               <div className="absolute -inset-px rounded-xl bg-gradient-to-r from-primary/30 to-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               <Link
                 to="/simulator?mode=advanced"
-                className="relative flex items-center gap-3 rounded-xl px-8 py-4 text-base font-semibold bg-card/80 backdrop-blur-sm border border-border/80 text-foreground group-hover:border-primary/40 transition-colors duration-300 shadow-sm"
-              >
+                className="relative flex items-center gap-3 rounded-xl px-8 py-4 text-base font-semibold bg-card/80 backdrop-blur-sm border border-border/80 text-foreground group-hover:border-primary/40 transition-colors duration-300 shadow-sm">
+                
                 <FlaskConical className="h-5 w-5 text-primary shrink-0" />
                 <span>Open Advanced Lab</span>
                 <Terminal className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
@@ -265,8 +265,8 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="max-w-3xl mx-auto glass-card-glow p-6 md:p-8"
-        >
+          className="max-w-3xl mx-auto glass-card-glow p-6 md:p-8">
+          
           <LiveCPUPreview />
         </motion.div>
       </section>
@@ -279,14 +279,14 @@ export default function LandingPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-          >
-            {stats.map((stat, i) => (
-              <motion.div key={stat.label} variants={fadeUp} custom={i} className="text-center">
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            
+            {stats.map((stat, i) =>
+            <motion.div key={stat.label} variants={fadeUp} custom={i} className="text-center">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 <div className="text-xs text-muted-foreground mt-1 font-body">{stat.label}</div>
               </motion.div>
-            ))}
+            )}
           </motion.div>
         </div>
       </section>
@@ -298,30 +298,30 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
+          className="text-center mb-16">
+          
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">How It Works</h2>
           <p className="text-muted-foreground max-w-lg mx-auto font-body">Three steps from code to understanding.</p>
         </motion.div>
 
         <div className="max-w-3xl mx-auto relative">
-          <div className="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-border hidden md:block" />
+          
           <div className="space-y-8 md:space-y-12">
-            {timeline.map((item, i) => (
-              <motion.div
-                key={item.step}
-                custom={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="flex items-start gap-5 md:gap-8 group"
-              >
+            {timeline.map((item, i) =>
+            <motion.div
+              key={item.step}
+              custom={i}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="flex items-start gap-5 md:gap-8 group">
+              
                 <motion.div
-                  className="shrink-0 relative z-10"
-                  whileHover={{ scale: 1.08 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
-                >
+                className="shrink-0 relative z-10"
+                whileHover={{ scale: 1.08 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}>
+                
                   <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border flex items-center justify-center group-hover:border-primary/40 transition-colors duration-300">
                     <item.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                   </div>
@@ -334,7 +334,7 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed font-body max-w-md">{item.desc}</p>
                 </div>
               </motion.div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -346,8 +346,8 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-14"
-        >
+          className="text-center mb-14">
+          
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">Built for Learning</h2>
           <p className="text-muted-foreground max-w-lg mx-auto font-body">
             Not just a simulator — a complete visual learning experience designed for education.
@@ -358,23 +358,23 @@ export default function LandingPage() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 max-w-3xl mx-auto"
-        >
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              custom={i}
-              variants={fadeUp}
-              whileHover={{ y: -4, transition: { type: "spring", stiffness: 400, damping: 20 } }}
-              className="glass-card p-6 card-glow cursor-default"
-            >
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 max-w-3xl mx-auto">
+          
+          {features.map((f, i) =>
+          <motion.div
+            key={f.title}
+            custom={i}
+            variants={fadeUp}
+            whileHover={{ y: -4, transition: { type: "spring", stiffness: 400, damping: 20 } }}
+            className="glass-card p-6 card-glow cursor-default">
+            
               <div className={`inline-flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br ${f.gradient} mb-4`}>
                 <f.icon className="h-5 w-5 text-primary-foreground" />
               </div>
               <h3 className="font-display font-semibold text-sm mb-2">{f.title}</h3>
               <p className="text-xs text-muted-foreground leading-relaxed font-body">{f.desc}</p>
             </motion.div>
-          ))}
+          )}
         </motion.div>
       </section>
 
@@ -386,8 +386,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-14"
-          >
+            className="text-center mb-14">
+            
             <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">Two Modes, One Engine</h2>
             <p className="text-muted-foreground max-w-md mx-auto text-sm font-body">
               The same CPU simulation engine powers both experiences. Switch anytime.
@@ -398,8 +398,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="max-w-2xl mx-auto glass-card-glow overflow-hidden"
-          >
+            className="max-w-2xl mx-auto glass-card-glow overflow-hidden">
+            
             <div className="grid grid-cols-3 gap-0 border-b bg-muted/30">
               <div className="p-4 text-xs font-semibold text-muted-foreground">Feature</div>
               <div className="p-4 text-xs font-semibold text-center text-accent">
@@ -409,15 +409,15 @@ export default function LandingPage() {
                 <Cpu className="h-3.5 w-3.5 inline mr-1.5" />Advanced
               </div>
             </div>
-            {comparisons.map((c, i) => (
-              <motion.div
-                key={c.feature}
-                initial={{ opacity: 0, x: -8 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
-                className={`grid grid-cols-3 gap-0 transition-colors hover:bg-muted/20 ${i < comparisons.length - 1 ? "border-b border-border/50" : ""}`}
-              >
+            {comparisons.map((c, i) =>
+            <motion.div
+              key={c.feature}
+              initial={{ opacity: 0, x: -8 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.04 }}
+              className={`grid grid-cols-3 gap-0 transition-colors hover:bg-muted/20 ${i < comparisons.length - 1 ? "border-b border-border/50" : ""}`}>
+              
                 <div className="p-3.5 text-xs text-muted-foreground font-body">{c.feature}</div>
                 <div className="p-3.5 text-center text-sm">
                   {c.beginner ? <span className="text-accent font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
@@ -426,7 +426,7 @@ export default function LandingPage() {
                   {c.advanced ? <span className="text-primary font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
                 </div>
               </motion.div>
-            ))}
+            )}
           </motion.div>
         </div>
       </section>
@@ -437,8 +437,8 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-10"
-        >
+          className="text-center mb-10">
+          
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">What You'll Understand</h2>
         </motion.div>
         <motion.div
@@ -446,29 +446,29 @@ export default function LandingPage() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-3xl mx-auto"
-        >
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-3xl mx-auto">
+          
           {[
-            "Fetch → Decode → Execute cycle",
-            "ALU arithmetic & flag logic",
-            "Conditional branching & jumps",
-            "Register transfer operations",
-            "Stack & subroutine calling",
-            "Memory addressing modes",
-          ].map((item, i) => (
-            <motion.div
-              key={item}
-              variants={fadeUp}
-              custom={i}
-              whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 20 } }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/30 border hover:bg-muted/50 hover:border-primary/30 transition-colors cursor-default"
-            >
+          "Fetch → Decode → Execute cycle",
+          "ALU arithmetic & flag logic",
+          "Conditional branching & jumps",
+          "Register transfer operations",
+          "Stack & subroutine calling",
+          "Memory addressing modes"].
+          map((item, i) =>
+          <motion.div
+            key={item}
+            variants={fadeUp}
+            custom={i}
+            whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 20 } }}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/30 border hover:bg-muted/50 hover:border-primary/30 transition-colors cursor-default">
+            
               <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <ArrowRight className="h-3 w-3 text-primary" />
               </div>
               <span className="text-sm text-foreground/80 font-body">{item}</span>
             </motion.div>
-          ))}
+          )}
         </motion.div>
       </section>
 
@@ -480,24 +480,24 @@ export default function LandingPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground font-body"
-          >
+            className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground font-body">
+            
             {[
-              { icon: GraduationCap, label: "Built for Microprocessor Courses", color: "text-accent" },
-              { icon: Cpu, label: "Covers 8085-Style Instruction Set", color: "text-primary" },
-              { icon: Clock, label: "Zero Setup Required", color: "text-warning" },
-            ].map((badge, i) => (
-              <motion.div
-                key={badge.label}
-                variants={fadeUp}
-                custom={i}
-                whileHover={{ scale: 1.04 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border cursor-default"
-              >
+            { icon: GraduationCap, label: "Built for Microprocessor Courses", color: "text-accent" },
+            { icon: Cpu, label: "Covers 8085-Style Instruction Set", color: "text-primary" },
+            { icon: Clock, label: "Zero Setup Required", color: "text-warning" }].
+            map((badge, i) =>
+            <motion.div
+              key={badge.label}
+              variants={fadeUp}
+              custom={i}
+              whileHover={{ scale: 1.04 }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border cursor-default">
+              
                 <badge.icon className={`h-3.5 w-3.5 ${badge.color}`} />
                 {badge.label}
               </motion.div>
-            ))}
+            )}
           </motion.div>
         </div>
       </section>
@@ -510,8 +510,8 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+            transition={{ duration: 0.6 }}>
+            
             <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Ready to explore inside a CPU?</h2>
             <p className="text-sm text-muted-foreground mb-8 font-body max-w-md mx-auto">
               No setup, no installation. Start learning in your browser right now.
@@ -521,14 +521,14 @@ export default function LandingPage() {
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                className="relative group"
-              >
+                className="relative group">
+                
                 <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-accent opacity-25 blur-md group-hover:opacity-45 transition-opacity duration-500 pointer-events-none" />
                 <Link
                   to="/simulator?mode=beginner"
                   className="relative flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md overflow-hidden"
-                  style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))" }}
-                >
+                  style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))" }}>
+                  
                   <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" style={{ background: "linear-gradient(90deg, transparent, hsl(var(--primary-foreground)/0.1), transparent)" }} />
                   <GraduationCap className="h-4 w-4 relative z-10" />
                   <span className="relative z-10">Start Beginner Mode</span>
@@ -537,12 +537,12 @@ export default function LandingPage() {
               <motion.div
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              >
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+                
                 <Link
                   to="/learn"
-                  className="flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-semibold border border-border/80 bg-card/80 backdrop-blur-sm text-foreground hover:border-primary/40 transition-colors duration-300"
-                >
+                  className="flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-semibold border border-border/80 bg-card/80 backdrop-blur-sm text-foreground hover:border-primary/40 transition-colors duration-300">
+                  
                   <BookOpen className="h-4 w-4 text-primary" />
                   Read the Guide
                 </Link>
@@ -563,8 +563,8 @@ export default function LandingPage() {
                 </div>
                 <span className="font-display font-bold text-sm">CPU Simulator</span>
               </div>
-              <p className="text-xs text-muted-foreground font-body leading-relaxed">
-                A visual microprocessor learning platform. Built for education.
+              <p className="text-xs text-muted-foreground font-body leading-relaxed">A visual microprocessor learning platform. Built for educational & Demonstration Purpose
+
               </p>
             </div>
             <div>
@@ -584,17 +584,17 @@ export default function LandingPage() {
             </div>
             <div>
               <h4 className="font-display font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">About</h4>
-              <p className="text-xs text-muted-foreground font-body leading-relaxed">
-                Educational project designed for computer architecture and microprocessor courses.
+              <p className="text-xs text-muted-foreground font-body leading-relaxed">Educational project designed for computer architecture and microprocessor courses.
+
               </p>
             </div>
           </div>
           <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
             <span className="text-[11px] text-muted-foreground/60 font-body">© {new Date().getFullYear()} CPU Simulator. Educational Project.</span>
-            <span className="text-[11px] text-muted-foreground/40 font-mono">v3.0</span>
+            <span className="text-[11px] text-muted-foreground/40 font-mono">v21.0</span>
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
