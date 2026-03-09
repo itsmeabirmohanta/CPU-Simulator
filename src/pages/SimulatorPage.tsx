@@ -209,7 +209,7 @@ export default function SimulatorPage() {
         <SimulatorTour active={showTour} mode={mode} onDismiss={dismissTour} />
 
         {/* Toolbar */}
-        <div className="border-b bg-card/60 backdrop-blur-sm sticky top-14 z-40">
+        <div className="border-b bg-card/60 backdrop-blur-sm sticky top-16 z-40">
           <div className="container mx-auto px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0">
             {/* Left: Mode Toggle + Status */}
             <div className="flex items-center justify-between sm:justify-start gap-3">
