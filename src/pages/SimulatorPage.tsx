@@ -434,19 +434,20 @@ export default function SimulatorPage() {
               {/* Left sidebar */}
               <div className="lg:col-span-3 flex flex-col gap-2" data-tour="sim-samples">
                 <div className="glass-card p-3 sm:p-4">
-                  <div className="font-display font-bold text-sm mb-2 sm:mb-3">📝 Choose a Program</div>
+                  <div className="font-display font-bold text-sm mb-2 sm:mb-3 flex items-center gap-2"><FileText className="h-3.5 w-3.5 text-primary" /> Choose a Program</div>
                   <div className="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0">
                     {beginnerSamples.map((sample) => (
                       <button
                         key={sample.key}
                         onClick={() => handleBeginnerSample(sample.key)}
                         disabled={isRunning}
-                        className={`whitespace-nowrap lg:whitespace-normal text-left px-3 py-2 sm:py-2.5 rounded-xl text-[12px] font-medium transition-all shrink-0 lg:shrink lg:w-full ${
+                        className={`whitespace-nowrap lg:whitespace-normal text-left px-3 py-2 sm:py-2.5 rounded-xl text-[12px] font-medium transition-all shrink-0 lg:shrink lg:w-full flex items-center gap-2 ${
                           beginnerSample === sample.key
                             ? "bg-accent/15 text-accent border border-accent/30"
                             : "hover:bg-muted/50 text-muted-foreground border border-transparent"
                         } disabled:opacity-40`}
                       >
+                        <sample.Icon className="h-3 w-3 shrink-0" />
                         {sample.label}
                       </button>
                     ))}
