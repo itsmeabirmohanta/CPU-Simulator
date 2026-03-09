@@ -466,7 +466,7 @@ export const modules: Module[] = [
     title: "Real-World Applications",
     icon: Gauge,
     difficulty: "advanced",
-    description: "Connect theory to practice — compilers, modern CPU design, optimization, and your capstone project.",
+    description: "Connect theory to practice, compilers, modern CPU design, optimization, and your capstone project.",
     prerequisites: ["advanced-arch"],
     videos: [
       {
