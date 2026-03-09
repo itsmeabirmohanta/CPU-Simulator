@@ -125,8 +125,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
   ];
 
   const totalInstr = countInstructions(memory);
-  const executedSteps = logs.length > 0 ? logs[logs.length - 1].step : 0;
-  const progress = totalInstr > 0 ? Math.min((executedSteps / totalInstr) * 100, 100) : 0;
+  const progress = totalInstr > 0 ? Math.min((logs.length / totalInstr) * 100, 100) : 0;
   const isCompleted = state.status === "halted";
 
   return (
