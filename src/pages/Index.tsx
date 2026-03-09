@@ -4,9 +4,11 @@ import Navbar from "@/components/Navbar";
 import { motion, useMotionValue, useTransform, animate, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6, ease: EASE } }),
 };
 
 const stagger = {

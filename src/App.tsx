@@ -13,17 +13,19 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.38, ease: EASE },
   },
   exit: {
     opacity: 0,
     y: -8,
-    transition: { duration: 0.22, ease: "easeIn" },
+    transition: { duration: 0.22, ease: "easeIn" as const },
   },
 };
 
