@@ -141,6 +141,7 @@ export function parseProgram(code: string, _advanced?: boolean): { memory: Memor
     }
 
     memory[address].value = value;
+    memory[address].type = "instruction";
   });
 
   return { memory, errors };
