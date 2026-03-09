@@ -407,39 +407,40 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
           {conceptCards.map((card) => {
             const isExpanded = expandedCard === card.term;
             return (
-              <motion.button
-                key={card.term}
-                onClick={() => setExpandedCard(isExpanded ? null : card.term)}
-                className="text-left rounded-xl bg-muted/30 border p-2.5 sm:p-3 hover:bg-muted/50 transition-all card-glow"
-                layout
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <card.Icon className="h-4 w-4 text-primary shrink-0" />
-                    <span className="font-display font-semibold text-[10px] sm:text-[11px]">{card.term}</span>
+              <div key={card.term}>
+                <motion.button
+                  onClick={() => setExpandedCard(isExpanded ? null : card.term)}
+                  className="w-full text-left rounded-xl bg-muted/30 border p-2.5 sm:p-3 hover:bg-muted/50 transition-all card-glow"
+                  layout
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <card.Icon className="h-4 w-4 text-primary shrink-0" />
+                      <span className="font-display font-semibold text-[10px] sm:text-[11px]">{card.term}</span>
+                    </div>
+                    {isExpanded ? (
+                      <ChevronUp className="h-3 w-3 text-muted-foreground shrink-0" />
+                    ) : (
+                      <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
+                    )}
                   </div>
-                  {isExpanded ? (
-                    <ChevronUp className="h-3 w-3 text-muted-foreground shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
-                  )}
-                </div>
-                <div className="text-[9px] sm:text-[10px] text-muted-foreground leading-snug mt-1">{card.desc}</div>
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-2 pt-2 border-t border-border/50 text-[10px] text-foreground/80 leading-relaxed font-body">
-                        {card.detail}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
+                  <div className="text-[9px] sm:text-[10px] text-muted-foreground leading-snug mt-1">{card.desc}</div>
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-2 pt-2 border-t border-border/50 text-[10px] text-foreground/80 leading-relaxed font-body">
+                          {card.detail}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </div>
             );
           })}
         </div>
