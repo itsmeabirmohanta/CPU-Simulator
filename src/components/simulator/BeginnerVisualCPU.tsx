@@ -415,7 +415,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-base sm:text-lg">{card.emoji}</span>
+                    <card.Icon className="h-4 w-4 text-primary shrink-0" />
                     <span className="font-display font-semibold text-[10px] sm:text-[11px]">{card.term}</span>
                   </div>
                   {isExpanded ? (
