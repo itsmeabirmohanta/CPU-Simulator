@@ -12,8 +12,26 @@
     <link rel="canonical" href="/" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/logo/FaviconBlack.ico" />
+    <link rel="apple-touch-icon" href="/logo/FaviconBlack.ico" />
+    <script>
+      (function() {
+        const updateFavicon = () => {
+          const isDark = localStorage.getItem("cpu-sim-theme") === "dark" || 
+                        (localStorage.getItem("cpu-sim-theme") === null && 
+                         window.matchMedia("(prefers-color-scheme: dark)").matches);
+          const favicon = document.querySelector('link[rel="icon"]');
+          const appleTouchIcon = document.querySelector('link[rel="apple-touch-icon"]');
+          const href = isDark ? "/logo/FaviconWhite.ico" : "/logo/FaviconBlack.ico";
+          if (favicon) favicon.href = href;
+          if (appleTouchIcon) appleTouchIcon.href = href;
+        };
+        updateFavicon();
+        window.addEventListener("storage", updateFavicon);
+        const observer = new MutationObserver(updateFavicon);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+      })();
+    </script>
 
     <!-- Theme -->
     <meta name="theme-color" content="#7c3aed" />

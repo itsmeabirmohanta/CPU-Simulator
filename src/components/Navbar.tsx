@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Cpu, Sparkles, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -9,6 +9,34 @@ const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
 export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("cpu-sim-theme");
+      if (stored) return stored === "dark";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      const stored = localStorage.getItem("cpu-sim-theme");
+      if (stored) {
+        setIsDark(stored === "dark");
+      } else {
+        setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      }
+    };
+
+    window.addEventListener("storage", handleThemeChange);
+    const observer = new MutationObserver(() => handleThemeChange());
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    return () => {
+      window.removeEventListener("storage", handleThemeChange);
+      observer.disconnect();
+    };
+  }, []);
 
   const navLinks = [
     { to: "/", label: "Home" },
@@ -21,27 +49,18 @@ export default function Navbar() {
     <nav className="border-b bg-card/80 backdrop-blur-xl sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         {/* Logo */}
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-          <Link to="/" className="flex items-center gap-3 group">
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+          <Link to="/" className="flex items-center group">
             <motion.div
-              className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-sm overflow-hidden relative"
-              whileHover={{ backgroundColor: "hsl(var(--primary) / 0.2)" }}
+              className="h-24 w-24 rounded-xl flex items-center justify-center shadow-sm overflow-hidden relative"
               transition={{ duration: 0.2 }}
             >
-              <Cpu className="h-5 w-5 text-primary relative z-10" />
-              <motion.div
-                className="absolute inset-0 bg-primary/10"
-                initial={{ scale: 0, opacity: 0 }}
-                whileHover={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
+              <img
+                src={isDark ? "/logo/NavBarLogoWhite.png" : "/logo/NavBarLogoBlack.png"}
+                alt="CPU Simulator Logo"
+                className="h-32 w-32 object-contain"
               />
             </motion.div>
-            <div className="flex flex-col">
-              <span className="font-display font-bold text-lg leading-none tracking-tight">CPU Simulator</span>
-              <span className="text-[10px] text-muted-foreground leading-none mt-1 flex items-center gap-1">
-                <Sparkles className="h-2.5 w-2.5" /> Visual Learning
-              </span>
-            </div>
           </Link>
         </motion.div>
 
