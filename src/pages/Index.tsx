@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Cpu, Play, GraduationCap, ArrowRight, Zap, Eye, Brain, Layers, Sparkles, BookOpen, ChevronRight, Github, Terminal, Clock, Code2, Monitor, HardDrive } from "lucide-react";
+import { Cpu, Play, GraduationCap, ArrowRight, Zap, Eye, Brain, Layers, Sparkles, BookOpen, ChevronRight, Github, Terminal, Clock, Code2, Monitor, HardDrive, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
