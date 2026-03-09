@@ -369,8 +369,8 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
             transition={{ delay: 0.5 }}
             className="mt-4 p-3 rounded-xl bg-accent/5 border border-accent/20"
           >
-            <p className="text-xs text-accent font-medium">
-              🎯 <strong>Try it yourself!</strong> Edit the data values in the code editor (e.g., change the numbers at addresses 10-11) and re-run to see different results.
+            <p className="text-xs text-accent font-medium flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5 shrink-0" /> <span><strong>Try it yourself!</strong> Edit the data values in the code editor (e.g., change the numbers at addresses 10-11) and re-run to see different results.</span>
             </p>
           </motion.div>
         )}
