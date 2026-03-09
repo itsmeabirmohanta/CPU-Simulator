@@ -342,10 +342,10 @@ export default function LandingPage() {
               <div key={c.feature} className={`grid grid-cols-3 gap-0 transition-colors hover:bg-muted/20 ${i < comparisons.length - 1 ? "border-b border-border/50" : ""}`}>
                 <div className="p-3.5 text-xs text-muted-foreground font-body">{c.feature}</div>
                 <div className="p-3.5 text-center text-sm">
-                  {c.beginner ? <span className="text-accent font-bold">✓</span> : <span className="text-muted-foreground/20">—</span>}
+                  {c.beginner ? <span className="text-accent font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
                 </div>
                 <div className="p-3.5 text-center text-sm">
-                  {c.advanced ? <span className="text-primary font-bold">✓</span> : <span className="text-muted-foreground/20">—</span>}
+                  {c.advanced ? <span className="text-primary font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
                 </div>
               </div>
             ))}
