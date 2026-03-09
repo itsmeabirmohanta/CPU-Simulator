@@ -176,7 +176,7 @@ export default function LandingPage() {
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
             className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.08]"
           >
             See How a CPU

@@ -46,7 +46,7 @@ export default function LearnPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,hsl(var(--accent)/0.1),transparent)]" />
 
         <div className="relative container mx-auto px-4 pt-14 pb-16 max-w-6xl">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: EASE }}>
             <div className="text-center max-w-2xl mx-auto mb-8">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}

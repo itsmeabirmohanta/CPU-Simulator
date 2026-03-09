@@ -4,6 +4,8 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const EASE = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);

@@ -75,7 +75,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-accent/5 to-background" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,hsl(var(--accent)/0.08),transparent)]" />
         <div className="relative container mx-auto px-4 pt-16 pb-20 max-w-4xl text-center">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: EASE }}>
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
