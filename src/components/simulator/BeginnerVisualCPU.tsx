@@ -148,7 +148,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
             animate={{ opacity: 1, y: 0 }}
             className="mt-2 text-[11px] text-success font-medium flex items-center gap-1.5"
           >
-            ✅ Program completed successfully!
+            <CheckCircle2 className="h-3.5 w-3.5" /> Program completed successfully!
           </motion.div>
         )}
       </div>
