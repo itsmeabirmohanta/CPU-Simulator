@@ -1,7 +1,7 @@
 import { CpuState, MemoryCell, LogEntry } from "@/lib/cpu";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Cpu, HardDrive, Calculator, ArrowRight, ArrowDown, Lightbulb, BookOpen, ChevronDown, ChevronUp, Sparkles, Info } from "lucide-react";
+import { Cpu, HardDrive, Calculator, ArrowRight, ArrowDown, Lightbulb, BookOpen, ChevronDown, ChevronUp, Sparkles, Info, MapPin, Sigma, Zap, Package, ClipboardList, Flag, Download, Search, CheckCircle2, Target } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 
