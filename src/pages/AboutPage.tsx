@@ -86,7 +86,7 @@ export default function AboutPage() {
             </motion.div>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">About CPU Simulator</h1>
             <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6">
-              An interactive, visual CPU simulator and curriculum designed to make computer architecture accessible to everyone — from curious beginners to university students.
+              An interactive, visual CPU simulator and curriculum designed to make computer architecture accessible to everyone, from curious beginners to university students.
             </p>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <motion.div whileHover={{ scale: 1.04, y: -1 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
