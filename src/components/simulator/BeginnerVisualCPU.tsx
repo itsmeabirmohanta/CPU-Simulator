@@ -139,7 +139,7 @@ export default function BeginnerVisualCPU({ state, previousState, memory, active
             <span className="font-display font-bold text-xs">Progress</span>
           </div>
           <span className="text-[10px] font-mono text-muted-foreground">
-            Step {logs.length} of ~{totalInstr} instructions
+            Step {executedSteps} of ~{totalInstr} instructions
           </span>
         </div>
         <Progress value={progress} className="h-2" />
