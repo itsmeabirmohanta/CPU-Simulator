@@ -1,13 +1,17 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Cpu, Play, GraduationCap, ArrowRight, Zap, Eye, Brain, Layers, Sparkles, BookOpen, ChevronRight, Github, Terminal, Clock, Code2, Monitor, HardDrive, Check } from "lucide-react";
+import { Cpu, Play, GraduationCap, ArrowRight, Zap, Eye, Brain, Layers, Sparkles, BookOpen, ChevronRight, Terminal, Clock, Code2, Monitor, HardDrive, Check, FlaskConical } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6 } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] } }),
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
 const features = [
@@ -127,10 +131,7 @@ function LiveCPUPreview() {
       </div>
 
       {/* Accumulator result */}
-      <motion.div
-        className="mt-4 flex items-center justify-center gap-3"
-        animate={{ opacity: 1 }}
-      >
+      <motion.div className="mt-4 flex items-center justify-center gap-3" animate={{ opacity: 1 }}>
         <div className="h-px flex-1 bg-border" />
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border">
           <span className="text-[10px] text-muted-foreground font-mono">ACC</span>
@@ -154,11 +155,12 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
+      {/* ── Hero ─────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div className="hero-glow absolute inset-0 pointer-events-none" />
         <div className="mesh-gradient absolute inset-0 pointer-events-none" />
         <div className="container mx-auto px-4 py-20 md:py-32 text-center max-w-4xl relative z-10">
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -184,29 +186,77 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-body"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed font-body"
           >
-            CPU Simulator is a visual microprocessor simulator that animates every fetch, decode, and execute cycle. 
+            CPU Simulator is a visual microprocessor simulator that animates every fetch, decode, and execute cycle.
             Designed for students and educators, it turns abstract CPU concepts into something you can actually see.
           </motion.p>
 
+          {/* ── CTA Buttons ── */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            transition={{ duration: 0.7, delay: 0.32 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button asChild size="lg" className="gap-2.5 rounded-xl text-base px-8 h-13 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg glow-primary">
-              <Link to="/simulator?mode=beginner"><GraduationCap className="h-5 w-5" /> Start Learning</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="gap-2.5 rounded-xl text-base px-8 h-13 border-primary/20 hover:bg-primary/5 hover:border-primary/40">
-              <Link to="/simulator?mode=advanced"><Terminal className="h-5 w-5" /> Open Advanced Lab</Link>
-            </Button>
+            {/* Primary CTA — Start Learning */}
+            <motion.div
+              whileHover={{ scale: 1.04, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="relative group"
+            >
+              {/* Glow bloom behind button */}
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary via-primary-glow to-accent opacity-30 blur-md group-hover:opacity-55 transition-opacity duration-500 pointer-events-none" />
+              <Link
+                to="/simulator?mode=beginner"
+                className="relative flex items-center gap-3 rounded-xl px-8 py-4 text-base font-semibold text-primary-foreground overflow-hidden shadow-lg"
+                style={{
+                  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))",
+                }}
+              >
+                {/* Shimmer sweep */}
+                <span
+                  className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"
+                  style={{
+                    background: "linear-gradient(90deg, transparent, hsl(var(--primary-foreground)/0.12), transparent)",
+                  }}
+                />
+                <GraduationCap className="h-5 w-5 shrink-0 relative z-10" />
+                <span className="relative z-10">Start Learning</span>
+                {/* Animated arrow */}
+                <motion.span
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+                  className="relative z-10"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </motion.span>
+              </Link>
+            </motion.div>
+
+            {/* Secondary CTA — Open Advanced Lab */}
+            <motion.div
+              whileHover={{ scale: 1.04, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="relative group"
+            >
+              <div className="absolute -inset-px rounded-xl bg-gradient-to-r from-primary/30 to-accent/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <Link
+                to="/simulator?mode=advanced"
+                className="relative flex items-center gap-3 rounded-xl px-8 py-4 text-base font-semibold bg-card/80 backdrop-blur-sm border border-border/80 text-foreground group-hover:border-primary/40 transition-colors duration-300 shadow-sm"
+              >
+                <FlaskConical className="h-5 w-5 text-primary shrink-0" />
+                <span>Open Advanced Lab</span>
+                <Terminal className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Live CPU Preview */}
+      {/* ── Live CPU Preview ── */}
       <section className="container mx-auto px-4 pb-20 -mt-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -219,33 +269,33 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* Stats */}
+      {/* ── Stats ── */}
       <section className="border-y bg-muted/10">
         <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+          >
             {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
+              <motion.div key={stat.label} variants={fadeUp} custom={i} className="text-center">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 <div className="text-xs text-muted-foreground mt-1 font-body">{stat.label}</div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* How It Works — Timeline */}
+      {/* ── How It Works — Timeline ── */}
       <section className="container mx-auto px-4 py-20 md:py-28">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">How It Works</h2>
@@ -253,9 +303,7 @@ export default function LandingPage() {
         </motion.div>
 
         <div className="max-w-3xl mx-auto relative">
-          {/* Vertical line */}
           <div className="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-border hidden md:block" />
-
           <div className="space-y-8 md:space-y-12">
             {timeline.map((item, i) => (
               <motion.div
@@ -265,13 +313,17 @@ export default function LandingPage() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="flex items-start gap-5 md:gap-8"
+                className="flex items-start gap-5 md:gap-8 group"
               >
-                <div className="shrink-0 relative z-10">
-                  <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border flex items-center justify-center">
+                <motion.div
+                  className="shrink-0 relative z-10"
+                  whileHover={{ scale: 1.08 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                >
+                  <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border flex items-center justify-center group-hover:border-primary/40 transition-colors duration-300">
                     <item.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                   </div>
-                </div>
+                </motion.div>
                 <div className="pt-1 md:pt-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-mono text-[10px] text-primary/60 font-bold">{item.step}</span>
@@ -285,12 +337,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* ── Features ── */}
       <section className="container mx-auto px-4 pb-20">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-14"
         >
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">Built for Learning</h2>
@@ -298,16 +351,20 @@ export default function LandingPage() {
             Not just a simulator — a complete visual learning experience designed for education.
           </p>
         </motion.div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 max-w-3xl mx-auto">
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 max-w-3xl mx-auto"
+        >
           {features.map((f, i) => (
             <motion.div
               key={f.title}
               custom={i}
               variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="glass-card p-6 group hover-lift card-glow"
+              whileHover={{ y: -4, transition: { type: "spring", stiffness: 400, damping: 20 } }}
+              className="glass-card p-6 card-glow cursor-default"
             >
               <div className={`inline-flex items-center justify-center h-10 w-10 rounded-xl bg-gradient-to-br ${f.gradient} mb-4`}>
                 <f.icon className="h-5 w-5 text-primary-foreground" />
@@ -316,19 +373,31 @@ export default function LandingPage() {
               <p className="text-xs text-muted-foreground leading-relaxed font-body">{f.desc}</p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
-      {/* Mode Comparison */}
+      {/* ── Mode Comparison ── */}
       <section className="border-t mesh-gradient">
         <div className="container mx-auto px-4 py-20 md:py-28">
-          <div className="text-center mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-14"
+          >
             <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">Two Modes, One Engine</h2>
             <p className="text-muted-foreground max-w-md mx-auto text-sm font-body">
               The same CPU simulation engine powers both experiences. Switch anytime.
             </p>
-          </div>
-          <div className="max-w-2xl mx-auto glass-card-glow overflow-hidden">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="max-w-2xl mx-auto glass-card-glow overflow-hidden"
+          >
             <div className="grid grid-cols-3 gap-0 border-b bg-muted/30">
               <div className="p-4 text-xs font-semibold text-muted-foreground">Feature</div>
               <div className="p-4 text-xs font-semibold text-center text-accent">
@@ -339,7 +408,14 @@ export default function LandingPage() {
               </div>
             </div>
             {comparisons.map((c, i) => (
-              <div key={c.feature} className={`grid grid-cols-3 gap-0 transition-colors hover:bg-muted/20 ${i < comparisons.length - 1 ? "border-b border-border/50" : ""}`}>
+              <motion.div
+                key={c.feature}
+                initial={{ opacity: 0, x: -8 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.04 }}
+                className={`grid grid-cols-3 gap-0 transition-colors hover:bg-muted/20 ${i < comparisons.length - 1 ? "border-b border-border/50" : ""}`}
+              >
                 <div className="p-3.5 text-xs text-muted-foreground font-body">{c.feature}</div>
                 <div className="p-3.5 text-center text-sm">
                   {c.beginner ? <span className="text-accent font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
@@ -347,18 +423,29 @@ export default function LandingPage() {
                 <div className="p-3.5 text-center text-sm">
                   {c.advanced ? <span className="text-primary font-bold flex justify-center"><Check className="h-4 w-4" /></span> : <span className="text-muted-foreground/20">—</span>}
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* What You'll Learn */}
+      {/* ── What You'll Learn ── */}
       <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-10"
+        >
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3">What You'll Understand</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-3xl mx-auto">
+        </motion.div>
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-w-3xl mx-auto"
+        >
           {[
             "Fetch → Decode → Execute cycle",
             "ALU arithmetic & flag logic",
@@ -366,13 +453,13 @@ export default function LandingPage() {
             "Register transfer operations",
             "Stack & subroutine calling",
             "Memory addressing modes",
-          ].map((item) => (
+          ].map((item, i) => (
             <motion.div
               key={item}
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/30 border hover:bg-muted/50 transition-colors"
+              variants={fadeUp}
+              custom={i}
+              whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 20 } }}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted/30 border hover:bg-muted/50 hover:border-primary/30 transition-colors cursor-default"
             >
               <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <ArrowRight className="h-3 w-3 text-primary" />
@@ -380,49 +467,90 @@ export default function LandingPage() {
               <span className="text-sm text-foreground/80 font-body">{item}</span>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
-      {/* Social Proof */}
+      {/* ── Social Proof ── */}
       <section className="border-t bg-muted/10">
         <div className="container mx-auto px-4 py-16 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground font-body">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border">
-              <GraduationCap className="h-3.5 w-3.5 text-accent" />
-              Built for Microprocessor Courses
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border">
-              <Cpu className="h-3.5 w-3.5 text-primary" />
-              Covers 8085-Style Instruction Set
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border">
-              <Clock className="h-3.5 w-3.5 text-warning" />
-              Zero Setup Required
-            </div>
-          </div>
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground font-body"
+          >
+            {[
+              { icon: GraduationCap, label: "Built for Microprocessor Courses", color: "text-accent" },
+              { icon: Cpu, label: "Covers 8085-Style Instruction Set", color: "text-primary" },
+              { icon: Clock, label: "Zero Setup Required", color: "text-warning" },
+            ].map((badge, i) => (
+              <motion.div
+                key={badge.label}
+                variants={fadeUp}
+                custom={i}
+                whileHover={{ scale: 1.04 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border cursor-default"
+              >
+                <badge.icon className={`h-3.5 w-3.5 ${badge.color}`} />
+                {badge.label}
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── Final CTA ── */}
       <section className="relative overflow-hidden">
         <div className="mesh-gradient absolute inset-0 pointer-events-none" />
         <div className="container mx-auto px-4 py-20 text-center relative z-10">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Ready to explore inside a CPU?</h2>
-          <p className="text-sm text-muted-foreground mb-8 font-body max-w-md mx-auto">
-            No setup, no installation. Start learning in your browser right now.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild size="lg" className="rounded-xl gap-2 bg-primary hover:bg-primary/90 text-primary-foreground glow-primary">
-              <Link to="/simulator?mode=beginner"><GraduationCap className="h-4 w-4" /> Start Beginner Mode</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-xl gap-2 border-primary/20">
-              <Link to="/learn"><BookOpen className="h-4 w-4" /> Read the Guide</Link>
-            </Button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Ready to explore inside a CPU?</h2>
+            <p className="text-sm text-muted-foreground mb-8 font-body max-w-md mx-auto">
+              No setup, no installation. Start learning in your browser right now.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <motion.div
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className="relative group"
+              >
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-accent opacity-25 blur-md group-hover:opacity-45 transition-opacity duration-500 pointer-events-none" />
+                <Link
+                  to="/simulator?mode=beginner"
+                  className="relative flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md overflow-hidden"
+                  style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)))" }}
+                >
+                  <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" style={{ background: "linear-gradient(90deg, transparent, hsl(var(--primary-foreground)/0.1), transparent)" }} />
+                  <GraduationCap className="h-4 w-4 relative z-10" />
+                  <span className="relative z-10">Start Beginner Mode</span>
+                </Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              >
+                <Link
+                  to="/learn"
+                  className="flex items-center gap-2.5 rounded-xl px-7 py-3.5 text-sm font-semibold border border-border/80 bg-card/80 backdrop-blur-sm text-foreground hover:border-primary/40 transition-colors duration-300"
+                >
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  Read the Guide
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       <footer className="border-t bg-card/50">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
