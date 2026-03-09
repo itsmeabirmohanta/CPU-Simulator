@@ -43,6 +43,7 @@ export default function Navbar() {
     { to: "/simulator", label: "Simulator" },
     { to: "/learn", label: "Learn" },
     { to: "/about", label: "About" },
+    { to: "/sitemap", label: "Sitemap" },
   ];
 
   return (

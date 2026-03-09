@@ -15,6 +15,7 @@ const SimulatorPage = lazy(() => import("./pages/SimulatorPage"));
 const LearnPage = lazy(() => import("./pages/LearnPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const LearnModulePage = lazy(() => import("./pages/LearnModulePage"));
+const SitemapPage = lazy(() => import("./pages/SitemapPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ function AnimatedRoutes() {
             <Route path="/learn/:moduleId" element={<LearnModulePage />} />
             <Route path="/help" element={<LearnPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/sitemap" element={<SitemapPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

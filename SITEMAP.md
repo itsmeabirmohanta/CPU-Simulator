@@ -1,8 +1,12 @@
 # 🗺️ CPU Simulator - Complete Sitemap
 
+> **Interactive Version Available!** Visit `/sitemap` or click "Sitemap" in the navbar for an interactive, searchable sitemap page.
+
 ## 📋 Overview
 
-The CPU Simulator platform is organized into several main sections with a comprehensive curriculum spanning 6 modules and 25+ lessons. This document provides a complete guide to all available pages and learning paths.
+The CPU Simulator platform is organized into several main sections with a comprehensive curriculum spanning 6 modules and 29 lessons. This document provides a complete guide to all available pages and learning paths.
+
+**Access the interactive sitemap:** [/sitemap](/sitemap)
 
 ---
 
@@ -16,6 +20,7 @@ The CPU Simulator platform is organized into several main sections with a compre
 | **CPU Simulator** | `/simulator` | Interactive 8-bit CPU simulator interface | Navbar |
 | **Learning Portal** | `/learn` | Module index and lesson browser | Navbar |
 | **About** | `/about` | Project information, team, license | Navbar |
+| **Sitemap** | `/sitemap` | Interactive, searchable site map with all pages | Navbar |
 | **Help** | `/help` | Redirects to learning portal | Navbar/Footer |
 | **404 Not Found** | `/*` | Error page for undefined routes | Auto |
 
@@ -212,6 +217,7 @@ Connect theory to practice, compilers, modern CPU design, optimization, and your
 | **Total Modules** | 6 |
 | **Total Lessons** | 29 |
 | **Total Videos** | 10+ |
+| **Total Main Pages** | 6 |
 | **Beginner Lessons** | 9 |
 | **Intermediate Lessons** | 10 |
 | **Advanced Lessons** | 10 |
@@ -377,6 +383,13 @@ Root (/)
 │   ├── Technology Stack
 │   ├── Acknowledgments
 │   └── Contact
+│
+├── Sitemap (/sitemap)
+│   ├── Main Pages Section
+│   ├── Learning Modules Section
+│   ├── Search & Filter
+│   ├── Learning Paths Info
+│   └── Quick Navigation
 │
 ├── Help (/help)
 │   └── Redirects to /learn
