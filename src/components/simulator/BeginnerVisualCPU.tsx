@@ -15,29 +15,29 @@ interface BeginnerVisualCPUProps {
 }
 
 const conceptCards = [
-  { term: "Program Counter (PC)", emoji: "📍", desc: "Points to the next instruction to execute.", detail: "The PC automatically increments after each instruction unless a jump (JMP, JZ) changes it. It's like a bookmark telling the CPU where to read next." },
-  { term: "Accumulator (A)", emoji: "🧮", desc: "The main working register for math results.", detail: "Most arithmetic operations (ADD, SUB) use the Accumulator as one operand and store the result back in it. Think of it as the CPU's scratchpad." },
-  { term: "ALU", emoji: "⚡", desc: "Arithmetic Logic Unit — the calculator.", detail: "The ALU performs all math (addition, subtraction) and logic (AND, OR, comparisons). It also sets flags based on results." },
-  { term: "Memory", emoji: "📦", desc: "Storage for instructions and data.", detail: "Memory holds both the program instructions and data values. Each cell has an address (like a street address) and a value." },
-  { term: "Instruction Register", emoji: "📋", desc: "Holds the current instruction.", detail: "After fetching, the instruction is loaded into the IR where the Control Unit decodes it to figure out what operation to perform." },
-  { term: "Flags", emoji: "🚩", desc: "Indicators for zero results and overflow.", detail: "The Zero flag (Z) is set when a result equals 0. The Carry flag (CY) is set on overflow/underflow. Conditional jumps like JZ check these flags." },
+  { term: "Program Counter (PC)", Icon: MapPin, desc: "Points to the next instruction to execute.", detail: "The PC automatically increments after each instruction unless a jump (JMP, JZ) changes it. It's like a bookmark telling the CPU where to read next." },
+  { term: "Accumulator (A)", Icon: Sigma, desc: "The main working register for math results.", detail: "Most arithmetic operations (ADD, SUB) use the Accumulator as one operand and store the result back in it. Think of it as the CPU's scratchpad." },
+  { term: "ALU", Icon: Zap, desc: "Arithmetic Logic Unit — the calculator.", detail: "The ALU performs all math (addition, subtraction) and logic (AND, OR, comparisons). It also sets flags based on results." },
+  { term: "Memory", Icon: Package, desc: "Storage for instructions and data.", detail: "Memory holds both the program instructions and data values. Each cell has an address (like a street address) and a value." },
+  { term: "Instruction Register", Icon: ClipboardList, desc: "Holds the current instruction.", detail: "After fetching, the instruction is loaded into the IR where the Control Unit decodes it to figure out what operation to perform." },
+  { term: "Flags", Icon: Flag, desc: "Indicators for zero results and overflow.", detail: "The Zero flag (Z) is set when a result equals 0. The Carry flag (CY) is set on overflow/underflow. Conditional jumps like JZ check these flags." },
 ];
 
 function simpleExplanation(log: LogEntry | null): string {
   if (!log) return "Press 'Load' then 'Next' to begin executing the program!";
   const expl = log.explanation || log.instruction || "";
-  if (expl.includes("LDA")) return `📦 The CPU is reading a number from memory and putting it in the Accumulator.`;
-  if (expl.includes("STA")) return `💾 The CPU is saving the Accumulator value back into memory.`;
-  if (expl.includes("ADD")) return `➕ The CPU is adding a number from memory to the Accumulator.`;
-  if (expl.includes("SUB")) return `➖ The CPU is subtracting a number from memory from the Accumulator.`;
-  if (expl.includes("MOV")) return `🔄 The CPU is copying a value from one register to another.`;
-  if (expl.includes("INR")) return `⬆️ Adding 1 to the register value.`;
-  if (expl.includes("DCR")) return `⬇️ Subtracting 1 from the register value.`;
-  if (expl.includes("JMP")) return `🔀 The CPU is jumping to a different instruction.`;
-  if (expl.includes("JZ") && expl.includes("taken")) return `🔀 Result was zero — jumping to a different address!`;
-  if (expl.includes("JZ") && expl.includes("not taken")) return `➡️ Result was NOT zero — continuing to next instruction.`;
-  if (expl.includes("HLT")) return `🛑 The program is done! The CPU has stopped.`;
-  return `🔧 ${expl}`;
+  if (expl.includes("LDA")) return `Loading a number from memory into the Accumulator.`;
+  if (expl.includes("STA")) return `Saving the Accumulator value back into memory.`;
+  if (expl.includes("ADD")) return `Adding a number from memory to the Accumulator.`;
+  if (expl.includes("SUB")) return `Subtracting a number from memory from the Accumulator.`;
+  if (expl.includes("MOV")) return `Copying a value from one register to another.`;
+  if (expl.includes("INR")) return `Adding 1 to the register value.`;
+  if (expl.includes("DCR")) return `Subtracting 1 from the register value.`;
+  if (expl.includes("JMP")) return `The CPU is jumping to a different instruction.`;
+  if (expl.includes("JZ") && expl.includes("taken")) return `Result was zero — jumping to a different address!`;
+  if (expl.includes("JZ") && expl.includes("not taken")) return `Result was NOT zero — continuing to next instruction.`;
+  if (expl.includes("HLT")) return `The program is done! The CPU has stopped.`;
+  return expl;
 }
 
 // Count total instructions in memory for progress
