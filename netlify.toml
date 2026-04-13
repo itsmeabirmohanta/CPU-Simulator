@@ -23,10 +23,22 @@
     Cache-Control = "public, max-age=3600"
 
 [[headers]]
-  for = "/"
+  for = "/*"
   [headers.values]
+    # Strong CSP: Only allow self, specific external assets
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: ws:; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+    # Prevent MIME type sniffing
     X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "SAMEORIGIN"
+    # Anti-Clickjacking
+    X-Frame-Options = "DENY"
+    # Legacy XSS protection
     X-XSS-Protection = "1; mode=block"
+    # Strict Transport Security (HSTS)
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    # Control referrer leaks
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    # Limit device features
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    # Cross origin isolation policies
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
