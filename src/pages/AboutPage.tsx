@@ -308,6 +308,69 @@ export default function AboutPage() {
           </div>
         </motion.section>
 
+        {/* Team */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}>
+
+          <div className="text-center mb-10">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Meet the Rest of the Team</h2>
+            <p className="text-sm text-muted-foreground">The brilliant contributors who helped bring this project to life</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
+            {[
+              {
+                name: "Vaishnavi Mahadik",
+                github: "https://github.com/Vaishnavi5060",
+                linkedin: "https://www.linkedin.com/in/-vaishnavi-mahadik/",
+              },
+              {
+                name: "Atharv Taralkar",
+                github: "https://github.com/Atharv0001A",
+                linkedin: "https://www.linkedin.com/in/atharvtaralkar/",
+              },
+              {
+                name: "Sujal Kalbhor",
+                github: "https://github.com/sujalkalbhor",
+                linkedin: "https://www.linkedin.com/in/sujalkalbhor/",
+              },
+            ].map((member, i) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: i * 0.1 }}
+                whileHover={{ y: -4 }}
+                className="p-6 rounded-2xl border bg-card/50 text-center hover:bg-card transition-colors">
+
+                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-accent/10 mb-4">
+                  <User className="h-8 w-8 text-accent" />
+                </div>
+                <h3 className="font-display text-base font-bold mb-4">{member.name}</h3>
+                <div className="flex items-center justify-center gap-2">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button asChild variant="outline" size="sm" className="rounded-full gap-1.5 text-xs px-3">
+                      <a href={member.github} target="_blank" rel="noopener noreferrer">
+                        <Github className="h-3.5 w-3.5" /> GitHub
+                      </a>
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button asChild variant="outline" size="sm" className="rounded-full gap-1.5 text-xs px-3">
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                        <Linkedin className="h-3.5 w-3.5" /> LinkedIn
+                      </a>
+                    </Button>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
         {/* Tech Stack */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
